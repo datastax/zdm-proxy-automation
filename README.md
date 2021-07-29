@@ -1,4 +1,4 @@
 # cloudgate-automation
-Automation to deploy the Cloudgate proxy
+Automation suite to deploy the Cloudgate Proxy for zero-downtime migrations
 
-Collaboration notes are available at: https://docs.google.com/document/d/1gnfbQESiOV1JzrT1cs2MG5cOfDQ4BBvybfJ_MFAUfm0/edit?usp=sharing
+Deployment runbook is available at: https://docs.google.com/document/d/1-BbtDLtCfBm3ZLaW2fClSQjgjKtEDnpcC0qil_rubeQ/edit?usp=sharing
