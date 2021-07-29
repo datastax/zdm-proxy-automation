@@ -1,0 +1,26 @@
+{{ ansible_managed | comment }}
+[Unit]
+Description=Vector
+Documentation={{ vector_documentation_link }}
+Requires=network-online.target
+After=network-online.target
+
+[Service]
+User={{ vector_user }}
+Group={{ vector_group }}
+
+ExecStart={{ vector_bin_path }}/{{ vector_exec_name }}
+ExecReload=/bin/kill -HUP $MAINPID
+
+StandardOutput={{ vector_log_output }}
+StandardError={{ vector_log_output }}
+
+{% if vector_syslog_identifier is defined %}
+SyslogIdentifier={{ vector_syslog_identifier }}
+{% endif %}
+
+KillSignal=SIGTERM
+Restart=no
+
+[Install]
+WantedBy=multi-user.target

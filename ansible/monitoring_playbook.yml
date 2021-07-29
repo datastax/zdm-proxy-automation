@@ -1,0 +1,41 @@
+---
+- name: Install and configure Prometheus and Grafana on the monitoring instance
+  hosts: monitoring
+  become: yes
+  roles:
+    - ansible-prometheus
+    - ansible-grafana
+  vars_files:
+    - vars/monitoring_config.yml
+  vars:
+    prometheus_targets:
+      node:
+      - targets:
+        - localhost:9100
+    grafana_version: "{{ grafana_version }}" 
+    grafana_security:
+      admin_user: "{{ grafana_admin_user }}"
+      admin_password: "{{ grafana_admin_password }}"
+    grafana_datasources:
+      - name: prometheus
+        type: prometheus
+        access: proxy
+        url: "http://{{ prometheus_web_listen_address }}"
+        basicAuth: false
+
+- name: Install and configure Prometheus Node Exporter on the proxy instances
+  hosts: proxies
+  roles:
+    - ansible-node-exporter
+
+- name: Install and configure Vector on the proxy instances
+  hosts: proxies
+  become: yes
+  roles:
+    - vector_role
+  vars_files:
+    - vars/monitoring_config.yml
+    - vars/proxy_advanced_config_input.yml
+  vars:
+    vector_version: "{{ vector_version }}"
+    vector_config_template_path: vector-proxy-instance.toml.j2

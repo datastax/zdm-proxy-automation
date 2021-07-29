@@ -1,0 +1,16 @@
+---
+
+- name: VECTOR | Install
+  include: install.yml
+  tags:
+    - vector_install
+
+- name: VECTOR | Configure
+  include: config.yml
+  tags:
+    - vector_configure
+
+- name: VECTOR | Service
+  include: service.yml
+  tags:
+    - vector_service

@@ -1,0 +1,10 @@
+---
+
+- name: VECTOR | Configure vector
+  template:
+    src: "{{ vector_config_template_path }}"
+    dest: /etc/vector/vector.toml
+    owner: "{{ vector_user }}"
+    group: "{{ vector_group }}"
+    mode: '0640'
+  notify: restart vector

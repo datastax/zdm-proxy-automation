@@ -1,0 +1,23 @@
+---
+grafana_version: 7.5.10
+grafana_admin_user: admin
+grafana_admin_password: testpasswordchangeme
+grafana_dashboards_dir: /home/ubuntu/grafana-dashboards
+
+grafana_datasources:
+  - name: "Prometheus"
+    type: "prometheus"
+    access: "proxy"
+    url: "{{ prometheus_web_listen_address }}"
+    basicAuth: false
+    basicAuthUser: "admin"
+    basicAuthPassword: "password"
+    isDefault: true
+    jsonData:
+      tlsAuth: false
+      tlsAuthWithCACert: false
+      tlsSkipVerify: true
+
+prometheus_web_listen_address: "{{ groups['monitoring'][0] }}:9090"
+
+vector_version: 0.15.0

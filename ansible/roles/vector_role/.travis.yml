@@ -1,0 +1,19 @@
+---
+dist: xenial
+language: python
+python: "3.7"
+os: linux
+services:
+  - docker
+install:
+  - pip install pipenv
+  - pipenv sync
+env:
+  jobs:
+    - MOLECULE_DISTRO=debian:stretch-slim
+    - MOLECULE_DISTRO=debian:buster-slim
+script:
+  - pipenv run molecule test
+
+notifications:
+  webhooks: https://galaxy.ansible.com/api/v1/notifications/

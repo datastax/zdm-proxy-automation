@@ -1,0 +1,17 @@
+---
+
+galaxy_info:
+  author: idealista
+  company: Idealista S.A.U.
+  description: Vector Role
+  min_ansible_version: 2.9.9
+  license: Apache 2.0
+  galaxy-tags:
+    - vector
+    - logging
+    - monitoring
+  platforms:
+    - name: Debian
+      versions:
+        - stretch
+        - buster

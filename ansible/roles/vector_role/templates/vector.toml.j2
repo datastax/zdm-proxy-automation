@@ -1,0 +1,34 @@
+#                                    __   __  __
+#                                    \ \ / / / /
+#                                     \ V / / /
+#                                      \_/  \/
+#
+#                                    V E C T O R
+#                                   Configuration
+#
+# ------------------------------------------------------------------------------
+# Website: https://vector.dev
+# Docs: https://vector.dev/docs/
+# ------------------------------------------------------------------------------
+
+# Note: A full config spec is located at ./vector.spec.toml and examples
+#       in the ./examples folder.
+
+data_dir = "{{ vector_data_dir }}"
+
+[api]
+enabled = "{{ vector_api_enabled }}"
+
+# Input data. Change me to a valid input source.
+[sources.prometheus_local]
+  type = "prometheus_scrape"
+  endpoints = [
+    "http://localhost:14001/metrics",
+    "http://localhost:9100/metrics"
+  ]
+
+# Output data
+[sinks.prometheus_server]
+  inputs   = ["prometheus_local"]
+  type     = "prometheus_remote_write"
+  endpoint = 

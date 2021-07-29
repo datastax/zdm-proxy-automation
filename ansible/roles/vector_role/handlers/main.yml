@@ -1,0 +1,13 @@
+---
+
+- name: restart vector
+  systemd:
+    name: vector
+    state: restarted
+  when: vector_service_state != 'stopped'
+
+- name: reload vector
+  systemd:
+    name: vector
+    state: restart
+  when: vector_service_state != 'stopped'

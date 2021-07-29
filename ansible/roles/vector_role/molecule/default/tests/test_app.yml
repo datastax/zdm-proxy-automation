@@ -1,0 +1,46 @@
+---
+
+file:
+  {{ vector_bin_path }}:
+  
+    owner: {{ vector_user }}
+    group: {{ vector_group }}
+    
+    exists: true
+    filetype: directory
+
+service:
+  vector:
+    enabled: true
+    running: true 
+process:
+  {{ vector_exec_name }}:
+    running: true
+user:
+  {{ vector_user }}:
+    exists: true
+    groups:
+      - {{ vector_group }}
+    shell: /usr/sbin/nologin
+group:
+  {{ vector_group }}:
+    exists: true
+
+command:
+  version:
+    exit-status: 0
+    exec: "{{ vector_exec_name }} --version"
+    stdout:
+      - "{{ vector_version }}"
+    stderr: []
+    timeout: 10000
+    skip: false
+
+  test:
+    exit-status: 0
+    exec: "vector test /etc/vector/vector.toml"
+    stdout:
+      - "passed"
+    stderr: []
+    timeout: 10000
+    skip: false

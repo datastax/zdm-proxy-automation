@@ -1,0 +1,52 @@
+---
+#proxy_instance_count: 3
+proxy_num_tokens: 8 
+
+shared_assets_dir_path_name: /home/ubuntu/shared_assets
+origin_scb_dir_name: origin_scb
+target_scb_dir_name: target_scb
+
+#origin_datacenter: OriginDC
+#target_datacenter: TargetDC
+#proxy_virtual_datacenter: ProxyVirtualDC
+
+debug: false
+
+forward_system_queries_to_target: true
+
+proxy_query_port: 14002
+
+cluster_connection_timeout_ms: 30000
+request_timeout_ms: 10000
+
+origin_enable_host_assignment: true
+target_enable_host_assignment: true
+
+heartbeat_interval_ms: 30000
+heartbeat_retry_interval_min_ms: 100
+heartbeat_retry_interval_max_ms: 30000
+heartbeat_retry_backoff_factor: 2
+heartbeat_failure_threshold: 1
+
+enable_metrics: true
+proxy_metrics_address: localhost
+proxy_metrics_port: 14001
+origin_buckets_ms: "10, 25, 50, 75, 100, 150, 200, 300, 500, 750, 1000, 2500, 5000"
+target_buckets_ms: "5, 10, 25, 50, 75, 100, 150, 300, 500, 1000, 2000"
+
+request_write_queue_size_frames: 128
+request_write_buffer_size_bytes: 4096
+request_read_buffer_size_bytes: 32768
+
+response_write_queue_size_frames: 128
+response_write_buffer_size_bytes: 8192
+response_read_buffer_size_bytes: 32768
+
+max_clients_threshold: 500
+
+request_response_max_workers: -1
+write_max_workers: -1
+read_max_workers: -1
+listener_max_workers: -1
+
+event_queue_size_frames: 12
