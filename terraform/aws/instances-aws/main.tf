@@ -10,6 +10,18 @@ terraform {
 }
 
 #############################
+## AWS Key Pair
+#############################
+resource "aws_key_pair" "dse_terra_ssh" {
+  key_name = var.cloudgate_key_name
+  public_key = file("${var.cloudgate_public_key_localpath}/${var.cloudgate_public_key_filename}")
+
+  tags = {
+    Name         = var.cloudgate_key_name
+  }
+}
+
+#############################
 ## Cloudgate proxy instances
 #############################
 resource "aws_instance" "cloudgate_proxy" {
@@ -17,7 +29,7 @@ resource "aws_instance" "cloudgate_proxy" {
   
   ami           = lookup(var.ami, var.aws_region)
   instance_type = var.proxy_instance_type
-  key_name      = var.cloudgate_public_key
+  key_name      = var.cloudgate_key_name
   associate_public_ip_address = false
 
   subnet_id = var.private_subnet_ids[count.index % length(var.private_subnet_ids)]
@@ -40,7 +52,7 @@ resource "aws_instance" "cloudgate_proxy" {
 resource "aws_instance" "monitoring" {
   ami = lookup(var.ami, var.aws_region)
   instance_type = var.monitoring_instance_type
-  key_name      = var.cloudgate_public_key
+  key_name      = var.cloudgate_key_name
   
   subnet_id = var.public_subnet_id
   associate_public_ip_address = true

@@ -1,8 +1,12 @@
 variable "aws_profile" {}
-
 variable "aws_region" {}
 
-variable "cloudgate_public_key" {} 
+variable "cloudgate_public_key_localpath" {}
+variable "cloudgate_public_key_filename" {}
+variable "cloudgate_key_name" {
+  default = "cloudgate-key"
+}
+
 
 variable "ami" {
   description = "AMI to be used for this EC2 instance"
