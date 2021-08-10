@@ -30,3 +30,4 @@ override.tf.json
 
 # Always ignore Idea files and directories
 .idea
+/terraform/aws/self-contained-deployment-root-aws/.terraform.lock.hcl

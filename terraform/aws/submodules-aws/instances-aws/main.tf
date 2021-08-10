@@ -17,7 +17,7 @@ resource "aws_key_pair" "dse_terra_ssh" {
   public_key = file("${var.cloudgate_public_key_localpath}/${var.cloudgate_public_key_filename}")
 
   tags = {
-    Name         = var.cloudgate_key_name
+    Name = var.cloudgate_key_name
   }
 }
 
@@ -25,11 +25,11 @@ resource "aws_key_pair" "dse_terra_ssh" {
 ## Cloudgate proxy instances
 #############################
 resource "aws_instance" "cloudgate_proxy" {
-  count         = var.proxy_instance_count
+  count = var.proxy_instance_count
   
-  ami           = lookup(var.ami, var.aws_region)
+  ami = lookup(var.ami, var.aws_region)
   instance_type = var.proxy_instance_type
-  key_name      = var.cloudgate_key_name
+  key_name = var.cloudgate_key_name
   associate_public_ip_address = false
 
   subnet_id = var.private_subnet_ids[count.index % length(var.private_subnet_ids)]
@@ -80,7 +80,7 @@ resource "aws_instance" "ec2jumphost" {
   ami = lookup(var.ami, var.aws_region)
   subnet_id = var.public_subnet_id
   vpc_security_group_ids = var.jumphost_security_group_ids
-  key_name = var.cloudgate_public_key
+  key_name = var.cloudgate_key_name
   associate_public_ip_address = true
 
   disable_api_termination = false

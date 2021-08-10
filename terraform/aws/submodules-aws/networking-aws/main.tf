@@ -32,15 +32,33 @@ data "aws_availability_zones" "available" {
 ## Private subnets
 ####################################
 resource "aws_subnet" "private_subnets" {
-  count = "${length(data.aws_availability_zones.available.names)}"
-  vpc_id = "${aws_vpc.cloudgate_vpc.id}"
+  count = length(data.aws_availability_zones.available.names)
+  vpc_id = aws_vpc.cloudgate_vpc.id
   cidr_block = "${var.aws_cloudgate_vpc_cidr_prefix}.${10+count.index}.0/24"
-  availability_zone= "${data.aws_availability_zones.available.names[count.index]}"
+  availability_zone= data.aws_availability_zones.available.names[count.index]
   map_public_ip_on_launch = false
   tags = {
     Name = "private_subnet_${data.aws_availability_zones.available.names[count.index]}"
   }
 }
+
+##################################################
+## Route table associated to the private subnets
+## Initially left empty
+## This is important for the VPC peering later on
+##################################################
+resource "aws_route_table" "private_subnet_rt" {
+  vpc_id = aws_vpc.cloudgate_vpc.id
+  route = []
+}
+
+resource "aws_route_table_association" "private_subnet_rta" {
+  count = length(aws_subnet.private_subnets)
+
+  subnet_id = aws_subnet.private_subnets[count.index].id
+  route_table_id = aws_route_table.private_subnet_rt.id
+}
+
 
 ####################################
 ## Public subnet for the NAT gateway 
@@ -112,7 +130,7 @@ resource "aws_default_route_table" "default_route_table_for_vpc" {
 ######################################################################################
 resource "aws_security_group" "public_instance_sg" {
   name = "public_instance_sg"
-  vpc_id = "${aws_vpc.cloudgate_vpc.id}"
+  vpc_id = aws_vpc.cloudgate_vpc.id
   ingress {
     cidr_blocks = ["0.0.0.0/0"] #TODO this could be restricted to an IP range
     from_port = 22
@@ -145,55 +163,3 @@ resource "aws_security_group" "public_instance_sg" {
       Name = "public_instance_sg"
   }
 }
-
-# This SG allows the proxies to receive inbound SSH connections from the jump host
-# It should be removed/amended when the jump host is not used and the only access to the proxies is from the other instances in the VPC (or peered VPC)
-resource "aws_security_group" "private_instance_sg" {
-  name = "private_instance_sg"
-  vpc_id = "${aws_vpc.cloudgate_vpc.id}"
-  ingress {
-    security_groups = [aws_security_group.public_instance_sg.id]
-    from_port = 22
-    to_port = 22
-    protocol = "tcp"
-  }
-  // Terraform removes the default rule
-  egress {
-    from_port = 0
-    to_port = 0
-    protocol = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  tags = {
-      Name = "private_instance_sg"
-  }
-}
-
-
-
-
-######################################################################################
-## Security Groups
-## TODO May need to be restricted. Check it is correct and does not allow too much 
-## Maybe restrict CIDR blocks on ingress to only addresses from the VPC?
-######################################################################################
-#resource "aws_security_group" "allow_ssh_sg" {
-#name = "allow_ssh_sg"
-#vpc_id = "${aws_vpc.cloudgate_vpc.id}"
-#ingress {
-#    cidr_blocks = [
-#      "0.0.0.0/0"
-#    ]
-#    from_port = 22
-#    to_port = 22
-#    protocol = "tcp"
-#  }
-#// Terraform removes the default rule
-#  egress {
-#   from_port = 0
-#   to_port = 0
-#   protocol = "-1"
-#   cidr_blocks = ["0.0.0.0/0"]
-# }
-#}

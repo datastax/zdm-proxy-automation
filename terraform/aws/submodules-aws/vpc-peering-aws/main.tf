@@ -3,22 +3,22 @@
 
 provider "aws" {
   alias = "cloudgate"
-
+  profile = var.cloudgate_aws_profile
+  region = var.aws_region
   # Requester's credentials (Cloudgate)
 }
 
 provider "aws" {
   alias = "user"
-
+  profile = var.user_aws_profile
+  region = var.aws_region
   # Accepter's credentials. (User)
 }
 
-# May not be necessary if all we need is the id
 data "aws_vpc" "cloudgate_vpc" {
   id = var.cloudgate_vpc_id
 }
 
-# May not be necessary if all we need is the id
 data "aws_vpc" "user_vpc" {
   id = var.user_vpc_id
 }
@@ -28,7 +28,7 @@ data "aws_caller_identity" "user_identity" {
   provider = aws.user
 }
 
-# Define the peering request initiated by Cloudgate
+# Cloudgate requests a peering connection
 resource "aws_vpc_peering_connection" "peering_request" {
   provider = aws.cloudgate
 
@@ -42,7 +42,7 @@ resource "aws_vpc_peering_connection" "peering_request" {
   }
 }
 
-# Define the acceptance of the peering request by User
+# User accepts the peering connection request
 resource "aws_vpc_peering_connection_accepter" "peering_acceptance" {
   provider = aws.user
 
@@ -50,7 +50,7 @@ resource "aws_vpc_peering_connection_accepter" "peering_acceptance" {
   auto_accept               = true
 
   tags = {
-    Side = "Accepter"
+    Side = "User (Accepter)"
   }
 }
 
@@ -88,9 +88,10 @@ resource "aws_vpc_peering_connection_options" "accepter_options" {
 resource "aws_route" "cloudgate_to_user" {
   provider = aws.cloudgate
 
-  route_table_id            = data.aws_vpc.cloudgate_vpc.main_route_table_id
+  //route_table_id            = data.aws_vpc.cloudgate_vpc.main_route_table_id
+  route_table_id = var.cloudgate_proxy_route_table_id
   destination_cidr_block    = data.aws_vpc.user_vpc.cidr_block
-  vpc_peering_connection_id = aws_vpc_peering_connection_options.accepter_options.vpc_peering_connection_id
+  vpc_peering_connection_id = aws_vpc_peering_connection_accepter.peering_acceptance.id
 }
 
 /**
@@ -101,22 +102,23 @@ resource "aws_route" "cloudgate_to_user" {
 resource "aws_route" "user_to_cloudgate" {
   provider = aws.user
 
-  route_table_id            = data.aws_vpc.user_vpc.main_route_table_id
+  //route_table_id            = data.aws_vpc.user_vpc.main_route_table_id
+  route_table_id = var.user_route_table_id != "" ? var.user_route_table_id : data.aws_vpc.user_vpc.main_route_table_id
   destination_cidr_block    = data.aws_vpc.cloudgate_vpc.cidr_block
-  vpc_peering_connection_id = aws_vpc_peering_connection_options.accepter_options.vpc_peering_connection_id
+  vpc_peering_connection_id = aws_vpc_peering_connection_accepter.peering_acceptance.id
 }
 
 # Add security group on each side of the peering to allow inbound SSH from the other side of the peering
 
-resource "aws_security_group" "cloudgate_allow_ssh_from_peering_sg" {
+resource "aws_security_group" "cloudgate_allow_traffic_from_peering_sg" {
   provider = aws.cloudgate
 
-  name = "cloudgate_allow_ssh_from_peering_sg"
+  name = "cloudgate_allow_traffic_from_peering_sg"
   vpc_id = data.aws_vpc.cloudgate_vpc.id
   ingress {
-    description      = "Inbound SSH from user's VPC"
-    from_port        = 22
-    to_port          = 22
+    description      = "Inbound traffic from user VPC"
+    from_port        = 0
+    to_port          = 0
     protocol         = "tcp"
     cidr_blocks      = [data.aws_vpc.user_vpc.cidr_block]
   }
@@ -130,21 +132,27 @@ resource "aws_security_group" "cloudgate_allow_ssh_from_peering_sg" {
   }
 }
 
-resource "aws_security_group" "user_allow_ssh_from_peering_sg" {
+resource "aws_security_group" "user_allow_traffic_from_peering_sg" {
   provider = aws.user
 
-  name = "user_allow_ssh_from_peering_sg"
-  vpc_id = data.aws_vpc.cloudgate_vpc.id
+  name = "user_allow_traffic_from_peering_sg"
+  vpc_id = data.aws_vpc.user_vpc.id
   ingress {
-    description      = "Inbound SSH from Cloudgate VPC"
-    from_port        = 22
-    to_port          = 22
+    description      = "Inbound traffic from Cloudgate VPC"
+    from_port        = 0
+    to_port          = 0
     protocol         = "tcp"
     cidr_blocks      = [data.aws_vpc.cloudgate_vpc.cidr_block]
   }
 
+//  ingress {
+//    description      = "Inbound Native Cassandra Protocol from Cloudgate VPC"
+//    from_port        = 9042
+//    to_port          = 9042
+//    protocol         = "tcp"
+//    cidr_blocks      = [data.aws_vpc.cloudgate_vpc.cidr_block]
+//  }
+
   // Not adding the default egress rule here to avoid interfering with other restrictive egress rules that the user may have set
 
 }
-
-# TODO associate the Cloudgate SG with all the Cloudgate instances
