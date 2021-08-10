@@ -44,7 +44,7 @@ resource "aws_subnet" "private_subnets" {
 
 ##################################################
 ## Route table associated to the private subnets
-## Initially left empty
+## Important: routes cannot be defined inline here as it would conflict with adding standalone routes later.
 ## This is important for the VPC peering later on
 ##################################################
 resource "aws_route_table" "private_subnet_rt" {
@@ -59,6 +59,11 @@ resource "aws_route_table_association" "private_subnet_rta" {
   route_table_id = aws_route_table.private_subnet_rt.id
 }
 
+resource aws_route "proxy_to_nat" {
+  route_table_id = aws_route_table.private_subnet_rt.id
+  destination_cidr_block = "0.0.0.0/0"
+  nat_gateway_id = aws_nat_gateway.nat_gateway.id
+}
 
 ####################################
 ## Public subnet for the NAT gateway 
