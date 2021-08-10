@@ -18,10 +18,8 @@ variable "user_vpc_id" {
   type = string
 }
 
-variable "user_route_table_id" {
-  // TODO make this a list of strings so the user can specify multiple route tables if necessary
-  type = string
-  default = ""
+variable "user_route_table_ids" {
+  type = list(string)
 }
 
 variable "aws_cloudgate_vpc_cidr_prefix" {

@@ -1,5 +1,8 @@
 variable "user_vpc_id" {}
-variable "user_route_table_id" {}
+variable "user_route_table_ids" {
+  type = list(string)
+}
+
 variable "cloudgate_vpc_id" {}
 variable "cloudgate_proxy_route_table_id" {}
 

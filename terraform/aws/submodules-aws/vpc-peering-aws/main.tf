@@ -94,6 +94,15 @@ resource "aws_route" "cloudgate_to_user" {
   vpc_peering_connection_id = aws_vpc_peering_connection_accepter.peering_acceptance.id
 }
 
+/*
+resource "aws_route_table_association" "private_subnet_rta" {
+  count = length(aws_subnet.private_subnets)
+
+  subnet_id = aws_subnet.private_subnets[count.index].id
+  route_table_id = aws_route_table.private_subnet_rt.id
+}
+*/
+
 /**
  * Creates a new route rule on the User VPC main route table. All requests
  * to the Cloudgate VPC's IP range will be directed to the VPC peering
@@ -102,8 +111,10 @@ resource "aws_route" "cloudgate_to_user" {
 resource "aws_route" "user_to_cloudgate" {
   provider = aws.user
 
+  count = length(var.user_route_table_ids)
   //route_table_id            = data.aws_vpc.user_vpc.main_route_table_id
-  route_table_id = var.user_route_table_id != "" ? var.user_route_table_id : data.aws_vpc.user_vpc.main_route_table_id
+  //route_table_id = var.user_route_table_id != "" ? var.user_route_table_id : data.aws_vpc.user_vpc.main_route_table_id
+  route_table_id = var.user_route_table_ids[count.index]
   destination_cidr_block    = data.aws_vpc.cloudgate_vpc.cidr_block
   vpc_peering_connection_id = aws_vpc_peering_connection_accepter.peering_acceptance.id
 }
