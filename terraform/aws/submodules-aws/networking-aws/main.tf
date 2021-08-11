@@ -169,13 +169,8 @@ resource "aws_security_group" "public_instance_sg" {
     to_port = 9090
     protocol = "tcp"
   }
-  // Terraform removes the default rule
-//  egress {
-//    from_port = 0
-//    to_port = 0
-//    protocol = "-1"
-//    cidr_blocks = ["0.0.0.0/0"]
-//  }
+  // Important note:
+  // Not adding the default egress rule to explicitly prevent any instance in the public subnet from initiating connections to other internal instances
 
   tags = {
       Name = "public_instance_sg"

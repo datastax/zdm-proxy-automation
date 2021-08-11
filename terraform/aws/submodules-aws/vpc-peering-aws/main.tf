@@ -106,54 +106,6 @@ resource "aws_route" "user_to_cloudgate" {
   vpc_peering_connection_id = aws_vpc_peering_connection_accepter.peering_acceptance.id
 }
 
-//resource "aws_network_acl" "cloudgate_public_subnet_acl" {
-//  provider = aws.cloudgate
-//  vpc_id = data.aws_vpc.cloudgate_vpc.id
-//  subnet_ids = tolist([var.cloudgate_public_subnet_id])
-//  tags = {
-//    Name = "cloudgate_public_subnet_acl"
-//  }
-//}
-//
-//resource "aws_network_acl_rule" "acl_rule_in" {
-//  provider = aws.cloudgate
-//  network_acl_id = aws_network_acl.cloudgate_public_subnet_acl.id
-//
-//  rule_number = 100
-//  egress = false
-//  protocol = -1
-//  rule_action = "allow"
-//  cidr_block = "0.0.0.0/0"
-//  from_port  = 0
-//  to_port    = 0
-//}
-//
-//resource "aws_network_acl_rule" "acl_rule_out_deny" {
-//  provider = aws.cloudgate
-//  network_acl_id = aws_network_acl.cloudgate_public_subnet_acl.id
-//
-//  rule_number = 50
-//  egress = true
-//  protocol = -1
-//  rule_action = "deny"
-//  cidr_block = data.aws_vpc.user_vpc.cidr_block
-//  from_port  = 0
-//  to_port    = 0
-//}
-//
-//resource "aws_network_acl_rule" "acl_rule_out_allow" {
-//  provider = aws.cloudgate
-//  network_acl_id = aws_network_acl.cloudgate_public_subnet_acl.id
-//
-//  rule_number = 100
-//  egress = true
-//  protocol = -1
-//  rule_action = "allow"
-//  cidr_block = "0.0.0.0/0"
-//  from_port  = 0
-//  to_port    = 0
-//}
-
 # Add security group on each side of the peering to allow inbound SSH from the other side of the peering
 
 resource "aws_security_group" "cloudgate_allow_traffic_from_peering_sg" {

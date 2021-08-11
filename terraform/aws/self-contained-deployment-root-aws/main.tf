@@ -36,7 +36,6 @@ module "vpc_peering" {
   user_aws_profile = (var.user_aws_profile != "" ? var.user_aws_profile : var.cloudgate_aws_profile)
 
   cloudgate_vpc_id = module.proxy_networking.cloudgate_vpc_id
-  cloudgate_public_subnet_id = module.proxy_networking.cloudgate_public_subnet_id
   cloudgate_route_table_ids = tolist([module.proxy_networking.private_subnet_route_table_id, module.proxy_networking.public_subnet_route_table_id])
   user_vpc_id = var.user_vpc_id
   user_route_table_ids = var.user_route_table_ids
