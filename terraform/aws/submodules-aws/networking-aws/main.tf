@@ -49,7 +49,9 @@ resource "aws_subnet" "private_subnets" {
 ##################################################
 resource "aws_route_table" "private_subnet_rt" {
   vpc_id = aws_vpc.cloudgate_vpc.id
-  route = []
+  tags = {
+    Name = "private_subnet_rt"
+  }
 }
 
 resource "aws_route_table_association" "private_subnet_rta" {
@@ -59,7 +61,7 @@ resource "aws_route_table_association" "private_subnet_rta" {
   route_table_id = aws_route_table.private_subnet_rt.id
 }
 
-resource aws_route "proxy_to_nat" {
+resource "aws_route" "proxy_to_nat" {
   route_table_id = aws_route_table.private_subnet_rt.id
   destination_cidr_block = "0.0.0.0/0"
   nat_gateway_id = aws_nat_gateway.nat_gateway.id
@@ -78,43 +80,19 @@ resource "aws_subnet" "public_subnet" {
 }
 
 ####################################
-## Elastic IP for the NAT gateway 
-####################################
-resource "aws_eip" "nat_gateway_eip" {
-  vpc      = true
-}
-
-####################################
-## NAT gateway
+## NAT gateway + its elastic IP
 ####################################
 resource "aws_nat_gateway" "nat_gateway" {
   connectivity_type = "public"
   allocation_id = aws_eip.nat_gateway_eip.id
   subnet_id = aws_subnet.public_subnet.id
-}
-
-####################################
-## Internet gateway
-####################################
-resource "aws_internet_gateway" "internet_gateway" {
-  vpc_id = aws_vpc.cloudgate_vpc.id
-
-}
-
-#########################################################
-## Route table for internet gateway + association to it
-#########################################################
-resource "aws_route_table" "internet_gateway_rt" {
-  vpc_id = aws_vpc.cloudgate_vpc.id
-    route {
-    cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.internet_gateway.id
+  tags = {
+    Name = "cloudgate_nat_gateway"
   }
 }
 
-resource "aws_route_table_association" "internet_gateway_rta" {
-  subnet_id = aws_subnet.public_subnet.id
-  route_table_id = aws_route_table.internet_gateway_rt.id
+resource "aws_eip" "nat_gateway_eip" {
+  vpc      = true
 }
 
 ##################################################################################
@@ -127,10 +105,45 @@ resource "aws_default_route_table" "default_route_table_for_vpc" {
     cidr_block = "0.0.0.0/0"
     nat_gateway_id = aws_nat_gateway.nat_gateway.id
   }
+
+  tags = {
+    Name = "default_route_table"
+  }
+}
+
+####################################
+## Internet gateway
+####################################
+resource "aws_internet_gateway" "internet_gateway" {
+  vpc_id = aws_vpc.cloudgate_vpc.id
+  tags = {
+    Name = "cloudgate_internet_gateway"
+  }
+}
+
+#########################################################
+## Route table for internet gateway + association to it
+#########################################################
+resource "aws_route_table" "internet_gateway_rt" {
+  vpc_id = aws_vpc.cloudgate_vpc.id
+  tags = {
+    Name = "cloudgate_internet_gateway_rt"
+  }
+}
+
+resource "aws_route" "igw_route" {
+  route_table_id = aws_route_table.internet_gateway_rt.id
+  destination_cidr_block = "0.0.0.0/0"
+  gateway_id = aws_internet_gateway.internet_gateway.id
+}
+
+resource "aws_route_table_association" "internet_gateway_rta" {
+  subnet_id = aws_subnet.public_subnet.id
+  route_table_id = aws_route_table.internet_gateway_rt.id
 }
 
 ######################################################################################
-## Security Groups
+## Security Group for instances accessible from outside
 ## TODO finalise
 ######################################################################################
 resource "aws_security_group" "public_instance_sg" {
@@ -157,12 +170,12 @@ resource "aws_security_group" "public_instance_sg" {
     protocol = "tcp"
   }
   // Terraform removes the default rule
-  egress {
-    from_port = 0
-    to_port = 0
-    protocol = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
+//  egress {
+//    from_port = 0
+//    to_port = 0
+//    protocol = "-1"
+//    cidr_blocks = ["0.0.0.0/0"]
+//  }
 
   tags = {
       Name = "public_instance_sg"

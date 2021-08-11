@@ -5,14 +5,12 @@ provider "aws" {
   alias = "cloudgate"
   profile = var.cloudgate_aws_profile
   region = var.aws_region
-  # Requester's credentials (Cloudgate)
 }
 
 provider "aws" {
   alias = "user"
   profile = var.user_aws_profile
   region = var.aws_region
-  # Accepter's credentials. (User)
 }
 
 data "aws_vpc" "cloudgate_vpc" {
@@ -81,27 +79,18 @@ resource "aws_vpc_peering_connection_options" "accepter_options" {
 # Add routes to the route table to enable two-way communication over the VPC peering
 
 /**
- * Creates a new route rule on the Cloudgate VPC main route table. All requests
+ * Creates a new route rule on the Cloudgate route table associated to the private subnets. All requests
  * to the User VPC's IP range will be directed to the VPC peering
  * connection.
  */
 resource "aws_route" "cloudgate_to_user" {
   provider = aws.cloudgate
 
-  //route_table_id            = data.aws_vpc.cloudgate_vpc.main_route_table_id
-  route_table_id = var.cloudgate_proxy_route_table_id
+  count = length(var.cloudgate_route_table_ids)
+  route_table_id = var.cloudgate_route_table_ids[count.index]
   destination_cidr_block    = data.aws_vpc.user_vpc.cidr_block
   vpc_peering_connection_id = aws_vpc_peering_connection_accepter.peering_acceptance.id
 }
-
-/*
-resource "aws_route_table_association" "private_subnet_rta" {
-  count = length(aws_subnet.private_subnets)
-
-  subnet_id = aws_subnet.private_subnets[count.index].id
-  route_table_id = aws_route_table.private_subnet_rt.id
-}
-*/
 
 /**
  * Creates a new route rule on the User VPC main route table. All requests
@@ -112,12 +101,58 @@ resource "aws_route" "user_to_cloudgate" {
   provider = aws.user
 
   count = length(var.user_route_table_ids)
-  //route_table_id            = data.aws_vpc.user_vpc.main_route_table_id
-  //route_table_id = var.user_route_table_id != "" ? var.user_route_table_id : data.aws_vpc.user_vpc.main_route_table_id
   route_table_id = var.user_route_table_ids[count.index]
   destination_cidr_block    = data.aws_vpc.cloudgate_vpc.cidr_block
   vpc_peering_connection_id = aws_vpc_peering_connection_accepter.peering_acceptance.id
 }
+
+//resource "aws_network_acl" "cloudgate_public_subnet_acl" {
+//  provider = aws.cloudgate
+//  vpc_id = data.aws_vpc.cloudgate_vpc.id
+//  subnet_ids = tolist([var.cloudgate_public_subnet_id])
+//  tags = {
+//    Name = "cloudgate_public_subnet_acl"
+//  }
+//}
+//
+//resource "aws_network_acl_rule" "acl_rule_in" {
+//  provider = aws.cloudgate
+//  network_acl_id = aws_network_acl.cloudgate_public_subnet_acl.id
+//
+//  rule_number = 100
+//  egress = false
+//  protocol = -1
+//  rule_action = "allow"
+//  cidr_block = "0.0.0.0/0"
+//  from_port  = 0
+//  to_port    = 0
+//}
+//
+//resource "aws_network_acl_rule" "acl_rule_out_deny" {
+//  provider = aws.cloudgate
+//  network_acl_id = aws_network_acl.cloudgate_public_subnet_acl.id
+//
+//  rule_number = 50
+//  egress = true
+//  protocol = -1
+//  rule_action = "deny"
+//  cidr_block = data.aws_vpc.user_vpc.cidr_block
+//  from_port  = 0
+//  to_port    = 0
+//}
+//
+//resource "aws_network_acl_rule" "acl_rule_out_allow" {
+//  provider = aws.cloudgate
+//  network_acl_id = aws_network_acl.cloudgate_public_subnet_acl.id
+//
+//  rule_number = 100
+//  egress = true
+//  protocol = -1
+//  rule_action = "allow"
+//  cidr_block = "0.0.0.0/0"
+//  from_port  = 0
+//  to_port    = 0
+//}
 
 # Add security group on each side of the peering to allow inbound SSH from the other side of the peering
 
@@ -130,6 +165,14 @@ resource "aws_security_group" "cloudgate_allow_traffic_from_peering_sg" {
     description      = "Inbound traffic from user VPC"
     from_port        = 0
     to_port          = 0
+    protocol         = "tcp"
+    cidr_blocks      = [data.aws_vpc.user_vpc.cidr_block]
+  }
+
+  ingress {
+    description      = "Inbound SSH from user VPC"
+    from_port        = 22
+    to_port          = 22
     protocol         = "tcp"
     cidr_blocks      = [data.aws_vpc.user_vpc.cidr_block]
   }

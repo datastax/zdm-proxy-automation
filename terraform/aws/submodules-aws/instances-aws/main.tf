@@ -12,7 +12,7 @@ terraform {
 #############################
 ## AWS Key Pair
 #############################
-resource "aws_key_pair" "dse_terra_ssh" {
+resource "aws_key_pair" "cloudgate_key_pair" {
   key_name = var.cloudgate_key_name
   public_key = file("${var.cloudgate_public_key_localpath}/${var.cloudgate_public_key_filename}")
 
@@ -65,32 +65,5 @@ resource "aws_instance" "monitoring" {
 
   tags = {
     Name = "MonitoringInstance"
-  }
-}
-
-
-######################################################################################
-## Test jumphost
-## (Replace this with the enterprise's infra simulation)
-## TODO REMOVE THIS COMPLETELY when deploying for customers:
-## The only way into the proxy (including ssh) must be from the enterprise's own VPC
-######################################################################################
-resource "aws_instance" "ec2jumphost" {
-  instance_type = "t2.micro"
-  ami = lookup(var.ami, var.aws_region)
-  subnet_id = var.public_subnet_id
-  vpc_security_group_ids = var.jumphost_security_group_ids
-  key_name = var.cloudgate_key_name
-  associate_public_ip_address = true
-
-  disable_api_termination = false
-  ebs_optimized = false
-  
-  root_block_device {
-    volume_size = "10"
-  }
-
-    tags = {
-    Name = "JumpHost"
   }
 }

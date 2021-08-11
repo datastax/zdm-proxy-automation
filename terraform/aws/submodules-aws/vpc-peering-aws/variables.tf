@@ -4,7 +4,10 @@ variable "user_route_table_ids" {
 }
 
 variable "cloudgate_vpc_id" {}
-variable "cloudgate_proxy_route_table_id" {}
+variable "cloudgate_public_subnet_id" {}
+variable "cloudgate_route_table_ids" {
+  type = list(string)
+}
 
 variable "cloudgate_aws_profile" {}
 variable "user_aws_profile" {

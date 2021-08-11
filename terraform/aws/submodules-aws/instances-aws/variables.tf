@@ -46,11 +46,6 @@ variable "monitoring_security_group_ids" {
   type = list(string)
 }
 
-variable "jumphost_security_group_ids" {
-  description = "Security group IDs to add to the jumphost instance"
-  type = list(string)
-}
-
 variable "public_subnet_id" {
   description = "Public subnet ID in the Cloudgate VPC"
 }
