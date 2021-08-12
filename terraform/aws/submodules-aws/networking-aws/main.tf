@@ -169,8 +169,16 @@ resource "aws_security_group" "public_instance_sg" {
     to_port = 9090
     protocol = "tcp"
   }
-  // Important note:
-  // Not adding the default egress rule to explicitly prevent any instance in the public subnet from initiating connections to other internal instances
+  // TODO Important note: this must be reviewed
+  // We should not add the default egress rule, in order to explicitly prevent any instance in the public subnet from initiating connections to other internal instances
+  // At the moment we are allowing this as a temporary workaround
+  // TODO This must be changed before GA
+  egress {
+    from_port = 0
+    to_port = 0
+    protocol = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 
   tags = {
       Name = "public_instance_sg"
