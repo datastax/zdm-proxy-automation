@@ -8,8 +8,8 @@
 ## *** REQUIRED Variables ***
 
 # REQUIRED: AWS credentials to be used to provision the Cloudgate infrastructure.
-cloudgate_aws_profile=
-#cloudgate_aws_profile="cloudgate"
+#cloudgate_aws_profile=
+cloudgate_aws_profile="cloudgate"
 
 # REQUIRED: AWS region for the Cloudgate deployment.
 #aws_region=
@@ -140,6 +140,8 @@ build_terraform_var_str () {
 ### Main script
 ###################################################
 
+cd ../terraform/aws/self-contained-deployment-root-aws
+
 echo "##################################"
 echo "# Initialize Terraform ..."
 echo "##################################"
@@ -161,6 +163,7 @@ if [ "${exit_code}" != 0 ]; then
 fi
 
 tf_var_str=$(build_terraform_var_str)
+echo "${tf_var_str}" > tf_latest_vars.txt
 tf_plan_cmd_str="terraform plan ${tf_var_str} -out myplan"
 echo "Executing command:"
 echo " ${tf_plan_cmd_str}"

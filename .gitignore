@@ -31,3 +31,6 @@ override.tf.json
 # Always ignore Idea files and directories
 .idea
 /terraform/aws/self-contained-deployment-root-aws/.terraform.lock.hcl
+/terraform/aws/self-contained-deployment-root-aws/tf_latest_vars.txt
+/terraform/aws/self-contained-deployment-root-aws/myplan
+/terraform/aws/self-contained-deployment-root-aws/cloudgate_inventory
