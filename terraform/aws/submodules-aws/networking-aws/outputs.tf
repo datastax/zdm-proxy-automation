@@ -33,7 +33,7 @@ output "public_instance_sg_id" {
   value = aws_security_group.public_instance_sg.id
 }
 
-output "nat_gateway_public_ip" {
-  description = "Public IP of the NAT gateway that allows the proxies to initiate outbound connections"
-  value = aws_eip.nat_gateway_eip.public_ip
+output "private_instance_sg_id" {
+  description = "ID of the security group to be used for private instances"
+  value = aws_security_group.private_instance_sg.id
 }

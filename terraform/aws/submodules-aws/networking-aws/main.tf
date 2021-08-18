@@ -67,9 +67,36 @@ resource "aws_route" "proxy_to_nat" {
   nat_gateway_id = aws_nat_gateway.nat_gateway.id
 }
 
-####################################
-## Public subnet for the NAT gateway 
-####################################
+######################################################################################
+## Security Group for instances in private subnets
+######################################################################################
+resource "aws_security_group" "private_instance_sg" {
+  name = "private_instance_sg"
+  vpc_id = aws_vpc.cloudgate_vpc.id
+
+  # Allow ssh connection from the public subnet (i.e. monitoring instance only)
+  ingress {
+    cidr_blocks = [aws_subnet.public_subnet.cidr_block]
+    from_port = 22
+    to_port = 22
+    protocol = "tcp"
+  }
+
+  egress {
+    from_port = 0
+    to_port = 0
+    protocol = "-1"
+    cidr_blocks = var.whitelisted_outbound_ip_ranges
+  }
+
+  tags = {
+    Name = "private_instance_sg"
+  }
+}
+
+########################################################
+## Public subnet for the NAT and monitoring instance / jumphost
+########################################################
 resource "aws_subnet" "public_subnet" {
   availability_zone = data.aws_availability_zones.available.names[0]
   cidr_block = "${var.aws_cloudgate_vpc_cidr_prefix}.100.0/24"
@@ -132,8 +159,10 @@ resource "aws_route_table" "internet_gateway_rt" {
 }
 
 resource "aws_route" "igw_route" {
+  count = length(var.whitelisted_outbound_ip_ranges)
+
   route_table_id = aws_route_table.internet_gateway_rt.id
-  destination_cidr_block = "0.0.0.0/0"
+  destination_cidr_block = var.whitelisted_outbound_ip_ranges[count.index]
   gateway_id = aws_internet_gateway.internet_gateway.id
 }
 
@@ -144,40 +173,47 @@ resource "aws_route_table_association" "internet_gateway_rta" {
 
 ######################################################################################
 ## Security Group for instances accessible from outside
-## TODO finalise
 ######################################################################################
 resource "aws_security_group" "public_instance_sg" {
   name = "public_instance_sg"
   vpc_id = aws_vpc.cloudgate_vpc.id
+
+  // Inbound SSH from trusted VPNs
   ingress {
-    cidr_blocks = ["0.0.0.0/0"] #TODO this could be restricted to an IP range
+    cidr_blocks = var.whitelisted_inbound_ip_ranges
     from_port = 22
     to_port = 22
     protocol = "tcp"
   }
+
   // Grafana UI
   ingress {
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = var.whitelisted_inbound_ip_ranges
     from_port = 3000
     to_port = 3000
     protocol = "tcp"
   }
   // Prometheus UI
   ingress {
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = var.whitelisted_inbound_ip_ranges
     from_port = 9090
     to_port = 9090
     protocol = "tcp"
   }
-  // TODO Important note: this must be reviewed
-  // We should not add the default egress rule, in order to explicitly prevent any instance in the public subnet from initiating connections to other internal instances
-  // At the moment we are allowing this as a temporary workaround
-  // TODO This must be changed before GA
+
+  // Allow any incoming traffic from within the VPC
+  ingress {
+    cidr_blocks = aws_vpc.cloudgate_vpc.cidr_block
+    from_port = 0
+    to_port = 0
+    protocol = "tcp"
+  }
+
   egress {
     from_port = 0
     to_port = 0
     protocol = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = var.whitelisted_outbound_ip_ranges
   }
 
   tags = {

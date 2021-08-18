@@ -21,15 +21,24 @@ proxy_instance_count=3
 
 # REQUIRED: ID of the user's VPC with which the Cloudgate VPC must be peered.
 #user_vpc_id=
-user_vpc_id="vpc-045f84f19560d702b"
+user_vpc_id="vpc-026185e411f592964"
 
 # REQUIRED: IDs of all the route tables associated with the Origin cluster and client application subnets.
 # String containing a comma-separated list of elements, without whitespaces. For example rtb-002b6c2dc4ab37ef3,rtb-0c12565bab8227485
 #user_route_table_ids=
-user_route_table_ids="rtb-002b6c2dc4ab37ef3,rtb-0c12565bab8227485"
-
+user_route_table_ids="rtb-0cc1dd47d04305b2a,rtb-01174ff309f0777aa"
 
 ## *** OPTIONAL Variables. Leave commented if you are happy with the defaults. ***
+
+# OPTIONAL: IP ranges that must be allowed to connect to any instances within the Cloudgate VPC over SSH and HTTP (to view monitoring dashboards)
+# Typically these are IP ranges (CIDRs) from trusted VPNs. Defaults to the Santa Clara VPC CIDR.
+# Multiple CIDRs can be specified as a string containing a comma-separated list of elements, without whitespaces.
+whitelisted_inbound_ip_ranges="38.99.104.112/28"
+
+# OPTIONAL: IP ranges to which instances within the Cloudgate VPC must be able to connect.
+# These can be destinations such as Astra, Dockerhub, AWS apt-get mirrors. Defaults to everything (unrestricted).
+# Multiple CIDRs can be specified as a string containing a comma-separated list of elements, without whitespaces.
+whitelisted_outbound_ip_ranges="0.0.0.0/0"
 
 # OPTIONAL: AWS credentials to be used to access the user's own infrastructure. Defaults to cloudgate_aws_profile.
 #user_aws_profile=
@@ -38,7 +47,7 @@ user_route_table_ids="rtb-002b6c2dc4ab37ef3,rtb-0c12565bab8227485"
 # OPTIONAL: First two octets of the CIDR used for the Cloudgate VPC (without trailing period).
 # Must not overlap with user's VPC. Defaults to 172.18, which will result in CIDR 172.18.0.0/16.
 # aws_cloudgate_vpc_cidr_prefix=
-aws_cloudgate_vpc_cidr_prefix="172.56"
+aws_cloudgate_vpc_cidr_prefix="172.18"
 
 # OPTIONAL: AWS instance type to be used for each proxy. Defaults to c5.xlarge, almost always fine.
 #proxy_instance_type=
@@ -98,39 +107,53 @@ build_terraform_var_str () {
 
   terraform_vars=" "
 
-  terraform_vars+="-var \"cloudgate_aws_profile=$cloudgate_aws_profile\" "
-  terraform_vars+="-var \"aws_region=$aws_region\" "
-  terraform_vars+="-var \"proxy_instance_count=$proxy_instance_count\" "
-  terraform_vars+="-var \"user_vpc_id=$user_vpc_id\" "
+  terraform_vars+="-var \"cloudgate_aws_profile=${cloudgate_aws_profile}\" "
+  terraform_vars+="-var \"aws_region=${aws_region}\" "
+  terraform_vars+="-var \"proxy_instance_count=${proxy_instance_count}\" "
+  terraform_vars+="-var \"user_vpc_id=${user_vpc_id}\" "
 
   # -var 'user_route_table_ids=["rtb-002b6c2dc4ab37ef3","rtb-0c12565bab8227485"]'
   rt_tbls_var="-var 'user_route_table_ids=["
-  rt_tbls_var+=$(add_quotes_around_elements "$user_route_table_ids")
+  rt_tbls_var+=$(add_quotes_around_elements "${user_route_table_ids}")
   rt_tbls_var+="]' "
-  terraform_vars+=$rt_tbls_var
+  terraform_vars+="${rt_tbls_var}"
+
+  if [ -n "${whitelisted_inbound_ip_ranges}" ]; then
+      wl_inbound_var="-var 'whitelisted_inbound_ip_ranges=["
+      wl_inbound_var+=$(add_quotes_around_elements "${whitelisted_inbound_ip_ranges}")
+      wl_inbound_var+="]' "
+      terraform_vars+="${wl_inbound_var}"
+  fi
+
+    if [ -n "${whitelisted_outbound_ip_ranges}" ]; then
+        wl_outbound_var="-var 'whitelisted_outbound_ip_ranges=["
+        wl_outbound_var+=$(add_quotes_around_elements "${whitelisted_outbound_ip_ranges}")
+        wl_outbound_var+="]' "
+        terraform_vars+="${wl_outbound_var}"
+    fi
 
   if [ -n "${user_aws_profile}" ]; then
-      terraform_vars+="-var \"user_aws_profile=$user_aws_profile\" "
+      terraform_vars+="-var \"user_aws_profile=${user_aws_profile}\" "
   fi
 
   if [ -n "${aws_cloudgate_vpc_cidr_prefix}" ]; then
-      terraform_vars+="-var \"aws_cloudgate_vpc_cidr_prefix=$aws_cloudgate_vpc_cidr_prefix\" "
+      terraform_vars+="-var \"aws_cloudgate_vpc_cidr_prefix=${aws_cloudgate_vpc_cidr_prefix}\" "
   fi
 
   if [ -n "${proxy_instance_type}" ]; then
-      terraform_vars+="-var \"proxy_instance_type=$proxy_instance_type\" "
+      terraform_vars+="-var \"proxy_instance_type=${proxy_instance_type}\" "
   fi
 
   if [ -n "${monitoring_instance_type}" ]; then
-      terraform_vars+="-var \"monitoring_instance_type=$monitoring_instance_type\" "
+      terraform_vars+="-var \"monitoring_instance_type=${monitoring_instance_type}\" "
   fi
 
   if [ -n "${cloudgate_public_key_localpath}" ]; then
-      terraform_vars+="-var \"cloudgate_public_key_localpath=$cloudgate_public_key_localpath\" "
+      terraform_vars+="-var \"cloudgate_public_key_localpath=${cloudgate_public_key_localpath}\" "
   fi
 
   if [ -n "${cloudgate_public_key_filename}" ]; then
-      terraform_vars+="-var \"cloudgate_public_key_filename=$cloudgate_public_key_filename\" "
+      terraform_vars+="-var \"cloudgate_public_key_filename=${cloudgate_public_key_filename}\" "
   fi
 
   echo "${terraform_vars}"
@@ -140,7 +163,7 @@ build_terraform_var_str () {
 ### Main script
 ###################################################
 
-cd ../terraform/aws/self-contained-deployment-root-aws
+cd ../terraform/aws/self-contained-deployment-root-aws || exit
 
 echo "##################################"
 echo "# Initialize Terraform ..."
@@ -164,7 +187,7 @@ fi
 
 tf_var_str=$(build_terraform_var_str)
 echo "${tf_var_str}" > tf_latest_vars.txt
-tf_plan_cmd_str="terraform plan ${tf_var_str} -out myplan"
+tf_plan_cmd_str="terraform plan ${tf_var_str} -out cloudgate_plan"
 echo "Executing command:"
 echo " ${tf_plan_cmd_str}"
 echo
@@ -180,8 +203,10 @@ if [[ "$yesno" == "yes" ]]; then
   echo "# Apply the Terraform plan ..."
   echo "##################################"
   echo
-  terraform apply myplan
+  terraform apply cloudgate_plan
 
   echo "#### Command apply executed with arguments: " "${tf_var_str}"
 fi
+
+cp cloudgate_inventory ../../../ansible/
 

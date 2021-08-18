@@ -17,7 +17,7 @@ PROXY_NUM_TOKENS={{ proxy_num_tokens }}
 ORIGIN_CASSANDRA_USERNAME={{ origin_cassandra_username }}
 ORIGIN_CASSANDRA_PASSWORD={{ origin_cassandra_password }}
 
-{% if ( origin_cassandra_contact_points is defined and origin_cassandra_port is defined ) %}
+{% if ( origin_cassandra_contact_points is defined ) %}
 ORIGIN_CASSANDRA_CONTACT_POINTS={{ origin_cassandra_contact_points }}
 ORIGIN_CASSANDRA_PORT={{ origin_cassandra_port }}
 {% elif ( origin_scb_response is defined ) %}

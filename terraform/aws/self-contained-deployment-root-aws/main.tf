@@ -23,6 +23,9 @@ module "proxy_networking" {
 
   // variable wirings for the networking module
   aws_cloudgate_vpc_cidr_prefix = var.aws_cloudgate_vpc_cidr_prefix
+
+  whitelisted_inbound_ip_ranges = var.whitelisted_inbound_ip_ranges
+  whitelisted_outbound_ip_ranges = var.whitelisted_outbound_ip_ranges
 }
 
 // peers the Cloudgate VPC with all the existing VPCs specified by the user
@@ -60,7 +63,7 @@ module "instances" {
   public_subnet_id = module.proxy_networking.cloudgate_public_subnet_id
 
   //proxy_security_group_ids = [module.proxy_networking.private_instance_sg_id]
-  proxy_security_group_ids = module.vpc_peering.user_to_cloudgate_security_group_ids
+  proxy_security_group_ids = concat(module.vpc_peering.user_to_cloudgate_security_group_ids,[module.proxy_networking.private_instance_sg_id])
 
   monitoring_security_group_ids = [module.proxy_networking.public_instance_sg_id]
 }

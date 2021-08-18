@@ -78,5 +78,5 @@ resource "local_file" "ansible_inventory" {
       monitoring_private_ip = aws_instance.monitoring.private_ip
     }
   )
-  filename = "~cloudgate_inventory"
+  filename = "cloudgate_inventory"
 }

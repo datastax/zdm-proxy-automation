@@ -106,30 +106,23 @@ resource "aws_route" "user_to_cloudgate" {
   vpc_peering_connection_id = aws_vpc_peering_connection_accepter.peering_acceptance.id
 }
 
-# Add security group on each side of the peering to allow inbound SSH from the other side of the peering
+# Add security group on each side of the peering to allow inbound TCP communication on port 9042 from the other side of the peering
 
 resource "aws_security_group" "cloudgate_allow_traffic_from_peering_sg" {
   provider = aws.cloudgate
 
+
   name = "cloudgate_allow_traffic_from_peering_sg"
   vpc_id = data.aws_vpc.cloudgate_vpc.id
   ingress {
-    description      = "Inbound traffic from user VPC"
-    from_port        = 0
-    to_port          = 0
+    description      = "Inbound Native Cassandra Protocol from user VPC"
+    from_port        = 14002
+    to_port          = 14002
     protocol         = "tcp"
     cidr_blocks      = [data.aws_vpc.user_vpc.cidr_block]
   }
 
-  ingress {
-    description      = "Inbound SSH from user VPC"
-    from_port        = 22
-    to_port          = 22
-    protocol         = "tcp"
-    cidr_blocks      = [data.aws_vpc.user_vpc.cidr_block]
-  }
-
-  // Terraform removes the default rule
+ // Terraform removes the default rule
   egress {
     from_port = 0
     to_port = 0
@@ -143,21 +136,14 @@ resource "aws_security_group" "user_allow_traffic_from_peering_sg" {
 
   name = "user_allow_traffic_from_peering_sg"
   vpc_id = data.aws_vpc.user_vpc.id
+
   ingress {
-    description      = "Inbound traffic from Cloudgate VPC"
-    from_port        = 0
-    to_port          = 0
+    description      = "Inbound Native Cassandra Protocol from Cloudgate VPC"
+    from_port        = 9042
+    to_port          = 9042
     protocol         = "tcp"
     cidr_blocks      = [data.aws_vpc.cloudgate_vpc.cidr_block]
   }
-
-//  ingress {
-//    description      = "Inbound Native Cassandra Protocol from Cloudgate VPC"
-//    from_port        = 9042
-//    to_port          = 9042
-//    protocol         = "tcp"
-//    cidr_blocks      = [data.aws_vpc.cloudgate_vpc.cidr_block]
-//  }
 
   // Not adding the default egress rule here to avoid interfering with other restrictive egress rules that the user may have set
 
