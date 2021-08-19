@@ -55,7 +55,7 @@ resource "aws_instance" "monitoring" {
   key_name      = var.cloudgate_key_name
   
   subnet_id = var.public_subnet_id
-  associate_public_ip_address = true
+
   vpc_security_group_ids = var.monitoring_security_group_ids
 
   root_block_device {
@@ -66,6 +66,15 @@ resource "aws_instance" "monitoring" {
   tags = {
     Name = "MonitoringInstance"
   }
+}
+
+resource "aws_eip" "monitoring_eip" {
+  vpc      = true
+}
+
+resource "aws_eip_association" "monitoring_eip_assoc" {
+  instance_id   = aws_instance.monitoring.id
+  allocation_id = aws_eip.monitoring_eip.id
 }
 
 ###################################

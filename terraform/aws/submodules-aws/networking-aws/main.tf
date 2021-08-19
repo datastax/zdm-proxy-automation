@@ -82,6 +82,22 @@ resource "aws_security_group" "private_instance_sg" {
     protocol = "tcp"
   }
 
+  # Allow Prometheus to pull proxy metrics
+  ingress {
+    cidr_blocks = [aws_subnet.public_subnet.cidr_block]
+    from_port = 14001
+    to_port = 14001
+    protocol = "tcp"
+  }
+
+  # Allow Prometheus to pull OS node metrics
+  ingress {
+    cidr_blocks = [aws_subnet.public_subnet.cidr_block]
+    from_port = 9100
+    to_port = 9100
+    protocol = "tcp"
+  }
+
   egress {
     from_port = 0
     to_port = 0
