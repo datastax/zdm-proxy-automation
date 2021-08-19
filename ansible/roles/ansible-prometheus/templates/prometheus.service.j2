@@ -38,8 +38,7 @@ ExecStart={{ _prometheus_binary_install_dir }}/prometheus \
 {% endfor %}
 {% endif %}
 {% endfor %}
-  --config.file={{ prometheus_config_dir }}/prometheus.yml \
-  --enable-feature=remote-write-receiver
+  --config.file={{ prometheus_config_dir }}/prometheus.yml
 
 CapabilityBoundingSet=CAP_SET_UID
 LimitNOFILE=65000

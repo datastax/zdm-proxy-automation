@@ -20,4 +20,4 @@ grafana_datasources:
 
 prometheus_web_listen_address: "{{ groups['monitoring'][0] }}:9090"
 
-vector_version: 0.15.0
+

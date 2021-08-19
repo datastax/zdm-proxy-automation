@@ -75,10 +75,6 @@ prometheus_scrape_configs:
     static_configs:
       - targets:
           - "{{ ansible_fqdn | default(ansible_host) | default('localhost') }}:9090"
-  - job_name: "node"
-    file_sd_configs:
-      - files:
-          - "{{ prometheus_config_dir }}/file_sd/node.yml"
 
 # Alternative config file name, searched in ansible templates path.
 prometheus_config_file: 'prometheus.yml.j2'

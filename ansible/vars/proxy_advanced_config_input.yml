@@ -29,7 +29,7 @@ heartbeat_retry_backoff_factor: 2
 heartbeat_failure_threshold: 1
 
 enable_metrics: true
-proxy_metrics_address: localhost
+#proxy_metrics_address: <defaults to the proxy instance's private IP>
 proxy_metrics_port: 14001
 origin_buckets_ms: "10, 25, 50, 75, 100, 150, 200, 300, 500, 750, 1000, 2500, 5000"
 target_buckets_ms: "5, 10, 25, 50, 75, 100, 150, 300, 500, 1000, 2000"

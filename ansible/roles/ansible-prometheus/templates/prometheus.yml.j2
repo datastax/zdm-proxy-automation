@@ -31,4 +31,22 @@ alerting:
 {% endif %}
 
 scrape_configs:
-  {{ prometheus_scrape_configs | to_nice_yaml(indent=2) | indent(2,False) }}
+  - job_name: prometheus
+    metrics_path: /metrics
+    static_configs:
+    - targets:
+      - {{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}:9090
+  - job_name: cloudgate_proxy
+    metrics_path: /metrics
+    static_configs:
+      - targets:
+{% for host in groups['proxies'] %}
+        - {{ host }}:{{ prometheus_cloudgate_metrics_port }}
+{% endfor %}
+  - job_name: node
+    metrics_path: /metrics
+    static_configs:
+      - targets:
+{% for host in groups['proxies'] %}
+        - {{ host }}:9100
+{% endfor %}

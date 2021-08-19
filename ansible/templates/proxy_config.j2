@@ -62,8 +62,12 @@ HEARTBEAT_RETRY_BACKOFF_FACTOR={{ heartbeat_retry_backoff_factor }}
 HEARTBEAT_FAILURE_THRESHOLD={{ heartbeat_failure_threshold }}
 
 ENABLE_METRICS={{ enable_metrics }}
-PROXY_METRICS_ADDRESS=localhost
-PROXY_METRICS_PORT=14001	
+{% if ( proxy_metrics_address is defined ) %}
+PROXY_METRICS_ADDRESS={{ proxy_metrics_address}}
+{% else %}
+PROXY_METRICS_ADDRESS={{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}
+{% endif %}
+PROXY_METRICS_PORT={{ proxy_metrics_port}}
 ORIGIN_BUCKETS_MS={{ origin_buckets_ms }}
 TARGET_BUCKETS_MS={{ target_buckets_ms }}
 

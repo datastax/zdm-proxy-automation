@@ -2,26 +2,33 @@
 ### Origin configuration
 
 # Origin credentials (always required)
-origin_cassandra_username: < Origin username. Required. If Origin is an Astra cluster, this is the clientID of a role with appropriate permissions (see docs)> 
-origin_cassandra_password: < Origin password. Required. If Origin is an Astra cluster, this is the client secret of the same role as above >
+#origin_cassandra_username: < Origin username. Required. If Origin is an Astra cluster, this is the clientID of a role with appropriate permissions (see docs)>
+#origin_cassandra_password: < Origin password. Required. If Origin is an Astra cluster, this is the client secret of the same role as above >
+origin_cassandra_username: cassandra
+origin_cassandra_password: cassandra
 
 # Set the following two parameters only if Origin is an Astra cluster
-origin_astra_db_id: <cluster id of the Origin Astra cluster>
-origin_astra_token: <token of the same role as above >
+#origin_astra_db_id: <cluster id of the Origin Astra cluster>
+#origin_astra_token: <token of the same role as above >
 
 # Set the following two parameters only if Origin is a self-managed, non-Astra cluster 
-origin_cassandra_contact_points: <comma-separated list of private IP addresses, no spaces>
-origin_cassandra_port: <typically 9042>
+#origin_cassandra_contact_points: <comma-separated list of private IP addresses, no spaces>
+#origin_cassandra_port: <typically 9042>
+origin_cassandra_contact_points: 191.100.20.204,191.100.20.111,191.100.20.145
 
 ### Target configuration
 
 # Target credentials (always required)
-target_cassandra_username: < Target username. Required. If Target is an Astra cluster, this is the clientID of a role with appropriate permissions (see docs)>  
-target_cassandra_password: < Target password. Required. If Target is an Astra cluster, this is the client secret of the same role as above >
+#target_cassandra_username: < Target username. Required. If Target is an Astra cluster, this is the clientID of a role with appropriate permissions (see docs)>
+#target_cassandra_password: < Target password. Required. If Target is an Astra cluster, this is the client secret of the same role as above >
+target_cassandra_username: EIdISjnWFHPAQIYucqNHZwBG
+target_cassandra_password: niXCenqjbhRRn7nZkcE-1Ya1rO1CZ6pTcqDQiWyIEQ6BQI5itZCRbx0io6xiotZ8EgeOjlKKtML0olzXQ_c9YWhss8GeaqX73ZoCZlOZLPZF3qQfYKStU-v1m2_nXE4Q
 
 # Set the following two parameters only if Target is an Astra cluster
-target_astra_db_id: <cluster id of the Target Astra cluster>
-target_astra_token: <token of the same role as above > 
+#target_astra_db_id: <cluster id of the Target Astra cluster>
+#target_astra_token: <token of the same role as above >
+target_astra_db_id: 88d8242c-3dbf-4885-bb23-0ac66678c4bd
+target_astra_token: AstraCS:OrLzUPhsPwJMIYIMzSZrRczq:4247516fac2a5365c7fb3bf9444cd977eeb38d2a6dd15f4990661502ac595ae2
 
 # Set the following two parameters only if Target is a self-managed, non-Astra cluster
 #target_cassandra_contact_points: <comma-separated list of private IP addresses, no spaces>
