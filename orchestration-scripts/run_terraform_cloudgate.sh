@@ -208,5 +208,7 @@ if [[ "$yesno" == "yes" ]]; then
   echo "#### Command apply executed with arguments: " "${tf_var_str}"
 fi
 
+terraform output > cloudgate_output.txt
+
 cp cloudgate_inventory ../../../ansible/
 

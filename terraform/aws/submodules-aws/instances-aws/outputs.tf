@@ -15,7 +15,7 @@ output "proxy_instance_private_ips" {
 
 output "monitoring_instance_public_ip" {
   description = "Public IP of the EC2 monitoring instance"
-  value = aws_instance.monitoring.public_ip
+  value = aws_eip.monitoring_eip.public_ip
 }
 
 output "monitoring_instance_private_ip" {
