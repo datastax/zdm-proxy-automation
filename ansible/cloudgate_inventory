@@ -1,7 +1,0 @@
-[proxies]
-< private IP address of proxy instance 1 >      ansible_connection=ssh     ansible_user=ubuntu
-< private IP address of proxy instance 2 >      ansible_connection=ssh     ansible_user=ubuntu
-< private IP address of proxy instance 3 >      ansible_connection=ssh     ansible_user=ubuntu
-
-[monitoring]
-< private IP address of monitoring instance >    ansible_connection=ssh     ansible_user=ubuntu

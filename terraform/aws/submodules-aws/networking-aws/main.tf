@@ -219,7 +219,7 @@ resource "aws_security_group" "public_instance_sg" {
 
   // Allow any incoming traffic from within the VPC
   ingress {
-    cidr_blocks = aws_vpc.cloudgate_vpc.cidr_block
+    cidr_blocks = [aws_vpc.cloudgate_vpc.cidr_block]
     from_port = 0
     to_port = 0
     protocol = "tcp"

@@ -35,3 +35,6 @@ override.tf.json
 /terraform/aws/self-contained-deployment-root-aws/myplan
 /terraform/aws/self-contained-deployment-root-aws/cloudgate_inventory
 /terraform/aws/self-contained-deployment-root-aws/cloudgate_plan
+/orchestration-scripts/setup_ansible_control_host.sh
+/ansible/cloudgate_inventory
+/orchestration-scripts/my_ssh_test/
