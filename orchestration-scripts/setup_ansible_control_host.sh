@@ -39,13 +39,13 @@ printf "# proxy instances \nHost %s.*\n  IdentityFile %s/cloudgate-key\n" "${clo
 if ! command -v ansible &> /dev/null; then
   echo "Installing Ansible"
   sudo apt update
-  sudo apt install -y software-properties-common
+  sudo apt install --yes software-properties-common
   sudo add-apt-repository --yes --update ppa:ansible/ansible
-  sudo apt install -y ansible
+  sudo apt install --yes ansible
 fi
 
 # Install the jmespath dependency
-sudo apt-get install -y python-jmespath
+sudo apt-get install --yes python-jmespath
 
 # Install the community.docker dependency
 ansible-galaxy collection install community.docker
