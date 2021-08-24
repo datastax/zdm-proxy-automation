@@ -8,11 +8,12 @@ target_scb_dir_name: target_scb
 
 #origin_datacenter: OriginDC
 #target_datacenter: TargetDC
-#proxy_virtual_datacenter: ProxyVirtualDC
 
 debug: false
 
 forward_system_queries_to_target: true
+
+proxy_virtual_datacenter_from_origin: true
 
 proxy_query_port: 14002
 

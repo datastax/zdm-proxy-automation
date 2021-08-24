@@ -9,9 +9,9 @@ PROXY_ADDRESSES={{ proxy_address_list|join(',') }}
 {% if ( proxy_instance_count is defined ) %}
 PROXY_INSTANCE_COUNT={{ proxy_instance_count }}
 {% endif %}
-{% if ( proxy_virtual_datacenter is defined ) %}
-PROXY_VIRTUAL_DATACENTER={{ proxy_virtual_datacenter }}
-{% endif %}
+
+PROXY_VIRTUAL_DATACENTER_FROM_ORIGIN={{ proxy_virtual_datacenter_from_origin }}
+
 PROXY_NUM_TOKENS={{ proxy_num_tokens }}
 
 ORIGIN_CASSANDRA_USERNAME={{ origin_cassandra_username }}
