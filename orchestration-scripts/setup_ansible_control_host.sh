@@ -16,7 +16,7 @@
 ### Please change defaults as appropriate
 ###################################################
 
-ssh_dir="~/.ssh"
+ssh_dir="/home/ubuntu/.ssh"
 cloudgate_vpc_cidr_first_two_octets="172.18"
 
 ###################################################
@@ -39,13 +39,13 @@ printf "# proxy instances \nHost %s.*\n  IdentityFile %s/cloudgate-key\n" "${clo
 if ! command -v ansible &> /dev/null; then
   echo "Installing Ansible"
   sudo apt update
-  sudo apt install software-properties-common
+  sudo apt install -y software-properties-common
   sudo add-apt-repository --yes --update ppa:ansible/ansible
-  sudo apt install ansible
+  sudo apt install -y ansible
 fi
 
 # Install the jmespath dependency
-sudo apt-get install python-jmespath
+sudo apt-get install -y python-jmespath
 
 # Install the community.docker dependency
 ansible-galaxy collection install community.docker
@@ -60,6 +60,6 @@ printf "# deploy key \nHost cloudgate-automation github.com\n  Hostname github.c
 git clone git@cloudgate-automation:riptano/cloudgate-automation.git
 
 # Put the inventory file into the ansible directory of the cloudgate automation code
-mv ~/cloudgate-inventory ~/cloudgate-automation/ansible
+mv /home/ubuntu/cloudgate_inventory /home/ubuntu/cloudgate-automation/ansible
 
 
