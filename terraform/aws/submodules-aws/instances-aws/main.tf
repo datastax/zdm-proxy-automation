@@ -14,7 +14,8 @@ terraform {
 #############################
 resource "aws_key_pair" "cloudgate_key_pair" {
   key_name = var.cloudgate_keypair_name
-  public_key = file("${var.cloudgate_public_key_localpath}/${var.cloudgate_keypair_name}.pub")
+  //public_key = file("${var.cloudgate_public_key_localpath}/${var.cloudgate_keypair_name}.pub")
+  public_key = file(format("%s/%s.pub", var.cloudgate_public_key_localpath, var.cloudgate_keypair_name))
 
   tags = {
     Name = var.cloudgate_keypair_name
