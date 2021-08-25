@@ -135,7 +135,7 @@ build_terraform_var_str () {
 ### Main script
 ###################################################
 
-cd ../terraform/aws/self-contained-deployment-root-aws || exit
+cd ../terraform/aws/no-peering-deployment-root-aws || exit
 
 echo "##################################"
 echo "# Initialize Terraform ..."
