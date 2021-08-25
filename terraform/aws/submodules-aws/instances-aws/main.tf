@@ -29,7 +29,7 @@ resource "aws_instance" "cloudgate_proxy" {
   
   ami = lookup(var.ami, var.aws_region)
   instance_type = var.proxy_instance_type
-  key_name = var.cloudgate_keypair_name
+  key_name = aws_key_pair.cloudgate_key_pair.key_name
   associate_public_ip_address = false
 
   subnet_id = var.private_subnet_ids[count.index % length(var.private_subnet_ids)]
@@ -52,7 +52,7 @@ resource "aws_instance" "cloudgate_proxy" {
 resource "aws_instance" "monitoring" {
   ami = lookup(var.ami, var.aws_region)
   instance_type = var.monitoring_instance_type
-  key_name      = var.cloudgate_keypair_name
+  key_name      = aws_key_pair.cloudgate_key_pair.key_name
   
   subnet_id = var.public_subnet_id
 

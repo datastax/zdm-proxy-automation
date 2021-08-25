@@ -22,3 +22,7 @@ output "monitoring_instance_private_ip" {
   description = "Private IP of the EC2 monitoring instance"
   value = aws_instance.monitoring.private_ip
 }
+
+output "public_key" {
+  value = aws_key_pair.cloudgate_key_pair.public_key
+}
