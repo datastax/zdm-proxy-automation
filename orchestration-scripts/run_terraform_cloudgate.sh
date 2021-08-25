@@ -108,7 +108,7 @@ build_terraform_var_str () {
   terraform_vars+="-var \"cloudgate_aws_profile=${cloudgate_aws_profile}\" "
   terraform_vars+="-var \"aws_region=${aws_region}\" "
   terraform_vars+="-var \"proxy_instance_count=${proxy_instance_count}\" "
-  terraform_vars+="-var \"cloudgate_public_key_filename=${cloudgate_keypair_name}.pub\" "
+  terraform_vars+="-var \"cloudgate_keypair_name=${cloudgate_keypair_name}\" "
   terraform_vars+="-var \"user_vpc_id=${user_vpc_id}\" "
 
   # -var 'user_route_table_ids=["rtb-002b6c2dc4ab37ef3","rtb-0c12565bab8227485"]'

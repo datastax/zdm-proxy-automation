@@ -2,10 +2,7 @@ variable "aws_profile" {}
 variable "aws_region" {}
 
 variable "cloudgate_public_key_localpath" {}
-variable "cloudgate_public_key_filename" {}
-variable "cloudgate_key_name" {
-  default = "cloudgate-key"
-}
+variable "cloudgate_keypair_name" {}
 
 
 variable "ami" {

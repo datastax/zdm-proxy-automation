@@ -51,7 +51,7 @@ module "instances" {
   aws_profile = var.cloudgate_aws_profile
   aws_region = var.aws_region
   cloudgate_public_key_localpath = var.cloudgate_public_key_localpath
-  cloudgate_public_key_filename = var.cloudgate_public_key_filename
+  cloudgate_keypair_name = var.cloudgate_keypair_name
 
   // variable wirings for the instance module
   proxy_instance_count = var.proxy_instance_count

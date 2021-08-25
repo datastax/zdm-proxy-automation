@@ -51,5 +51,5 @@ variable "cloudgate_public_key_localpath" {
   default = "~/.ssh"
 }
 
-variable "cloudgate_public_key_filename" {}
+variable "cloudgate_keypair_name" {}
 
