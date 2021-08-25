@@ -9,24 +9,23 @@
 
 # REQUIRED: AWS credentials to be used to provision the Cloudgate infrastructure.
 #cloudgate_aws_profile=
-cloudgate_aws_profile="cloudgate"
 
 # REQUIRED: AWS region for the Cloudgate deployment.
 #aws_region=
-aws_region="eu-west-1"
 
 # REQUIRED: Number of proxy instances to be deployed. Minimum 3.
 #proxy_instance_count=
-proxy_instance_count=3
+
+# REQUIRED: Name of the locally-generated key pair for the Cloudgate infrastructure specific to this deployment. Example: cloudgate-key-<enterprise_name>
+#cloudgate_keypair_name=
 
 # REQUIRED: ID of the user's VPC with which the Cloudgate VPC must be peered.
 #user_vpc_id=
-user_vpc_id="vpc-026185e411f592964"
 
 # REQUIRED: IDs of all the route tables associated with the Origin cluster and client application subnets.
 # String containing a comma-separated list of elements, without whitespaces. For example rtb-002b6c2dc4ab37ef3,rtb-0c12565bab8227485
 #user_route_table_ids=
-user_route_table_ids="rtb-0cc1dd47d04305b2a,rtb-01174ff309f0777aa"
+
 
 ## *** OPTIONAL Variables. Leave commented if you are happy with the defaults. ***
 
@@ -57,9 +56,8 @@ proxy_instance_type="t2.micro"
 #monitoring_instance_type=
 monitoring_instance_type="t2.large"
 
-# OPTIONAL: Path and filename of the locally-generated key pair for the Cloudgate infrastructure. Both optional (default to ~./ssh and cloudgate-key respectively).
+# OPTIONAL: Path to the locally-generated key pair for the Cloudgate infrastructure. Defaults to ~./ssh.
 #cloudgate_public_key_localpath=
-#cloudgate_public_key_filename=
 
 ###################################################
 ### End of configuration variables
@@ -94,7 +92,7 @@ add_quotes_around_elements () {
 
 check_required_vars_exist() {
     # Check that all required variables have been specified
-    if [ -z "${cloudgate_aws_profile}" ] || [ -z "${aws_region}" ] || [ -z "${proxy_instance_count}" ] || [ -z "${user_vpc_id}" ] || [ -z "${user_route_table_ids}" ];
+    if [ -z "${cloudgate_aws_profile}" ] || [ -z "${aws_region}" ] || [ -z "${proxy_instance_count}" ] || [ -z "${user_vpc_id}" ] || [ -z "${user_route_table_ids}" ] || [ -z "${cloudgate_keypair_name}" ];
     then
       return 1
     else
@@ -110,6 +108,7 @@ build_terraform_var_str () {
   terraform_vars+="-var \"cloudgate_aws_profile=${cloudgate_aws_profile}\" "
   terraform_vars+="-var \"aws_region=${aws_region}\" "
   terraform_vars+="-var \"proxy_instance_count=${proxy_instance_count}\" "
+  terraform_vars+="-var \"cloudgate_public_key_filename=${cloudgate_keypair_name}.pub\" "
   terraform_vars+="-var \"user_vpc_id=${user_vpc_id}\" "
 
   # -var 'user_route_table_ids=["rtb-002b6c2dc4ab37ef3","rtb-0c12565bab8227485"]'
@@ -150,10 +149,6 @@ build_terraform_var_str () {
 
   if [ -n "${cloudgate_public_key_localpath}" ]; then
       terraform_vars+="-var \"cloudgate_public_key_localpath=${cloudgate_public_key_localpath}\" "
-  fi
-
-  if [ -n "${cloudgate_public_key_filename}" ]; then
-      terraform_vars+="-var \"cloudgate_public_key_filename=${cloudgate_public_key_filename}\" "
   fi
 
   echo "${terraform_vars}"

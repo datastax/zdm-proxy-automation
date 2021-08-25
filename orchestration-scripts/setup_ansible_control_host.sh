@@ -4,8 +4,8 @@
 ### Prerequisites ###
 ### Please make sure that the following files exist and are in the correct location:
 
-###  - ~/.ssh/cloudgate-key
-###  - ~/.ssh/cloudgate-key.pub
+###  - ~/.ssh/<cloudgate_keypair_name>
+###  - ~/.ssh/<cloudgate_keypair_name>.pub
 ###  - ~/.ssh/cloudgate-automation-deploy-key
 ###  - ~/cloudgate-inventory
 
@@ -13,9 +13,12 @@
 
 ###################################################
 ### Configuration variables
-### Please change defaults as appropriate
 ###################################################
 
+# REQUIRED variables - Please uncomment and specify
+#cloudgate_keypair_name=
+
+# OPTIONAL variables - Please change defaults as appropriate
 ssh_dir="/home/ubuntu/.ssh"
 cloudgate_vpc_cidr_first_two_octets="172.18"
 
@@ -24,16 +27,16 @@ cloudgate_vpc_cidr_first_two_octets="172.18"
 ###################################################
 
 # Change the permissions of the Cloudgate key pair
-chmod 400 "${ssh_dir}"/cloudgate-key*
+chmod 400 "${ssh_dir}"/"${cloudgate_keypair_name}"*
 
 #Ensure that the ssh agent is running
 eval $(ssh-agent -s)
 
 # Add the private ssh key to the ssh agent
-ssh-add "${ssh_dir}"/cloudgate-key
+ssh-add "${ssh_dir}"/"${cloudgate_keypair_name}"
 
 # Append the following lines to the ssh config file (creating it if it doesn't exist)
-printf "# proxy instances \nHost %s.*\n  IdentityFile %s/cloudgate-key\n" "${cloudgate_vpc_cidr_first_two_octets}" "${ssh_dir}" >> "${ssh_dir}"/config
+printf "# proxy instances \nHost %s.*\n  IdentityFile %s/%s\n" "${cloudgate_vpc_cidr_first_two_octets}" "${ssh_dir}" "${cloudgate_keypair_name}" >> "${ssh_dir}"/config
 
 # Install Ansible if it has not already been installed
 if ! command -v ansible &> /dev/null; then
