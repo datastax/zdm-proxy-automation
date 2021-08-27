@@ -1,24 +1,4 @@
 {
-  "__requires": [
-    {
-      "type": "grafana",
-      "id": "grafana",
-      "name": "Grafana",
-      "version": "7.4.5"
-    },
-    {
-      "type": "panel",
-      "id": "graph",
-      "name": "Graph",
-      "version": ""
-    },
-    {
-      "type": "datasource",
-      "id": "prometheus",
-      "name": "Prometheus",
-      "version": "1.0.0"
-    }
-  ],
   "annotations": {
     "list": [
       {
@@ -35,8 +15,8 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
-  "id": null,
-  "iteration": 1627570286101,
+  "id": 1,
+  "iteration": 1630059156192,
   "links": [],
   "panels": [
     {
@@ -3764,9 +3744,17 @@
     "list": [
       {
         "allValue": null,
-        "current": {},
+        "current": {
+          "selected": true,
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
+        },
         "datasource": "Prometheus",
-        "definition": "{job=~\"proxy.*\"}",
+        "definition": "{job=~\"cloudgate_proxy.*\"}",
         "description": null,
         "error": null,
         "hide": 0,
@@ -3776,8 +3764,8 @@
         "name": "proxyinstance",
         "options": [],
         "query": {
-          "query": "{job=~\"proxy.*\"}",
-          "refId": "prometheus-proxyinstance-Variable-Query"
+          "query": "{job=~\"cloudgate_proxy.*\"}",
+          "refId": "StandardVariableQuery"
         },
         "refresh": 2,
         "regex": ".*instance=\"([^\"]*)\".*",
@@ -3791,9 +3779,17 @@
       },
       {
         "allValue": null,
-        "current": {},
+        "current": {
+          "selected": true,
+          "text": [
+            "172.18.10.135:14001"
+          ],
+          "value": [
+            "172.18.10.135:14001"
+          ]
+        },
         "datasource": "Prometheus",
-        "definition": "{job=~\"proxy.*\"}",
+        "definition": "{job=~\"cloudgate_proxy.*\"}",
         "description": null,
         "error": null,
         "hide": 0,
@@ -3803,11 +3799,11 @@
         "name": "node",
         "options": [],
         "query": {
-          "query": "{job=~\"proxy.*\"}",
+          "query": "{job=~\"cloudgate_proxy.*\"}",
           "refId": "StandardVariableQuery"
         },
         "refresh": 2,
-        "regex": ".*node=\"([^\"]*)\".*",
+        "regex": ".*instance=\"([^\"]*)\".*",
         "skipUrlSync": false,
         "sort": 0,
         "tagValuesQuery": "",
@@ -3901,5 +3897,5 @@
   "timezone": "",
   "title": "Cloudgate Proxy (dashboard v5)",
   "uid": "qFn8h2oMzs",
-  "version": 13
+  "version": 1
 }
