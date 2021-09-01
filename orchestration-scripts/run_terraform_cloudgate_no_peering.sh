@@ -38,11 +38,9 @@ aws_cloudgate_vpc_cidr_prefix="172.18"
 
 # OPTIONAL: AWS instance type to be used for each proxy. Defaults to c5.xlarge, almost always fine.
 #proxy_instance_type=
-proxy_instance_type="t2.micro"
 
 # OPTIONAL: AWS instance type to be used for the monitoring server. Defaults to c5.2xlarge, almost always fine.
 #monitoring_instance_type=
-monitoring_instance_type="t2.large"
 
 # OPTIONAL: Path to the locally-generated key pair for the Cloudgate infrastructure. Defaults to ~./ssh.
 #cloudgate_public_key_localpath=
