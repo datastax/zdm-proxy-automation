@@ -6,13 +6,6 @@
 {% endfor %}
 PROXY_INDEX={{ groups['proxies'].index(hostvars[inventory_hostname]['ansible_default_ipv4']['address']) }}
 PROXY_ADDRESSES={{ proxy_address_list|join(',') }}
-{% if ( proxy_instance_count is defined ) %}
-PROXY_INSTANCE_COUNT={{ proxy_instance_count }}
-{% endif %}
-
-PROXY_VIRTUAL_DATACENTER_FROM_ORIGIN={{ proxy_virtual_datacenter_from_origin }}
-
-PROXY_NUM_TOKENS={{ proxy_num_tokens }}
 
 ORIGIN_CASSANDRA_USERNAME={{ origin_cassandra_username }}
 ORIGIN_CASSANDRA_PASSWORD={{ origin_cassandra_password }}
@@ -42,48 +35,35 @@ TARGET_DATACENTER={{ target_datacenter }}
 
 FORWARD_READS_TO_TARGET={{ forward_reads_to_target }}
 
+{% if ( forward_system_queries_to_target is defined ) %}
 FORWARD_SYSTEM_QUERIES_TO_TARGET={{ forward_system_queries_to_target }}
+{% endif %}
 
-DEBUG={{ debug }}
+{% if ( log_level is defined ) %}
+LOG_LEVEL={{ log_level }}
+{% endif %}
 
 PROXY_QUERY_ADDRESS={{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}
 PROXY_QUERY_PORT={{ proxy_query_port }}
 
+{% if ( cluster_connection_timeout_ms is defined ) %}
 CLUSTER_CONNECTION_TIMEOUT_MS={{ cluster_connection_timeout_ms }}
+{% endif %}
+{% if ( request_timeout_ms is defined ) %}
 REQUEST_TIMEOUT_MS={{ request_timeout_ms }}
+{% endif %}
 
-ORIGIN_ENABLE_HOST_ASSIGNMENT={{ origin_enable_host_assignment }}
-TARGET_ENABLE_HOST_ASSIGNMENT={{ target_enable_host_assignment }}
-
-HEARTBEAT_INTERVAL_MS={{ heartbeat_interval_ms }}
-HEARTBEAT_RETRY_INTERVAL_MIN_MS={{ heartbeat_retry_interval_min_ms }}
-HEARTBEAT_RETRY_INTERVAL_MAX_MS={{ heartbeat_retry_interval_max_ms }}
-HEARTBEAT_RETRY_BACKOFF_FACTOR={{ heartbeat_retry_backoff_factor }}
-HEARTBEAT_FAILURE_THRESHOLD={{ heartbeat_failure_threshold }}
-
+{% if ( enable_metrics is defined ) %}
 ENABLE_METRICS={{ enable_metrics }}
+{% endif %}
+
 {% if ( proxy_metrics_address is defined ) %}
 PROXY_METRICS_ADDRESS={{ proxy_metrics_address}}
 {% else %}
 PROXY_METRICS_ADDRESS={{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}
 {% endif %}
 PROXY_METRICS_PORT={{ proxy_metrics_port}}
-ORIGIN_BUCKETS_MS={{ origin_buckets_ms }}
-TARGET_BUCKETS_MS={{ target_buckets_ms }}
 
-REQUEST_WRITE_QUEUE_SIZE_FRAMES={{ request_write_queue_size_frames }}
-REQUEST_WRITE_BUFFER_SIZE_BYTES={{ request_write_buffer_size_bytes }}
-REQUEST_READ_BUFFER_SIZE_BYTES={{ request_read_buffer_size_bytes }}
-
-RESPONSE_WRITE_QUEUE_SIZE_FRAMES={{ response_write_queue_size_frames }}
-RESPONSE_WRITE_BUFFER_SIZE_BYTES={{ response_write_buffer_size_bytes }}
-RESPONSE_READ_BUFFER_SIZE_BYTES={{ response_read_buffer_size_bytes }}
-
+{% if ( max_clients_threshold is defined ) %}
 MAX_CLIENTS_THRESHOLD={{ max_clients_threshold }}
-
-REQUEST_RESPONSE_MAX_WORKERS={{ request_response_max_workers }}
-WRITE_MAX_WORKERS={{ write_max_workers }}
-READ_MAX_WORKERS={{ read_max_workers }}
-LISTENER_MAX_WORKERS={{ listener_max_workers }}
-
-EVENT_QUEUE_SIZE_FRAMES={{ event_queue_size_frames }}
+{% endif %}

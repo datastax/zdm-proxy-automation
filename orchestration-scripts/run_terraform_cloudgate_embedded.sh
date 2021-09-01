@@ -8,7 +8,7 @@
 ## *** REQUIRED Variables ***
 
 # REQUIRED: AWS credentials to be used to provision the Cloudgate infrastructure.
-#cloudgate_aws_profile=
+#user_aws_profile=
 
 # REQUIRED: AWS region for the Cloudgate deployment.
 #aws_region=
@@ -17,36 +17,21 @@
 #proxy_instance_count=
 
 # REQUIRED: Name of the locally-generated key pair for the Cloudgate infrastructure specific to this deployment. Example: cloudgate-key-<enterprise_name>
-#cloudgate_keypair_name=
+#keypair_name=
 
-# REQUIRED: ID of the user's VPC with which the Cloudgate VPC must be peered.
-#user_vpc_id=
+# REQUIRED: IDs of all the subnets of the client application instances.
+# String containing a comma-separated list of elements, without whitespaces.
+#user_subnet_ids=
 
-# REQUIRED: IDs of all the route tables associated with the Origin cluster and client application subnets.
-# String containing a comma-separated list of elements, without whitespaces. For example rtb-002b6c2dc4ab37ef3,rtb-0c12565bab8227485
-#user_route_table_ids=
+# REQUIRED: IDs of all the security groups to assign to the proxies.
+# String containing a comma-separated list of elements, without whitespaces.
+#user_proxy_security_group_ids=
 
+# REQUIRED: IDs of all the security groups to assign to the monitoring instance.
+# String containing a comma-separated list of elements, without whitespaces.
+#user_monitoring_security_group_ids=
 
 ## *** OPTIONAL Variables. Leave commented if you are happy with the defaults. ***
-
-# OPTIONAL: IP ranges that must be allowed to connect to any instances within the Cloudgate VPC over SSH and HTTP (to view monitoring dashboards)
-# Typically these are IP ranges (CIDRs) from trusted VPNs. Defaults to the Santa Clara VPC CIDR.
-# Multiple CIDRs can be specified as a string containing a comma-separated list of elements, without whitespaces.
-whitelisted_inbound_ip_ranges="38.99.104.112/28"
-
-# OPTIONAL: IP ranges to which instances within the Cloudgate VPC must be able to connect.
-# These can be destinations such as Astra, Dockerhub, AWS apt-get mirrors. Defaults to everything (unrestricted).
-# Multiple CIDRs can be specified as a string containing a comma-separated list of elements, without whitespaces.
-whitelisted_outbound_ip_ranges="0.0.0.0/0"
-
-# OPTIONAL: AWS credentials to be used to access the user's own infrastructure. Defaults to cloudgate_aws_profile.
-#user_aws_profile=
-#user_aws_profile="iamtheuser"
-
-# OPTIONAL: First two octets of the CIDR used for the Cloudgate VPC (without trailing period).
-# Must not overlap with user's VPC. Defaults to 172.18, which will result in CIDR 172.18.0.0/16.
-# aws_cloudgate_vpc_cidr_prefix=
-aws_cloudgate_vpc_cidr_prefix="172.18"
 
 # OPTIONAL: AWS instance type to be used for each proxy. Defaults to c5.xlarge, almost always fine.
 #proxy_instance_type=
@@ -57,7 +42,7 @@ proxy_instance_type="t2.micro"
 monitoring_instance_type="t2.large"
 
 # OPTIONAL: Path to the locally-generated key pair for the Cloudgate infrastructure. Defaults to ~./ssh.
-#cloudgate_public_key_localpath=
+#keypair_localpath=
 
 ###################################################
 ### End of configuration variables
@@ -92,7 +77,7 @@ add_quotes_around_elements () {
 
 check_required_vars_exist() {
     # Check that all required variables have been specified
-    if [ -z "${cloudgate_aws_profile}" ] || [ -z "${aws_region}" ] || [ -z "${proxy_instance_count}" ] || [ -z "${user_vpc_id}" ] || [ -z "${user_route_table_ids}" ] || [ -z "${cloudgate_keypair_name}" ];
+    if [ -z "${user_aws_profile}" ] || [ -z "${aws_region}" ] || [ -z "${proxy_instance_count}" ] || [ -z "${user_subnet_ids}" ] || [ -z "${user_proxy_security_group_ids}" ] || [ -z "${user_monitoring_security_group_ids}" ] || [ -z "${keypair_name}" ];
     then
       return 1
     else
@@ -105,14 +90,13 @@ build_terraform_var_str () {
 
   terraform_vars=" "
 
-  terraform_vars+="-var \"cloudgate_aws_profile=${cloudgate_aws_profile}\" "
+  terraform_vars+="-var \"user_aws_profile=${user_aws_profile}\" "
   terraform_vars+="-var \"aws_region=${aws_region}\" "
   terraform_vars+="-var \"proxy_instance_count=${proxy_instance_count}\" "
-  terraform_vars+="-var \"cloudgate_keypair_name=${cloudgate_keypair_name}\" "
-  terraform_vars+="-var \"user_vpc_id=${user_vpc_id}\" "
+  terraform_vars+="-var \"keypair_name=${keypair_name}\" "
 
-  # -var 'user_route_table_ids=["rtb-002b6c2dc4ab37ef3","rtb-0c12565bab8227485"]'
-  rt_tbls_var="-var 'user_route_table_ids=["
+  # -var 'user_subnet_ids=["subnet-002b6c2dc4ab37ef3","subnet-0c12565bab8227485"]'
+  rt_tbls_var="-var 'user_subnet_ids=["
   rt_tbls_var+=$(add_quotes_around_elements "${user_route_table_ids}")
   rt_tbls_var+="]' "
   terraform_vars+="${rt_tbls_var}"
