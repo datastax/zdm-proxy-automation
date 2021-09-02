@@ -94,32 +94,21 @@ build_terraform_var_str () {
   terraform_vars+="-var \"keypair_name=${keypair_name}\" "
 
   # -var 'user_subnet_ids=["subnet-002b6c2dc4ab37ef3","subnet-0c12565bab8227485"]'
-  rt_tbls_var="-var 'user_subnet_ids=["
-  rt_tbls_var+=$(add_quotes_around_elements "${user_route_table_ids}")
-  rt_tbls_var+="]' "
-  terraform_vars+="${rt_tbls_var}"
+  subnets_var="-var 'user_subnet_ids=["
+  subnets_var+=$(add_quotes_around_elements "${user_subnet_ids}")
+  subnets_var+="]' "
+  terraform_vars+="${subnets_var}"
 
-  if [ -n "${whitelisted_inbound_ip_ranges}" ]; then
-      wl_inbound_var="-var 'whitelisted_inbound_ip_ranges=["
-      wl_inbound_var+=$(add_quotes_around_elements "${whitelisted_inbound_ip_ranges}")
-      wl_inbound_var+="]' "
-      terraform_vars+="${wl_inbound_var}"
-  fi
+  proxy_sg_var="-var 'user_proxy_security_group_ids=["
+  proxy_sg_var+=$(add_quotes_around_elements "${user_proxy_security_group_ids}")
+  proxy_sg_var+="]' "
+  terraform_vars+="${proxy_sg_var}"
 
-    if [ -n "${whitelisted_outbound_ip_ranges}" ]; then
-        wl_outbound_var="-var 'whitelisted_outbound_ip_ranges=["
-        wl_outbound_var+=$(add_quotes_around_elements "${whitelisted_outbound_ip_ranges}")
-        wl_outbound_var+="]' "
-        terraform_vars+="${wl_outbound_var}"
-    fi
-
-  if [ -n "${user_aws_profile}" ]; then
-      terraform_vars+="-var \"user_aws_profile=${user_aws_profile}\" "
-  fi
-
-  if [ -n "${aws_cloudgate_vpc_cidr_prefix}" ]; then
-      terraform_vars+="-var \"aws_cloudgate_vpc_cidr_prefix=${aws_cloudgate_vpc_cidr_prefix}\" "
-  fi
+  # -var 'user_subnet_ids=["subnet-002b6c2dc4ab37ef3","subnet-0c12565bab8227485"]'
+  monitoring_sg_var="-var 'user_monitoring_security_group_ids=["
+  monitoring_sg_var+=$(add_quotes_around_elements "${user_monitoring_security_group_ids}")
+  monitoring_sg_var+="]' "
+  terraform_vars+="${monitoring_sg_var}"
 
   if [ -n "${proxy_instance_type}" ]; then
       terraform_vars+="-var \"proxy_instance_type=${proxy_instance_type}\" "
@@ -187,5 +176,6 @@ fi
 
 terraform output > cloudgate_output.txt
 
+chmod -x cloudgate_inventory
 cp cloudgate_inventory ../../../ansible/
 

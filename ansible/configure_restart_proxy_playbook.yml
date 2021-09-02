@@ -1,0 +1,30 @@
+---
+
+- name: Create proxy configuration env file based on the latest configuration
+  hosts: proxies
+  vars_files:
+    - vars/proxy_core_config_input.yml
+    - vars/proxy_advanced_config_input.yml
+  tasks:
+    - name: Generate env var file from template
+      template: src=proxy_config.j2 dest=proxy_config.env 
+
+- name: Configure and restart proxy
+  hosts: proxies
+  serial: 1
+  become: yes
+  vars_files:
+    - vars/proxy_container.yml
+    - vars/proxy_advanced_config_input.yml
+
+  tasks:
+    - name: Update configuration of the proxy container and restart it
+      docker_container:
+        name: "{{ cloudgate_proxy_container_name }}"
+        env_file: /home/ubuntu/proxy_config.env
+        restart: yes
+        state: started 
+
+
+
+

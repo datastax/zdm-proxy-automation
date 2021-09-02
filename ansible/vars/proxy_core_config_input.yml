@@ -13,7 +13,7 @@
 #origin_cassandra_contact_points: <comma-separated list of private IP addresses, no spaces>
 #origin_cassandra_port: <typically 9042>
 
-### Target configuration
+### Target configuration
 
 # Target credentials (always required)
 #target_cassandra_username: < Target username. Required. If Target is an Astra cluster, this is the clientID of a read-only role >

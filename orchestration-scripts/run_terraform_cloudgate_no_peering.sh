@@ -180,5 +180,6 @@ fi
 
 terraform output > cloudgate_output.txt
 
+chmod -x cloudgate_inventory
 cp cloudgate_inventory ../../../ansible/
 
