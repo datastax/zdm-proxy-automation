@@ -7,9 +7,6 @@
 PROXY_INDEX={{ groups['proxies'].index(hostvars[inventory_hostname]['ansible_default_ipv4']['address']) }}
 PROXY_ADDRESSES={{ proxy_address_list|join(',') }}
 
-ORIGIN_CASSANDRA_USERNAME={{ origin_cassandra_username }}
-ORIGIN_CASSANDRA_PASSWORD={{ origin_cassandra_password }}
-
 {% if ( origin_cassandra_contact_points is defined ) %}
 ORIGIN_CASSANDRA_CONTACT_POINTS={{ origin_cassandra_contact_points }}
 ORIGIN_CASSANDRA_PORT={{ origin_cassandra_port }}
@@ -19,9 +16,6 @@ ORIGIN_CASSANDRA_SECURE_CONNECT_BUNDLE_PATH={{ shared_assets_dir_path_name }}/{{
 {% if ( origin_datacenter is defined ) %}
 ORIGIN_DATACENTER={{ origin_datacenter }}
 {% endif %}
-
-TARGET_CASSANDRA_USERNAME={{ target_cassandra_username }}
-TARGET_CASSANDRA_PASSWORD={{ target_cassandra_password }}
 
 {% if ( target_cassandra_contact_points is defined and target_cassandra_port is defined ) %}
 TARGET_CASSANDRA_CONTACT_POINTS={{ target_cassandra_contact_points }}
@@ -33,29 +27,12 @@ TARGET_CASSANDRA_SECURE_CONNECT_BUNDLE_PATH={{ shared_assets_dir_path_name }}/{{
 TARGET_DATACENTER={{ target_datacenter }}
 {% endif %}
 
-FORWARD_READS_TO_TARGET={{ forward_reads_to_target }}
-
 {% if ( forward_system_queries_to_target is defined ) %}
 FORWARD_SYSTEM_QUERIES_TO_TARGET={{ forward_system_queries_to_target }}
 {% endif %}
 
-{% if ( log_level is defined ) %}
-LOG_LEVEL={{ log_level }}
-{% endif %}
-
 PROXY_QUERY_ADDRESS={{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}
 PROXY_QUERY_PORT={{ proxy_query_port }}
-
-{% if ( cluster_connection_timeout_ms is defined ) %}
-CLUSTER_CONNECTION_TIMEOUT_MS={{ cluster_connection_timeout_ms }}
-{% endif %}
-{% if ( request_timeout_ms is defined ) %}
-REQUEST_TIMEOUT_MS={{ request_timeout_ms }}
-{% endif %}
-
-{% if ( enable_metrics is defined ) %}
-ENABLE_METRICS={{ enable_metrics }}
-{% endif %}
 
 {% if ( proxy_metrics_address is defined ) %}
 PROXY_METRICS_ADDRESS={{ proxy_metrics_address}}
@@ -63,7 +40,3 @@ PROXY_METRICS_ADDRESS={{ proxy_metrics_address}}
 PROXY_METRICS_ADDRESS={{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}
 {% endif %}
 PROXY_METRICS_PORT={{ proxy_metrics_port}}
-
-{% if ( max_clients_threshold is defined ) %}
-MAX_CLIENTS_THRESHOLD={{ max_clients_threshold }}
-{% endif %}

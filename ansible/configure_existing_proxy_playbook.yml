@@ -7,7 +7,7 @@
     - vars/proxy_advanced_config_input.yml
   tasks:
     - name: Generate env var file from template
-      template: src=proxy_config.j2 dest=proxy_config.env 
+      template: src=proxy_immutable_config.j2 dest=proxy_config.env
 
 - name: Configure and restart proxy
   hosts: proxies

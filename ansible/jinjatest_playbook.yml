@@ -15,4 +15,4 @@
         msg: "pio2"
       register: target_scb_response
     - name: Test jinja2template
-      template: src=proxy_config.j2 dest=testconfig.conf
+      template: src=proxy_immutable_config.j2 dest=testconfig.conf
