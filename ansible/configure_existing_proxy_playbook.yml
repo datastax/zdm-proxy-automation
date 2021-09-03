@@ -28,6 +28,7 @@
       docker_container:
         name: "{{ cloudgate_proxy_container_name }}"
         env_file: /home/ubuntu/proxy_config.env
+        recreate: no
         restart: yes
         state: started 
 
