@@ -6,8 +6,14 @@
     - vars/proxy_core_config_input.yml
     - vars/proxy_advanced_config_input.yml
   tasks:
-    - name: Generate env var file from template
-      template: src=proxy_immutable_config.j2 dest=proxy_config.env
+    - name: Generate env var file from template for mutable configuration
+      template:
+        src: "proxy_mutable_config.j2"
+        dest: "{{ proxy_config_fragments_dir_path_name }}/proxy_mutable_config.env"
+    - name: Merge the immutable and mutable configuration files into a single one
+      assemble:
+        src: "{{ proxy_config_fragments_dir_path_name }}"
+        dest: /home/ubuntu/proxy_config.env
 
 - name: Configure and restart proxy
   hosts: proxies
