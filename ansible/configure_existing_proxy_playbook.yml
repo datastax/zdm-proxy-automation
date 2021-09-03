@@ -36,7 +36,9 @@
         network_mode: host
         restart: yes
         state: started
-
+    - pause:
+        prompt: "Pause for 5s after restarting this proxy"
+        seconds: 5
 
 
 
