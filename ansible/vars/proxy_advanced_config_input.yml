@@ -12,7 +12,7 @@ proxy_config_fragments_dir_path_name: /home/ubuntu/proxy_config_fragments
 
 #forward_system_queries_to_target:
 
-proxy_query_port: 14002
+proxy_query_port: 9042
 
 #cluster_connection_timeout_ms:
 #request_timeout_ms:

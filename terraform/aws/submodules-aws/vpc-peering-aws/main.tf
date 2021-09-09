@@ -116,8 +116,8 @@ resource "aws_security_group" "cloudgate_allow_traffic_from_peering_sg" {
   vpc_id = data.aws_vpc.cloudgate_vpc.id
   ingress {
     description      = "Inbound Native Cassandra Protocol from user VPC"
-    from_port        = 14002
-    to_port          = 14002
+    from_port        = 9042
+    to_port          = 9042
     protocol         = "tcp"
     cidr_blocks      = [data.aws_vpc.user_vpc.cidr_block]
   }
