@@ -1,0 +1,22 @@
+---
+
+- name: Do a rolling restart of the proxy
+  hosts: proxies
+  serial: 1
+  become: yes
+  vars_files:
+    - vars/proxy_container.yml
+    - vars/proxy_advanced_config_input.yml
+
+  tasks:
+    - name: Restart one proxy instance at a time
+      docker_container:
+        name: "{{ cloudgate_proxy_container_name }}"
+        restart: yes
+        state: started
+    - pause:
+        prompt: "Pause for 5s after restarting this proxy"
+        seconds: 5
+
+
+
