@@ -154,12 +154,7 @@
     - vars/proxy_advanced_config_input.yml
 
   tasks:
-    - name: Log into DockerHub
-      community.docker.docker_login:
-        username: "{{ cloudgate_image_repo_username }}"
-        password: "{{ cloudgate_image_repo_password }}"
-
-    - name: Pull Cloudgate Proxy Docker image
+    - name: Pull Cloudgate Proxy Docker image from DockerHub
       docker_image:
         name: "{{ cloudgate_proxy_image }}"
         source: pull

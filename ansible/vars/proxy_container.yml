@@ -1,7 +1,5 @@
 ---
-cloudgate_proxy_image: cloudgateproxy/cloudgate-proxy:latest
-cloudgate_image_repo_username: cloudgateproxy 
-cloudgate_image_repo_password: 9t`w)Aa}8:v?=VKX
+cloudgate_proxy_image: datastax/cloudgate-proxy:latest
 
 create_containers: 1
 cloudgate_proxy_container_name: cloudgate-proxy-container
