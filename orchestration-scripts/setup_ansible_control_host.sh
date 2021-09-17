@@ -53,6 +53,9 @@ sudo apt-get install --yes python-jmespath
 # Install the community.docker dependency
 ansible-galaxy collection install community.docker
 
+# Install the community.general dependency
+ansible-galaxy collection install community.general
+
 # Set up the Cloudgate repository deploy key
 chmod 400 "${ssh_dir}"/cloudgate-automation-deploy-key
 
