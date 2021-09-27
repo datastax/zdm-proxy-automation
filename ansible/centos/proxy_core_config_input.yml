@@ -1,0 +1,31 @@
+---
+### Origin configuration
+
+# Origin credentials (always required)
+#origin_cassandra_username: < Origin username. Required. If Origin is an Astra cluster, this is the clientID of a role with appropriate permissions (see docs)>
+#origin_cassandra_password: < Origin password. Required. If Origin is an Astra cluster, this is the client secret of the same role as above >
+
+# Set the following two parameters only if Origin is an Astra cluster
+#origin_astra_db_id: <cluster id of the Origin Astra cluster>
+#origin_astra_token: <token of the same role as above >
+
+# Set the following two parameters only if Origin is a self-managed, non-Astra cluster 
+#origin_cassandra_contact_points: <comma-separated list of private IP addresses, no spaces>
+#origin_cassandra_port: <typically 9042>
+
+### Target configuration
+
+# Target credentials (always required)
+#target_cassandra_username: < Target username. Required. If Target is an Astra cluster, this is the clientID of a read-only role >
+#target_cassandra_password: < Target password. Required. If Target is an Astra cluster, this is the client secret of the same role as above >
+
+# Set the following two parameters only if Target is an Astra cluster
+#target_astra_db_id: <cluster id of the Target Astra cluster>
+#target_astra_token: <token of the same role as above >
+
+# Set the following two parameters only if Target is a self-managed, non-Astra cluster
+#target_cassandra_contact_points: <comma-separated list of private IP addresses, no spaces>
+#target_cassandra_port: <typically 9042>
+
+# Destination for all read requests. Set to false to send all reads to Origin, or true to send all reads to Target
+forward_reads_to_target: false
