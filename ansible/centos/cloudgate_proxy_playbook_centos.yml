@@ -226,12 +226,14 @@
     - proxy_advanced_config_input.yml
 
   tasks:
+#    - name: Pull Cloudgate Proxy Docker image from DockerHub
+#      docker_image:
+#        name: "{{ cloudgate_proxy_image }}"
+#        source: pull
+#      vars:
+#        ansible_python_interpreter: /usr/bin/python3
     - name: Pull Cloudgate Proxy Docker image from DockerHub
-      docker_image:
-        name: "{{ cloudgate_proxy_image }}"
-        source: pull
-      vars:
-        ansible_python_interpreter: /usr/bin/python3
+      ansible.builtin.shell: docker pull datastax/cloudgate-proxy
 
     - name: Create proxy container
       docker_container:
