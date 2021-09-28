@@ -53,6 +53,11 @@
         name: python-pip
         state: latest
 
+    - name: Install python-docker
+      yum:
+        name: python-docker
+        state: latest
+
     - name: Add Docker repo
       get_url:
         url: https://download.docker.com/linux/centos/docker-ce.repo
@@ -63,7 +68,7 @@
         dest: /etc/yum.repos.d/docker-ce.repo
         section: 'docker-ce-edge'
         option: enabled
-        value: 0
+        value: "0"
 
 #    - name: Enable Docker Test repo
 #      ini_file:
