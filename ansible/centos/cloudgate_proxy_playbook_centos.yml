@@ -48,6 +48,11 @@
         name: lvm2
         state: latest
 
+    - name: Install python 3
+      yum:
+        name: python3
+        state: latest
+
     - name: Install python-pip
       yum:
         name: python-pip
@@ -222,6 +227,8 @@
       docker_image:
         name: "{{ cloudgate_proxy_image }}"
         source: pull
+      vars:
+        ansible_python_interpreter: usr/bin/python3
 
     - name: Create proxy container
       docker_container:
@@ -235,6 +242,8 @@
         network_mode: host
         restart: yes
         state: started
+        vars:
+          ansible_python_interpreter: usr/bin/python3
 #    - name: Pull Cloudgate Proxy Docker image from DockerHub
 #      ansible.builtin.shell: docker pull datastax/cloudgate-proxy
 #
