@@ -66,6 +66,9 @@
     - name: Install Python library for Docker
       pip:
         name: docker
+    - name: Install Python requests module
+      pip:
+        name: requests
 
     - name: Add Docker repo
       get_url:
@@ -228,7 +231,7 @@
         name: "{{ cloudgate_proxy_image }}"
         source: pull
       vars:
-        ansible_python_interpreter: usr/bin/python3
+        ansible_python_interpreter: /usr/bin/python3
 
     - name: Create proxy container
       docker_container:
@@ -243,7 +246,7 @@
         restart: yes
         state: started
         vars:
-          ansible_python_interpreter: usr/bin/python3
+          ansible_python_interpreter: /usr/bin/python3
 #    - name: Pull Cloudgate Proxy Docker image from DockerHub
 #      ansible.builtin.shell: docker pull datastax/cloudgate-proxy
 #
