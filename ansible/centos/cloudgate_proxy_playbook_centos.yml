@@ -53,10 +53,14 @@
         name: python-pip
         state: latest
 
-    - name: Install python-docker
-      yum:
-        name: python-docker
-        state: latest
+#    - name: Install python-docker
+#      yum:
+#        name: python-docker
+#        version: 2.7.0-1
+        #state: latest
+    - name: Install Python library for Docker
+      pip:
+        name: docker
 
     - name: Add Docker repo
       get_url:
