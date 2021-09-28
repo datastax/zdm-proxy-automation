@@ -1,0 +1,28 @@
+#jinja2: lstrip_blocks: "True", trim_blocks: "True"
+
+ORIGIN_CASSANDRA_USERNAME={{ origin_cassandra_username }}
+ORIGIN_CASSANDRA_PASSWORD={{ origin_cassandra_password }}
+
+TARGET_CASSANDRA_USERNAME={{ target_cassandra_username }}
+TARGET_CASSANDRA_PASSWORD={{ target_cassandra_password }}
+
+FORWARD_READS_TO_TARGET={{ forward_reads_to_target }}
+
+{% if ( log_level is defined ) %}
+LOG_LEVEL={{ log_level }}
+{% endif %}
+
+{% if ( cluster_connection_timeout_ms is defined ) %}
+CLUSTER_CONNECTION_TIMEOUT_MS={{ cluster_connection_timeout_ms }}
+{% endif %}
+{% if ( request_timeout_ms is defined ) %}
+REQUEST_TIMEOUT_MS={{ request_timeout_ms }}
+{% endif %}
+
+{% if ( enable_metrics is defined ) %}
+ENABLE_METRICS={{ enable_metrics }}
+{% endif %}
+
+{% if ( max_clients_threshold is defined ) %}
+MAX_CLIENTS_THRESHOLD={{ max_clients_threshold }}
+{% endif %}
