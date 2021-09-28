@@ -33,6 +33,11 @@
         name: yum-utils
         state: latest
 
+    - name: Install EPEL repository
+      yum:
+        name: epel-release
+        state: latest
+
     - name: Install device-mapper-persistent-data
       yum:
         name: device-mapper-persistent-data
@@ -204,28 +209,28 @@
     - proxy_advanced_config_input.yml
 
   tasks:
-#    - name: Pull Cloudgate Proxy Docker image from DockerHub
-#      docker_image:
-#        name: "{{ cloudgate_proxy_image }}"
-#        source: pull
-#
-#    - name: Create proxy container
-#      docker_container:
-#        name: "{{ cloudgate_proxy_container_name }}"
-#        image: "{{ cloudgate_proxy_image }}"
-#        env_file: /home/centos/proxy_config.env
-#        mounts:
-#          - source: "{{ shared_assets_dir_path_name }}"
-#            target: "{{ shared_assets_dir_path_name }}"
-#            type: bind
-#        network_mode: host
-#        restart: yes
-#        state: started
     - name: Pull Cloudgate Proxy Docker image from DockerHub
-      ansible.builtin.shell: docker pull datastax/cloudgate-proxy
+      docker_image:
+        name: "{{ cloudgate_proxy_image }}"
+        source: pull
 
     - name: Create proxy container
-      ansible.builtin.shell: docker run --name=cloudgate-proxy-container --env-file /home/centos/proxy_config.env --net=host --mount type=bind,source=/home/centos/shared_assets/,target=/home/centos/shared_assets -it datastax/cloudgate-proxy
+      docker_container:
+        name: "{{ cloudgate_proxy_container_name }}"
+        image: "{{ cloudgate_proxy_image }}"
+        env_file: /home/centos/proxy_config.env
+        mounts:
+          - source: "{{ shared_assets_dir_path_name }}"
+            target: "{{ shared_assets_dir_path_name }}"
+            type: bind
+        network_mode: host
+        restart: yes
+        state: started
+#    - name: Pull Cloudgate Proxy Docker image from DockerHub
+#      ansible.builtin.shell: docker pull datastax/cloudgate-proxy
+#
+#    - name: Create proxy container
+#      ansible.builtin.shell: docker run --name=cloudgate-proxy-container --env-file /home/centos/proxy_config.env --net=host --mount type=bind,source=/home/centos/shared_assets/,target=/home/centos/shared_assets -it datastax/cloudgate-proxy
 
 
 
