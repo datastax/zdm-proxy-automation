@@ -1,0 +1,28 @@
+- name: Create TLS directory for the cluster
+  file:
+    path: "{{ dest_tls_dir_path }}"
+    state: directory
+
+- name: Copy Server CA for the cluster
+  copy:
+    src: "{{ src_tls_dir_path }}/{{ server_ca_filename }}"
+    dest: "{{ dest_tls_dir_path }}/{{ server_ca_filename }}"
+  when:
+    - server_ca_filename is defined
+    - server_ca_filename | length > 0
+
+- name: Copy Client cert for the cluster
+  copy:
+    src: "{{ src_tls_dir_path }}/{{ client_cert_filename }}"
+    dest: "{{ dest_tls_dir_path }}/{{ client_cert_filename }}"
+  when:
+    - client_cert_filename is defined
+    - client_cert_filename | length > 0
+
+- name: Copy Client key for the cluster
+  copy:
+    src: "{{ src_tls_dir_path }}/{{ client_key_filename }}"
+    dest: "{{ dest_tls_dir_path }}/{{ client_key_filename }}"
+  when:
+    - client_key_filename is defined
+    - client_key_filename | length > 0

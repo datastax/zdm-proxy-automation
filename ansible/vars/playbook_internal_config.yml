@@ -1,0 +1,8 @@
+---
+
+shared_assets_dir_path_name: /home/ubuntu/shared_assets
+origin_scb_dir_name: origin_scb
+target_scb_dir_name: target_scb
+origin_tls_proxy_dir_name: origin_tls
+target_tls_proxy_dir_name: target_tls
+proxy_config_fragments_dir_path_name: /home/ubuntu/proxy_config_fragments

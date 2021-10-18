@@ -1,10 +1,5 @@
 ---
 
-shared_assets_dir_path_name: /home/ubuntu/shared_assets
-origin_scb_dir_name: origin_scb
-target_scb_dir_name: target_scb
-proxy_config_fragments_dir_path_name: /home/ubuntu/proxy_config_fragments
-
 #origin_datacenter:
 #target_datacenter:
 

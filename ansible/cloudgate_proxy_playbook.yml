@@ -4,7 +4,7 @@
   become: yes
 
   tasks:
-    - name: Install aptitude using apt
+    - name: Install aptitude using apt (this will take some time)
       apt: name=aptitude state=latest update_cache=yes force_apt_get=yes
 
     - name: Install required system packages
@@ -31,7 +31,7 @@
 - name: Create directory to share assets between host and container
   hosts: proxies
   vars_files:
-    - vars/proxy_advanced_config_input.yml
+    - vars/playbook_internal_config.yml
 
   tasks:
     - name: Create directory
@@ -39,93 +39,77 @@
         path: "{{ shared_assets_dir_path_name }}"
         state: directory
 
-- name: Download Origin SCB
+- name: Download Secure Connect Bundles
   hosts: proxies
   vars_files:
     - vars/proxy_core_config_input.yml
-    - vars/proxy_advanced_config_input.yml
+    - vars/playbook_internal_config.yml
 
   tasks:
-    - name: If Origin is Astra, call DevOps API to obtain the SCB URL, download it and save it in the configured location
-      block: 
-        - name: Query the Secure Connect Bundle location for Origin
-          uri:
-            url: "https://api.astra.datastax.com/v2/databases/{{ origin_astra_db_id }}/secureBundleURL"
-            method: POST
-            headers:
-              Accept: "application/json"
-              Content-Type: "application/json"
-              Authorization: "Bearer {{ origin_astra_token }}"
-            timeout: 30
-            status_code: 200
-          register: origin_scb_response
-    
-        - name: Create origin_scb directory in the shared_assets directory in the host's home
-          file:
-            path: "{{ shared_assets_dir_path_name }}/{{ origin_scb_dir_name }}"
-            state: directory
-          when:
-            - origin_scb_response is defined
-
-        - name: Download the Secure Connect Bundle for Origin using the URL from the response
-          get_url: 
-            url: "{{ origin_scb_response.json.downloadURL }}"
-            dest: "{{ shared_assets_dir_path_name }}/{{ origin_scb_dir_name }}/origin_scb_{{ origin_astra_db_id }}.zip"
-            timeout: 30
-          when:
-            - origin_scb_response is defined
+    - name: Download SCB for Origin
+      include_tasks: tasks/download_astra_scb_for_cluster.yml
+      vars:
+        - astra_db_id: "{{ origin_astra_db_id }}"
+        - astra_token: "{{ origin_astra_token }}"
+        - scb_dir_name: "{{ origin_scb_dir_name }}"
+        - scb_filename_prefix: "origin_scb_"
+        - shared_assets_dir: "{{ shared_assets_dir_path_name }}"
       when:
         - origin_astra_token is defined
         - origin_astra_token | length > 0
         - origin_astra_db_id is defined
         - origin_astra_db_id | length > 0
-
-- name: Download Target SCB
-  hosts: proxies
-  vars_files:
-    - vars/proxy_core_config_input.yml
-    - vars/proxy_advanced_config_input.yml
-  
-  tasks:
-    - name: If Target is Astra, call DevOps API to obtain the SCB URL, download it and save it in the configured location
-      block:
-        - name: Query the Secure Connect Bundle location for Target
-          uri:
-            url: "https://api.astra.datastax.com/v2/databases/{{ target_astra_db_id }}/secureBundleURL"
-            method: POST
-            headers:
-              Accept: "application/json"
-              Content-Type: "application/json"
-              Authorization: "Bearer {{ target_astra_token }}"
-            timeout: 30
-            status_code: 200
-          register: target_scb_response
-
-        - name: Create target_scb directory in the host's home
-          file:
-            path: "{{ shared_assets_dir_path_name }}/{{ target_scb_dir_name }}"
-            state: directory
-          when:
-            - target_scb_response is defined
-
-        - name: Download the Secure Connect Bundle for Target using the URL from the response
-          get_url:
-            url: "{{ target_scb_response.json.downloadURL }}"
-            dest: "{{ shared_assets_dir_path_name }}/{{ target_scb_dir_name }}/target_scb_{{ target_astra_db_id }}.zip"
-            timeout: 30
-          when:
-            - target_scb_response is defined
+    - name: Download SCB for Target
+      include_tasks: tasks/download_astra_scb_for_cluster.yml
+      vars:
+        - astra_db_id: "{{ target_astra_db_id }}"
+        - astra_token: "{{ target_astra_token }}"
+        - scb_dir_name: "{{ target_scb_dir_name }}"
+        - scb_filename_prefix: "target_scb_"
+        - shared_assets_dir: "{{ shared_assets_dir_path_name }}"
       when:
         - target_astra_token is defined
         - target_astra_token | length > 0
         - target_astra_db_id is defined
         - target_astra_db_id | length > 0
 
+- name: Make TLS-related files available to proxy
+  hosts: proxies
+  vars_files:
+    - vars/proxy_custom_tls_config_input.yml
+    - vars/playbook_internal_config.yml
+
+  tasks:
+    - name: Copy Origin TLS-related files to shared asset directory
+      include_tasks: tasks/transfer_tls_files_for_cluster.yml
+      vars:
+        - src_tls_dir_path: "{{ origin_tls_user_dir_path_name }}"
+        - dest_tls_dir_path: "{{ shared_assets_dir_path_name }}/{{ origin_tls_proxy_dir_name }}"
+        - server_ca_filename: "{{ origin_tls_server_ca_filename | default('') }}"
+        - client_cert_filename: "{{ origin_tls_client_cert_filename | default('') }}"
+        - client_key_filename: "{{ origin_tls_client_key_filename | default('') }}"
+      when:
+        - origin_tls_user_dir_path_name is defined
+        - origin_tls_user_dir_path_name | length > 0
+    - name: Copy Target TLS-related files to shared asset directory
+      include_tasks: tasks/transfer_tls_files_for_cluster.yml
+      vars:
+        - src_tls_dir_path: "{{ target_tls_user_dir_path_name }}"
+        - dest_tls_dir_path: "{{ shared_assets_dir_path_name }}/{{ target_tls_proxy_dir_name }}"
+        - server_ca_filename: "{{ target_tls_server_ca_filename | default('') }}"
+        - client_cert_filename: "{{ target_tls_client_cert_filename | default('') }}"
+        - client_key_filename: "{{ target_tls_client_key_filename | default('') }}"
+      when:
+        - target_tls_user_dir_path_name is defined
+        - target_tls_user_dir_path_name | length > 0
+
 - name: Create proxy configuration env file
   hosts: proxies
   vars_files:
     - vars/proxy_core_config_input.yml
     - vars/proxy_advanced_config_input.yml
+    - vars/proxy_custom_tls_config_input.yml
+    - vars/playbook_internal_config.yml
 
   tasks:
     - name: Create configuration fragment directory
@@ -145,13 +129,13 @@
         src: "{{ proxy_config_fragments_dir_path_name }}"
         dest: /home/ubuntu/proxy_config.env
 
-
 - name: Install Proxy
   hosts: proxies
   become: yes
   vars_files:
     - vars/proxy_container.yml
     - vars/proxy_advanced_config_input.yml
+    - vars/playbook_internal_config.yml
 
   tasks:
     - name: Pull Cloudgate Proxy Docker image from DockerHub

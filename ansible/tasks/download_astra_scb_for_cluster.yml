@@ -1,0 +1,30 @@
+---
+- name: Query the Secure Connect Bundle location for the cluster
+  uri:
+    url: "https://api.astra.datastax.com/v2/databases/{{ astra_db_id }}/secureBundleURL"
+    method: POST
+    headers:
+      Accept: "application/json"
+      Content-Type: "application/json"
+      Authorization: "Bearer {{ astra_token }}"
+    timeout: 30
+    status_code: 200
+  register: scb_response
+
+- name: Create cluster's scb directory in the shared_assets directory in the host's home
+  file:
+    path: "{{ shared_assets_dir }}/{{ scb_dir_name }}"
+    state: directory
+  when:
+    - scb_response is defined
+
+- name: Download the Secure Connect Bundle for the cluster using the URL from the response
+  get_url:
+    url: "{{ scb_response.json.downloadURL }}"
+    dest: "{{ shared_assets_dir }}/{{ scb_dir_name }}/{{ scb_filename_prefix }}{{ astra_db_id }}.zip"
+    timeout: 30
+  when:
+    - scb_response is defined
+
+- name: Set a value to indicate that the SCB was downloaded for this cluster
+  set_fact: '{{ scb_filename_prefix }}downloaded="success"'
