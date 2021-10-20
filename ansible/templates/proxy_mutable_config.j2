@@ -6,6 +6,9 @@ ORIGIN_CASSANDRA_PASSWORD={{ origin_cassandra_password }}
 TARGET_CASSANDRA_USERNAME={{ target_cassandra_username }}
 TARGET_CASSANDRA_PASSWORD={{ target_cassandra_password }}
 
+{% if ( forward_client_credentials_to_origin is defined ) %}
+FORWARD_CLIENT_CREDENTIALS_TO_ORIGIN={{ forward_client_credentials_to_origin }}
+{% endif %}
 FORWARD_READS_TO_TARGET={{ forward_reads_to_target }}
 
 {% if ( log_level is defined ) %}
