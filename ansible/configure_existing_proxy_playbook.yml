@@ -37,6 +37,7 @@
             target: "{{ shared_assets_dir_path_name }}"
             type: bind
         network_mode: host
+        restart_policy: unless-stopped
         restart: yes
         state: started
     - pause:
