@@ -1,0 +1,16 @@
+## *****
+## This is an example inventory file that can be used as a guideline when manually creating the inventory file for a certain deployment.
+##
+## IMPORTANT NOTE: Manually creating this file is ONLY needed if the infrastructure was NOT provisioned using the Cloudgate Terraform automation in this project.
+## This is because the Cloudgate Terraform automation creates the inventory file automatically and places it in the correct location - in which case no manual operation is needed.
+##
+## Please remove this comment from the manually created file.
+## *****
+
+[proxies]
+<private_IP_address_of_proxy_instance_0>      ansible_connection=ssh     ansible_user=ubuntu
+<private_IP_address_of_proxy_instance_1>      ansible_connection=ssh     ansible_user=ubuntu
+<private_IP_address_of_proxy_instance_2>      ansible_connection=ssh     ansible_user=ubuntu
+
+[monitoring]
+<private_IP_address_of_monitoring_instance>    ansible_connection=ssh     ansible_user=ubuntu

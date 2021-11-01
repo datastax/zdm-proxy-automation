@@ -205,4 +205,8 @@ terraform output > cloudgate_output.txt
 
 chmod -x cloudgate_inventory
 cp cloudgate_inventory ../../../ansible/
+echo "Cloudgate inventory file created and copied into Ansible directory"
+chmod 600 cloudgate_ssh_config
+cp cloudgate_ssh_config ../../../ansible/
+echo "Cloudgate custom SSH file created and copied into Ansible directory"
 

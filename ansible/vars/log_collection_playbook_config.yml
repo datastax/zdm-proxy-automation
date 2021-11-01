@@ -1,0 +1,13 @@
+---
+# Host on which the playbook is executed. Use localhost for execution on local machine, or monitoring for execution on jumphost.
+log_collection_playbook_host: monitoring
+
+# Directory, on the Ansible control host, where the zipped log archive should be placed.
+# If running the playbook on local machine, provide the desired absolute path (the directory will be created if it does not exist)
+# If running the playbook on the jumphost, the default value is fine
+archived_log_dir_path_name: /home/ubuntu/proxy_archived_logs
+
+# Temporary directory, one the Ansible control host, used while handling the log files. Will be removed at the end of the playbook execution.
+# If running the playbook on local machine, provide the desired absolute path (the directory will be created if it does not exist)
+# If running the playbook on the jumphost, the default value is fine
+tmp_log_dir_path_name: /home/ubuntu/tmp_logs

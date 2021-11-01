@@ -68,4 +68,10 @@ git clone git@cloudgate-automation:riptano/cloudgate-automation.git
 # Put the inventory file into the ansible directory of the cloudgate automation code
 mv /home/ubuntu/cloudgate_inventory /home/ubuntu/cloudgate-automation/ansible
 
+# Overwrite the ansible.cfg file with the appropriate parameters to run playbooks from the jumphost
+cd cloudgate-automation/ansible
+printf "[ssh_connection]\nssh_args = -o StrictHostKeyChecking=no\n" > ansible.cfg
+
+
+
 

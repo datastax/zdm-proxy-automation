@@ -2,6 +2,7 @@
 - name: Install and configure Prometheus and Grafana on the monitoring instance
   hosts: monitoring
   become: yes
+
   roles:
     - ansible-prometheus
     - ansible-grafana

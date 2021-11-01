@@ -4,13 +4,14 @@
   become: yes
   vars_files:
     - vars/proxy_container.yml
+    - vars/log_collection_playbook_config.yml
 
   tasks:
     - name: Inspect the proxy container
       docker_container_info:
         name: "{{ cloudgate_proxy_container_name }}"
       register: containerinfo
-    - name: Find the files list which you want to copy/fetch
+    - name: Find the log files to copy/fetch
       find:
         paths: "/var/lib/docker/containers/{{ containerinfo.container.Id }}"
         patterns: ".*-json.log$"
@@ -18,29 +19,33 @@
       register: logfilenames
       when:
         - containerinfo is defined
+    - name: Create temporary directory
+      file:
+        path: "{{ tmp_log_dir_path_name }}/"
+        state: directory
     - name: Fetch the logs of the container
       fetch:
         src: "{{ item.path }}"
-        dest: "/home/ubuntu/tmp_logs/"
+        dest: "{{ tmp_log_dir_path_name }}/"
         flat: yes
       with_items: "{{ logfilenames.files }}"
 
 - name: Zip the logs in a single archive
-  hosts: monitoring
+  hosts: "{{ log_collection_playbook_host }}"
+  vars_files:
+    - vars/log_collection_playbook_config.yml
 
   tasks:
     - name: Create general log archive directory if it doesn't exist
       file:
-        path: "/home/ubuntu/proxy_archived_logs/"
+        path: "{{ archived_log_dir_path_name }}/"
         state: directory
     - name: Zip the logs in a single archive
       community.general.archive:
-        path: "/home/ubuntu/tmp_logs/"
-        dest: "/home/ubuntu/proxy_archived_logs/proxy_logs_{{ ansible_date_time.iso8601_basic_short }}.zip"
-        owner: ubuntu
-        group: ubuntu
+        path: "{{ tmp_log_dir_path_name }}/"
+        dest: "{{ archived_log_dir_path_name }}/proxy_logs_{{ ansible_date_time.iso8601_basic_short }}.zip"
         format: zip
     - name: Remove the temporary directory where the logs were copied
       file:
-        path: "/home/ubuntu/tmp_logs/"
+        path: "{{ tmp_log_dir_path_name }}/"
         state: absent

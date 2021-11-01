@@ -34,7 +34,7 @@ data "aws_availability_zones" "available" {
 resource "aws_subnet" "private_subnets" {
   count = length(data.aws_availability_zones.available.names)
   vpc_id = aws_vpc.cloudgate_vpc.id
-  cidr_block = "${var.aws_cloudgate_vpc_cidr_prefix}.${10+count.index}.0/24"
+  cidr_block = cidrsubnet(aws_vpc.cloudgate_vpc.cidr_block, 8, 10+count.index )
   availability_zone= data.aws_availability_zones.available.names[count.index]
   map_public_ip_on_launch = false
   tags = {
@@ -115,7 +115,8 @@ resource "aws_security_group" "private_instance_sg" {
 ########################################################
 resource "aws_subnet" "public_subnet" {
   availability_zone = data.aws_availability_zones.available.names[0]
-  cidr_block = "${var.aws_cloudgate_vpc_cidr_prefix}.100.0/24"
+#  cidr_block = "${var.aws_cloudgate_vpc_cidr_prefix}.100.0/24"
+  cidr_block = cidrsubnet(aws_vpc.cloudgate_vpc.cidr_block, 8, 100 )
   vpc_id = aws_vpc.cloudgate_vpc.id
   tags = {
     Name = "public_subnet_${data.aws_availability_zones.available.names[0]}"

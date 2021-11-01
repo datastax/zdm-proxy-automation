@@ -1,0 +1,32 @@
+## *****
+## This is an example custom SSH config file that can be used as a guideline when manually creating the custom SSH config file for a certain deployment.
+##
+## IMPORTANT NOTE: Manually creating this file is ONLY needed if the infrastructure was NOT provisioned using the Cloudgate Terraform automation in this project.
+## This is because the Cloudgate Terraform automation creates the custom SSH config file automatically and places it in the correct location - in which case no manual operation is needed.
+##
+## Please remove this comment from the manually created file.
+## *****
+
+Host <jumphost_private_IP_address> jumphost
+  Hostname <jumphost_public_IP_address>
+  Port 22
+
+Host <private_IP_address_of_proxy_instance_0> cloudgate-proxy-0
+  Hostname <private_IP_address_of_proxy_instance_0>
+  ProxyJump jumphost
+
+Host <private_IP_address_of_proxy_instance_1> cloudgate-proxy-1
+  Hostname <private_IP_address_of_proxy_instance_1>
+  ProxyJump jumphost
+
+Host <private_IP_address_of_proxy_instance_2> cloudgate-proxy-2
+  Hostname <private_IP_address_of_proxy_instance_2>
+  ProxyJump jumphost
+
+Host *
+    User ubuntu
+    IdentityFile < Filename (with absolute path) of the locally-generated key pair for the Cloudgate infrastructure. Example ~/.ssh/cloudgate-key-XXX >
+    IdentitiesOnly yes
+    StrictHostKeyChecking no
+    GlobalKnownHostsFile /dev/null
+    UserKnownHostsFile /dev/null
