@@ -28,7 +28,7 @@ ssh_dir="/home/ubuntu/.ssh"
 
 # Prefix of the private IP addresses of the Cloudgate proxies.
 # This defaults to the first two octets of the Cloudgate VPC created by Terraform in the standard configuration.
-# Please uncomment and chnage as appropriate, to match the prefix of the private IPs of the proxy machines.
+# Please uncomment and change as appropriate, to match the prefix of the private IPs of the proxy machines.
 proxy_private_ip_address_prefix="172.18"
 
 ###################################################
