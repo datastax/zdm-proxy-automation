@@ -15,12 +15,21 @@
 ### Configuration variables
 ###################################################
 
-# REQUIRED variables - Please uncomment and specify
+### REQUIRED variables - Please uncomment and specify
+
+# Name of the keypair that enables access to the Cloudgate infrastructure.
 #cloudgate_keypair_name=
 
-# OPTIONAL variables - Please change defaults as appropriate
+### End of REQUIRED variables
+
+### OPTIONAL variables - Please change defaults as appropriate
+# SSH config directory used by the SSH agent. Typically it is .ssh in the home of the OS user (default "ubuntu")
 ssh_dir="/home/ubuntu/.ssh"
-cloudgate_vpc_cidr_first_two_octets="172.18"
+
+# Prefix of the private IP addresses of the Cloudgate proxies.
+# This defaults to the first two octets of the Cloudgate VPC created by Terraform in the standard configuration.
+# Please uncomment and chnage as appropriate, to match the prefix of the private IPs of the proxy machines.
+proxy_private_ip_address_prefix="172.18"
 
 ###################################################
 ### Main script
@@ -36,7 +45,7 @@ eval $(ssh-agent -s)
 ssh-add "${ssh_dir}"/"${cloudgate_keypair_name}"
 
 # Append the following lines to the ssh config file (creating it if it doesn't exist)
-printf "# proxy instances \nHost %s.*\n  IdentityFile %s/%s\n" "${cloudgate_vpc_cidr_first_two_octets}" "${ssh_dir}" "${cloudgate_keypair_name}" >> "${ssh_dir}"/config
+printf "# proxy instances \nHost %s.*\n  IdentityFile %s/%s\n" "${proxy_private_ip_address_prefix}" "${ssh_dir}" "${cloudgate_keypair_name}" >> "${ssh_dir}"/config
 
 # Install Ansible if it has not already been installed
 if ! command -v ansible &> /dev/null; then
