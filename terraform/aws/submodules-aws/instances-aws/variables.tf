@@ -20,6 +20,8 @@ variable "ami" {
     "eu-central-1" = "ami-073375fc9e17516d6"
     "eu-north-1" = "ami-09f07498568488979"
     "eu-south-1" = "ami-016e7e862dbd5eb59"
+
+    "ap-south-1" = "ami-07a4716f9f312e466"
   }
 }
 
