@@ -3,4 +3,3 @@ cloudgate_proxy_image: datastax/cloudgate-proxy:1.x
 
 create_containers: 1
 cloudgate_proxy_container_name: cloudgate-proxy-container
-

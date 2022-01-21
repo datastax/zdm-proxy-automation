@@ -1,0 +1,14 @@
+name: Ansible Integration
+on: push
+jobs:
+  test-in-compose:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Start docker-compose
+        run: |
+          docker-compose up -d
+          sleep 720
+          docker-compose logs
+          docker ps -a
+          docker exec cloudgate-automation_client_1 cqlsh cloudgate-automation_proxy_1 -e 'select * from system.local;'

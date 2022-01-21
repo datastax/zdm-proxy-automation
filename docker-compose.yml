@@ -1,0 +1,62 @@
+version: '3.8'
+
+networks:
+  proxy:
+    name: proxy
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 192.168.100.0/24
+
+services:
+  origin:
+    image: cassandra:3.11
+    restart: unless-stopped
+    networks:
+      proxy:
+
+  target:
+    image: cassandra:4.0
+    restart: unless-stopped
+    networks:
+      proxy:
+
+  proxy:
+    image: thesoul/ubuntu-dind:docker-20.10.12
+    restart: unless-stopped
+    tty: true
+    privileged: true
+    volumes:
+      - .:/opt/cloudgate-automation
+      - ./compose/keys:/run/keys
+    entrypoint:
+      - /opt/cloudgate-automation/compose/proxy-entrypoint.sh
+    networks:
+      proxy:
+    deploy:
+      mode: replicated
+      replicas: 3
+
+  jumphost:
+    image: ubuntu:20.04
+    restart: unless-stopped
+    tty: true
+    volumes:
+      - .:/opt/cloudgate-automation
+      - ./compose/keys:/run/keys
+    entrypoint:
+      - /opt/cloudgate-automation/compose/jumphost-entrypoint.sh
+    networks:
+      proxy:
+
+  client:
+    image: ubuntu:20.04
+    restart: unless-stopped
+    tty: true
+    volumes:
+      - .:/opt/cloudgate-automation
+    entrypoint:
+      - /opt/cloudgate-automation/compose/client-entrypoint.sh
+    networks:
+      proxy:
