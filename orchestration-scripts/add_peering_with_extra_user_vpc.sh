@@ -13,9 +13,6 @@
 # REQUIRED: AWS region for the Cloudgate deployment.
 #aws_region=
 
-# REQUIRED: Name of the locally-generated key pair for the Cloudgate infrastructure specific to this deployment. Example: cloudgate-key-<enterprise_name>
-#cloudgate_keypair_name=
-
 # REQUIRED: ID of the user's VPC with which the Cloudgate VPC must be peered.
 #user_vpc_id=
 
@@ -28,9 +25,6 @@
 # OPTIONAL: AWS credentials to be used to access the user's own infrastructure. Defaults to cloudgate_aws_profile.
 #user_aws_profile=
 #user_aws_profile="iamtheuser"
-
-# OPTIONAL: Path to the locally-generated key pair for the Cloudgate infrastructure. Defaults to ~./ssh.
-#cloudgate_public_key_localpath=
 
 ###################################################
 ### End of configuration variables
@@ -65,7 +59,7 @@ add_quotes_around_elements () {
 
 check_required_vars_exist() {
     # Check that all required variables have been specified
-    if [ -z "${cloudgate_aws_profile}" ] || [ -z "${aws_region}" ] || [ -z "${user_vpc_id}" ] || [ -z "${user_route_table_ids}" ] || [ -z "${cloudgate_keypair_name}" ];
+    if [ -z "${cloudgate_aws_profile}" ] || [ -z "${aws_region}" ] || [ -z "${user_vpc_id}" ] || [ -z "${user_route_table_ids}" ];
     then
       return 1
     else
@@ -80,7 +74,6 @@ build_terraform_var_str () {
 
   terraform_vars+="-var \"cloudgate_aws_profile=${cloudgate_aws_profile}\" "
   terraform_vars+="-var \"aws_region=${aws_region}\" "
-  terraform_vars+="-var \"cloudgate_keypair_name=${cloudgate_keypair_name}\" "
   terraform_vars+="-var \"user_vpc_id=${user_vpc_id}\" "
 
   # -var 'user_route_table_ids=["rtb-002b6c2dc4ab37ef3","rtb-0c12565bab8227485"]'
@@ -91,10 +84,6 @@ build_terraform_var_str () {
 
   if [ -n "${user_aws_profile}" ]; then
       terraform_vars+="-var \"user_aws_profile=${user_aws_profile}\" "
-  fi
-
-  if [ -n "${cloudgate_public_key_localpath}" ]; then
-      terraform_vars+="-var \"cloudgate_public_key_localpath=${cloudgate_public_key_localpath}\" "
   fi
 
   echo "${terraform_vars}"
@@ -149,5 +138,5 @@ if [[ "$yesno" == "yes" ]]; then
   echo "#### Command apply executed with arguments: " "${tf_var_str}"
 fi
 
-terraform output 
+terraform output
 

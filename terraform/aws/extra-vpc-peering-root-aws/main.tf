@@ -15,8 +15,6 @@ provider "aws" {
 }
 
 data "aws_vpc" "cloudgate_vpc" {
-  #TODO decide on one filtering criterion to keep things simple. Either would be sufficient to match exactly the Cloudgate VPC only
-  #cidr_block = "${var.aws_cloudgate_vpc_cidr_prefix}.0.0/16"
   tags = {
     Name = "cloudgate_vpc"
   }
