@@ -112,7 +112,7 @@ resource "aws_security_group" "cloudgate_allow_traffic_from_peering_sg" {
   provider = aws.cloudgate
 
   vpc_id = data.aws_vpc.cloudgate_vpc.id
-  name = "cloudgate_allow_traffic_from_peering_sg_" + vpc_id
+  name = "cloudgate_allow_traffic_from_peering_sg_${vpc_id}"
 
   ingress {
     description      = "Inbound Native Cassandra Protocol from user VPC"
@@ -135,7 +135,7 @@ resource "aws_security_group" "user_allow_traffic_from_peering_sg" {
   provider = aws.user
 
   vpc_id = data.aws_vpc.user_vpc.id
-  name = "user_allow_traffic_from_peering_sg_" + vpc_id
+  name = "user_allow_traffic_from_peering_sg_${vpc_id}"
 
   ingress {
     description      = "Inbound Native Cassandra Protocol from Cloudgate VPC"
