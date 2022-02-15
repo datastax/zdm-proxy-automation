@@ -41,7 +41,7 @@ module "vpc_peering" {
 
   cloudgate_vpc_id = data.aws_vpc.cloudgate_vpc.id
   #cloudgate_route_table_ids = tolist([module.proxy_networking.private_subnet_route_table_id])
-  cloudgate_route_table_ids = data.aws_route_table.cloudgate_private_subnet_route_table.id
+  cloudgate_route_table_ids = [data.aws_route_table.cloudgate_private_subnet_route_table.id]
   user_vpc_id = var.user_vpc_id
   user_route_table_ids = var.user_route_table_ids
 }
