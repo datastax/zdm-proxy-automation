@@ -27,7 +27,7 @@ module "proxy_networking" {
 
   #aws_profile = var.cloudgate_aws_profile
   #aws_region = var.aws_region
-  
+
   // variable wirings for the networking module
   aws_cloudgate_vpc_cidr_prefix = var.aws_cloudgate_vpc_cidr_prefix
 

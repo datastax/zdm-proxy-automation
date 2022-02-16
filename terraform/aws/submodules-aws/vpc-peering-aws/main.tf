@@ -111,7 +111,7 @@ resource "aws_route" "user_to_cloudgate" {
 resource "aws_security_group" "cloudgate_allow_traffic_from_peering_sg" {
   provider = aws.cloudgate
 
-  name = "cloudgate_allow_traffic_from_peering_sg_${data.aws_vpc.user_vpc.id}"
+  name_prefix = "cloudgate_allow_traffic_from_peering_sg_"
   vpc_id = data.aws_vpc.cloudgate_vpc.id
 
   ingress {
@@ -134,7 +134,7 @@ resource "aws_security_group" "cloudgate_allow_traffic_from_peering_sg" {
 resource "aws_security_group" "user_allow_traffic_from_peering_sg" {
   provider = aws.user
 
-  name = "user_allow_traffic_from_peering_sg_${data.aws_vpc.user_vpc.id}"
+  name_prefix = "user_allow_traffic_from_peering_sg_"
   vpc_id = data.aws_vpc.user_vpc.id
 
   ingress {
