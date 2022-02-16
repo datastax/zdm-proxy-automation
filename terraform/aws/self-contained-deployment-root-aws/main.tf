@@ -54,17 +54,17 @@ module "instances" {
 }
 
 // peers the Cloudgate VPC with the existing VPC specified by the user
-#module "vpc_peering" {
-#  source = "../submodules-aws/vpc-peering-aws"
-#
-#  aws_region = var.aws_region
-#
-#  cloudgate_aws_profile = var.cloudgate_aws_profile
-#  // if no user AWS profile was specified, default the user AWS profile to the Cloudgate AWS profile
-#  user_aws_profile = (var.user_aws_profile != "" ? var.user_aws_profile : var.cloudgate_aws_profile)
-#
-#  cloudgate_vpc_id = module.proxy_networking.cloudgate_vpc_id
-#  cloudgate_route_table_ids = tolist([module.proxy_networking.private_subnet_route_table_id])
-#  user_vpc_id = var.user_vpc_id
-#  user_route_table_ids = var.user_route_table_ids
-#}
+module "vpc_peering" {
+  source = "../submodules-aws/vpc-peering-aws"
+
+  aws_region = var.aws_region
+
+  cloudgate_aws_profile = var.cloudgate_aws_profile
+  // if no user AWS profile was specified, default the user AWS profile to the Cloudgate AWS profile
+  user_aws_profile = (var.user_aws_profile != "" ? var.user_aws_profile : var.cloudgate_aws_profile)
+
+  cloudgate_vpc_id = module.proxy_networking.cloudgate_vpc_id
+  cloudgate_route_table_ids = tolist([module.proxy_networking.private_subnet_route_table_id])
+  user_vpc_id = var.user_vpc_id
+  user_route_table_ids = var.user_route_table_ids
+}

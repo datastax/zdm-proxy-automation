@@ -150,8 +150,12 @@ resource "aws_security_group" "user_allow_traffic_from_peering_sg" {
 }
 
 data aws_instances "cloudgate_proxy_instances" {
-  instance_tags = {
-    Type = "CloudgateProxy"
+#  instance_tags = {
+#    Type = "CloudgateProxy"
+#  }
+  filter {
+    name   = "tag:Type"
+    values = ["CloudgateProxy"]
   }
 }
 
