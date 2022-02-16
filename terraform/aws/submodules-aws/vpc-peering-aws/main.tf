@@ -1,11 +1,11 @@
 ## Requester = Cloudgate
 ## Accepter = User
 
-provider "aws" {
-  alias = "cloudgate"
-  profile = var.cloudgate_aws_profile
-  region = var.aws_region
-}
+#provider "aws" {
+#  alias = "cloudgate"
+#  profile = var.cloudgate_aws_profile
+#  region = var.aws_region
+#}
 
 provider "aws" {
   alias = "user"
@@ -150,13 +150,10 @@ resource "aws_security_group" "user_allow_traffic_from_peering_sg" {
 }
 
 data aws_instances "cloudgate_proxy_instances" {
-#  instance_tags = {
-#    Type = "CloudgateProxy"
-#  }
-  filter {
-    name   = "tag:Type"
-    values = ["CloudgateProxy"]
+  instance_tags = {
+    Type = "CloudgateProxy"
   }
+
 }
 
 data aws_instance "proxy_instance_array" {
