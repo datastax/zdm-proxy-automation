@@ -157,7 +157,7 @@ data aws_instances "cloudgate_proxy_instances" {
 
 data aws_instance "proxy_instance_array" {
   count = length(data.aws_instances.cloudgate_proxy_instances)
-  id = data.aws_instances.cloudgate_proxy_instances[count.index].id
+  instance_id = data.aws_instances.cloudgate_proxy_instances[count.index].id
 }
 
 resource aws_network_interface_sg_attachment "proxy_peering_sg_attachment" {
