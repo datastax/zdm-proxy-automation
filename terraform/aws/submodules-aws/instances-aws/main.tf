@@ -34,7 +34,7 @@ resource "aws_instance" "cloudgate_proxy" {
   associate_public_ip_address = false
 
   subnet_id = var.private_subnet_ids[count.index % length(var.private_subnet_ids)]
-  vpc_security_group_ids = var.proxy_security_group_ids
+  #vpc_security_group_ids = var.proxy_security_group_ids
   
   root_block_device {
     volume_size = 100
@@ -42,9 +42,22 @@ resource "aws_instance" "cloudgate_proxy" {
   }
 
   tags = {
+    Type = "CloudgateProxy"
     Name = "CloudgateProxy-${count.index}"
   }
 
+}
+
+######################################################################
+## Attach security groups to Cloudgate proxy instances
+##
+## Must be done this way to be able to add more security groups later
+## in case of additional VPC peering
+######################################################################
+resource "aws_network_interface_sg_attachment" "cloudgate_proxy_sg_attachment" {
+  count = var.proxy_instance_count
+  security_group_id    = var.proxy_instance_sg_id
+  network_interface_id = aws_instance.cloudgate_proxy[count.index].primary_network_interface_id
 }
 
 #############################

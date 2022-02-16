@@ -35,14 +35,14 @@ variable "private_subnet_ids" {
   description = "Private subnets IDs in the Cloudgate VPC"
 }
 
-variable "proxy_security_group_ids" {
-  description = "Security group IDs to add to the proxy instances"
-  type = list(string)
+variable "proxy_instance_sg_id" {
+  description = "Security group ID to add to the proxy instances"
+  type = string
 }
 
 variable "monitoring_security_group_ids" {
   description = "Security group IDs to add to the monitoring instance"
-  type = list(string)
+  type = string
 }
 
 variable "public_subnet_id" {
