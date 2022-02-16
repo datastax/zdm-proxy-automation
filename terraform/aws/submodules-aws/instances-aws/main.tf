@@ -70,7 +70,7 @@ resource "aws_instance" "monitoring" {
   
   subnet_id = var.public_subnet_id
 
-  vpc_security_group_ids = var.monitoring_security_group_ids
+  #vpc_security_group_ids = var.monitoring_security_group_ids
 
   root_block_device {
     volume_size = 200
@@ -80,6 +80,16 @@ resource "aws_instance" "monitoring" {
   tags = {
     Name = "MonitoringInstance"
   }
+}
+
+#####################################################################################
+## Attach security groups to Cloudgate proxy instances
+##
+## Doing it this way for consistency with how the SG is added to the proxy instances
+#####################################################################################
+resource "aws_network_interface_sg_attachment" "monitoring_sg_attachment" {
+  security_group_id    = var.monitoring_security_group_id
+  network_interface_id = aws_instance.monitoring.primary_network_interface_id
 }
 
 resource "aws_eip" "monitoring_eip" {

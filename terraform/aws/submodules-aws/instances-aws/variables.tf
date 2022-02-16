@@ -40,7 +40,7 @@ variable "proxy_instance_sg_id" {
   type = string
 }
 
-variable "monitoring_security_group_ids" {
+variable "monitoring_security_group_id" {
   description = "Security group IDs to add to the monitoring instance"
   type = string
 }

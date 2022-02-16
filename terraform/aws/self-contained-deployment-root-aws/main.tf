@@ -50,7 +50,7 @@ module "instances" {
   //proxy_security_group_ids = [module.proxy_networking.private_instance_sg_id]
   proxy_instance_sg_id = module.proxy_networking.private_instance_sg_id
 
-  monitoring_security_group_ids = module.proxy_networking.public_instance_sg_id
+  monitoring_security_group_id = module.proxy_networking.public_instance_sg_id
 }
 
 // peers the Cloudgate VPC with the existing VPC specified by the user
