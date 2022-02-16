@@ -150,11 +150,6 @@ resource "aws_security_group" "user_allow_traffic_from_peering_sg" {
 }
 
 data aws_instances "cloudgate_proxy_instances" {
-  filter {
-    name   = "instance.vpc-id"
-    values = [data.aws_vpc.cloudgate_vpc.id]
-  }
-
   instance_tags = {
     Type = "CloudgateProxy"
   }
