@@ -1,4 +1,4 @@
-variable "aws_profile" {}
+#variable "aws_profile" {}
 variable "aws_region" {}
 
 variable "cloudgate_public_key_localpath" {}

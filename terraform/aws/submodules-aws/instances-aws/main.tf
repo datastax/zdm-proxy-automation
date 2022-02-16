@@ -13,6 +13,8 @@ terraform {
 ## AWS Key Pair
 #############################
 resource "aws_key_pair" "cloudgate_key_pair" {
+  provider = aws.cloudgate
+
   key_name = var.cloudgate_keypair_name
   //public_key = file("${var.cloudgate_public_key_localpath}/${var.cloudgate_keypair_name}.pub")
   public_key = file(format("%s/%s.pub", var.cloudgate_public_key_localpath, var.cloudgate_keypair_name))
@@ -26,6 +28,8 @@ resource "aws_key_pair" "cloudgate_key_pair" {
 ## Cloudgate proxy instances
 #############################
 resource "aws_instance" "cloudgate_proxy" {
+  provider = aws.cloudgate
+
   count = var.proxy_instance_count
   
   ami = lookup(var.ami, var.aws_region)
@@ -55,6 +59,8 @@ resource "aws_instance" "cloudgate_proxy" {
 ## in case of additional VPC peering
 ######################################################################
 resource "aws_network_interface_sg_attachment" "cloudgate_proxy_sg_attachment" {
+  provider = aws.cloudgate
+
   count = var.proxy_instance_count
   security_group_id    = var.proxy_instance_sg_id
   network_interface_id = aws_instance.cloudgate_proxy[count.index].primary_network_interface_id
@@ -64,6 +70,8 @@ resource "aws_network_interface_sg_attachment" "cloudgate_proxy_sg_attachment" {
 ## Monitoring instance
 #############################
 resource "aws_instance" "monitoring" {
+  provider = aws.cloudgate
+
   ami = lookup(var.ami, var.aws_region)
   instance_type = var.monitoring_instance_type
   key_name      = aws_key_pair.cloudgate_key_pair.key_name
@@ -88,15 +96,21 @@ resource "aws_instance" "monitoring" {
 ## Doing it this way for consistency with how the SG is added to the proxy instances
 #####################################################################################
 resource "aws_network_interface_sg_attachment" "monitoring_sg_attachment" {
+  provider = aws.cloudgate
+
   security_group_id    = var.monitoring_security_group_id
   network_interface_id = aws_instance.monitoring.primary_network_interface_id
 }
 
 resource "aws_eip" "monitoring_eip" {
+  provider = aws.cloudgate
+
   vpc      = true
 }
 
 resource "aws_eip_association" "monitoring_eip_assoc" {
+  provider = aws.cloudgate
+
   instance_id   = aws_instance.monitoring.id
   allocation_id = aws_eip.monitoring_eip.id
 }
@@ -105,6 +119,8 @@ resource "aws_eip_association" "monitoring_eip_assoc" {
 ## Generation of Ansible inventory
 ###################################
 resource "local_file" "ansible_inventory" {
+  provider = aws.cloudgate
+
   content = templatefile("${path.module}/templates/cloudgate_inventory.tpl",
     {
       cloudgate_proxy_private_ips = aws_instance.cloudgate_proxy.*.private_ip
@@ -118,6 +134,8 @@ resource "local_file" "ansible_inventory" {
 ## Generation of Cloudgate SSH config file for ProxyJump
 ######################################################
 resource "local_file" "cloudgate_ssh_config" {
+  provider = aws.cloudgate
+
   content = templatefile("${path.module}/templates/cloudgate_ssh_config.tpl",
   {
     cloudgate_proxy_private_ips = aws_instance.cloudgate_proxy.*.private_ip

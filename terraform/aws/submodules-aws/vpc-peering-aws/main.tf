@@ -6,12 +6,12 @@
 #  profile = var.cloudgate_aws_profile
 #  region = var.aws_region
 #}
-
-provider "aws" {
-  alias = "user"
-  profile = var.user_aws_profile
-  region = var.aws_region
-}
+#
+#provider "aws" {
+#  alias = "user"
+#  profile = var.user_aws_profile
+#  region = var.aws_region
+#}
 
 data "aws_vpc" "cloudgate_vpc" {
   id = var.cloudgate_vpc_id

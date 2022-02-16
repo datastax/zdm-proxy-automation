@@ -15,6 +15,8 @@ terraform {
 ## VPC
 ####################################
 resource "aws_vpc" "cloudgate_vpc" {
+  provider = aws.cloudgate
+
   cidr_block = "${var.aws_cloudgate_vpc_cidr_prefix}.0.0/16"
   enable_dns_hostnames = true
   enable_dns_support = true
@@ -32,6 +34,8 @@ data "aws_availability_zones" "available" {
 ## Private subnets
 ####################################
 resource "aws_subnet" "private_subnets" {
+  provider = aws.cloudgate
+
   count = length(data.aws_availability_zones.available.names)
   vpc_id = aws_vpc.cloudgate_vpc.id
   cidr_block = cidrsubnet(aws_vpc.cloudgate_vpc.cidr_block, 8, 10+count.index )
@@ -48,6 +52,8 @@ resource "aws_subnet" "private_subnets" {
 ## This is important for the VPC peering later on
 ##################################################
 resource "aws_route_table" "private_subnet_rt" {
+  provider = aws.cloudgate
+
   vpc_id = aws_vpc.cloudgate_vpc.id
   tags = {
     Name = "private_subnet_rt"
@@ -55,6 +61,8 @@ resource "aws_route_table" "private_subnet_rt" {
 }
 
 resource "aws_route_table_association" "private_subnet_rta" {
+  provider = aws.cloudgate
+
   count = length(aws_subnet.private_subnets)
 
   subnet_id = aws_subnet.private_subnets[count.index].id
@@ -62,6 +70,8 @@ resource "aws_route_table_association" "private_subnet_rta" {
 }
 
 resource "aws_route" "proxy_to_nat" {
+  provider = aws.cloudgate
+
   route_table_id = aws_route_table.private_subnet_rt.id
   destination_cidr_block = "0.0.0.0/0"
   nat_gateway_id = aws_nat_gateway.nat_gateway.id
@@ -71,6 +81,8 @@ resource "aws_route" "proxy_to_nat" {
 ## Security Group for instances in private subnets
 ######################################################################################
 resource "aws_security_group" "private_instance_sg" {
+  provider = aws.cloudgate
+
   name = "private_instance_sg"
   vpc_id = aws_vpc.cloudgate_vpc.id
 
@@ -114,6 +126,8 @@ resource "aws_security_group" "private_instance_sg" {
 ## Public subnet for the NAT and monitoring instance / jumphost
 ########################################################
 resource "aws_subnet" "public_subnet" {
+  provider = aws.cloudgate
+
   availability_zone = data.aws_availability_zones.available.names[0]
 #  cidr_block = "${var.aws_cloudgate_vpc_cidr_prefix}.100.0/24"
   cidr_block = cidrsubnet(aws_vpc.cloudgate_vpc.cidr_block, 8, 100 )
@@ -127,6 +141,8 @@ resource "aws_subnet" "public_subnet" {
 ## NAT gateway + its elastic IP
 ####################################
 resource "aws_nat_gateway" "nat_gateway" {
+  provider = aws.cloudgate
+
   connectivity_type = "public"
   allocation_id = aws_eip.nat_gateway_eip.id
   subnet_id = aws_subnet.public_subnet.id
@@ -136,13 +152,17 @@ resource "aws_nat_gateway" "nat_gateway" {
 }
 
 resource "aws_eip" "nat_gateway_eip" {
-  vpc      = true
+  provider = aws.cloudgate
+
+  vpc = true
 }
 
 ##################################################################################
 ## Main route table must contain a route to send outbound traffic to NAT gateway
 ##################################################################################
 resource "aws_default_route_table" "default_route_table_for_vpc" {
+  provider = aws.cloudgate
+
   default_route_table_id = aws_vpc.cloudgate_vpc.default_route_table_id
 
   route {
@@ -159,6 +179,8 @@ resource "aws_default_route_table" "default_route_table_for_vpc" {
 ## Internet gateway
 ####################################
 resource "aws_internet_gateway" "internet_gateway" {
+  provider = aws.cloudgate
+
   vpc_id = aws_vpc.cloudgate_vpc.id
   tags = {
     Name = "cloudgate_internet_gateway"
@@ -169,6 +191,8 @@ resource "aws_internet_gateway" "internet_gateway" {
 ## Route table for internet gateway + association to it
 #########################################################
 resource "aws_route_table" "internet_gateway_rt" {
+  provider = aws.cloudgate
+
   vpc_id = aws_vpc.cloudgate_vpc.id
   tags = {
     Name = "cloudgate_internet_gateway_rt"
@@ -176,6 +200,8 @@ resource "aws_route_table" "internet_gateway_rt" {
 }
 
 resource "aws_route" "igw_route" {
+  provider = aws.cloudgate
+
   count = length(var.whitelisted_outbound_ip_ranges)
 
   route_table_id = aws_route_table.internet_gateway_rt.id
@@ -184,6 +210,8 @@ resource "aws_route" "igw_route" {
 }
 
 resource "aws_route_table_association" "internet_gateway_rta" {
+  provider = aws.cloudgate
+
   subnet_id = aws_subnet.public_subnet.id
   route_table_id = aws_route_table.internet_gateway_rt.id
 }
@@ -192,6 +220,8 @@ resource "aws_route_table_association" "internet_gateway_rta" {
 ## Security Group for instances accessible from outside
 ######################################################################################
 resource "aws_security_group" "public_instance_sg" {
+  provider = aws.cloudgate
+
   name = "public_instance_sg"
   vpc_id = aws_vpc.cloudgate_vpc.id
 

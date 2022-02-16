@@ -10,7 +10,14 @@ terraform {
 }
 
 provider "aws" {
+  alias = "cloudgate"
   profile = var.cloudgate_aws_profile
+  region  = var.aws_region
+}
+
+provider "aws" {
+  alias = "user"
+  profile = (var.user_aws_profile != "" ? var.user_aws_profile : var.cloudgate_aws_profile)
   region  = var.aws_region
 }
 
@@ -18,9 +25,9 @@ provider "aws" {
 module "proxy_networking" {
   source = "../submodules-aws/networking-aws"
 
-  aws_profile = var.cloudgate_aws_profile
-  aws_region = var.aws_region
-
+  #aws_profile = var.cloudgate_aws_profile
+  #aws_region = var.aws_region
+  
   // variable wirings for the networking module
   aws_cloudgate_vpc_cidr_prefix = var.aws_cloudgate_vpc_cidr_prefix
 
@@ -33,7 +40,7 @@ module "instances" {
   source = "../submodules-aws/instances-aws"
 
   // top level variables
-  aws_profile = var.cloudgate_aws_profile
+#  aws_profile = var.cloudgate_aws_profile
   aws_region = var.aws_region
   cloudgate_public_key_localpath = var.cloudgate_public_key_localpath
   cloudgate_keypair_name = var.cloudgate_keypair_name
@@ -57,11 +64,11 @@ module "instances" {
 module "vpc_peering" {
   source = "../submodules-aws/vpc-peering-aws"
 
-  aws_region = var.aws_region
-
-  cloudgate_aws_profile = var.cloudgate_aws_profile
-  // if no user AWS profile was specified, default the user AWS profile to the Cloudgate AWS profile
-  user_aws_profile = (var.user_aws_profile != "" ? var.user_aws_profile : var.cloudgate_aws_profile)
+#  aws_region = var.aws_region
+#
+#  cloudgate_aws_profile = var.cloudgate_aws_profile
+#  // if no user AWS profile was specified, default the user AWS profile to the Cloudgate AWS profile
+#  user_aws_profile = (var.user_aws_profile != "" ? var.user_aws_profile : var.cloudgate_aws_profile)
 
   cloudgate_vpc_id = module.proxy_networking.cloudgate_vpc_id
   cloudgate_route_table_ids = tolist([module.proxy_networking.private_subnet_route_table_id])
