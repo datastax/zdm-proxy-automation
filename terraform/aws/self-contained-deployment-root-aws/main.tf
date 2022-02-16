@@ -67,4 +67,8 @@ module "vpc_peering" {
   cloudgate_route_table_ids = tolist([module.proxy_networking.private_subnet_route_table_id])
   user_vpc_id = var.user_vpc_id
   user_route_table_ids = var.user_route_table_ids
+
+  depends_on = [
+    module.instances
+  ]
 }
