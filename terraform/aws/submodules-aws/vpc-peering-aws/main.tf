@@ -108,7 +108,7 @@ resource "aws_route" "user_to_cloudgate" {
 
 # Create a security group on each side of the peering to allow inbound TCP communication on port 9042 from the other side of the peering
 
-resource "aws_security_group" "cloudgate_allow_traffic_from_peering_sg_XYZ" {
+resource "aws_security_group" "cloudgate_allow_traffic_from_peering_sg" {
   provider = aws.cloudgate
 
   name_prefix = "cloudgate_allow_traffic_from_peering_sg_"
@@ -131,7 +131,7 @@ resource "aws_security_group" "cloudgate_allow_traffic_from_peering_sg_XYZ" {
   }
 }
 
-resource "aws_security_group" "user_allow_traffic_from_peering_sg-ABC" {
+resource "aws_security_group" "user_allow_traffic_from_peering_sg" {
   provider = aws.user
 
   name_prefix = "user_allow_traffic_from_peering_sg_"
@@ -163,6 +163,6 @@ data aws_instance "proxy_instance_array" {
 
 resource aws_network_interface_sg_attachment "proxy_peering_sg_attachment" {
   count = length(data.aws_instances.cloudgate_proxy_instances)
-  security_group_id = aws_security_group.cloudgate_allow_traffic_from_peering_sg_XYZ.id
+  security_group_id = aws_security_group.cloudgate_allow_traffic_from_peering_sg.id
   network_interface_id = data.aws_instance.proxy_instance_array[count.index].network_interface_id
 }

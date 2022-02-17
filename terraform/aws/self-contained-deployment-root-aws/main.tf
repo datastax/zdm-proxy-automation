@@ -24,6 +24,9 @@ provider "aws" {
 // creates the Cloudgate VPC and all the networking infrastructure
 module "proxy_networking" {
   source = "../submodules-aws/networking-aws"
+  providers = {
+    cloudgate = aws.cloudgate
+  }
 
   #aws_profile = var.cloudgate_aws_profile
   #aws_region = var.aws_region
@@ -38,6 +41,9 @@ module "proxy_networking" {
 
 module "instances" {
   source = "../submodules-aws/instances-aws"
+  providers = {
+    cloudgate = aws.cloudgate
+  }
 
   // top level variables
 #  aws_profile = var.cloudgate_aws_profile
@@ -63,6 +69,10 @@ module "instances" {
 // peers the Cloudgate VPC with the existing VPC specified by the user
 module "vpc_peering" {
   source = "../submodules-aws/vpc-peering-aws"
+  providers = {
+    cloudgate = aws.cloudgate
+    user = aws.user
+  }
 
 #  aws_region = var.aws_region
 #
