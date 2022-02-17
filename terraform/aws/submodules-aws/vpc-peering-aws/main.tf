@@ -164,6 +164,7 @@ resource "aws_security_group" "user_allow_traffic_from_peering_sg" {
 }
 
 data aws_instances "cloudgate_proxy_instances" {
+  provider = aws.cloudgate
   instance_tags = {
     Type = "CloudgateProxy"
   }
@@ -171,11 +172,13 @@ data aws_instances "cloudgate_proxy_instances" {
 }
 
 data aws_instance "proxy_instance_array" {
+  provider = aws.cloudgate
   count = length(data.aws_instances.cloudgate_proxy_instances)
   instance_id = data.aws_instances.cloudgate_proxy_instances[count.index].id
 }
 
 resource aws_network_interface_sg_attachment "proxy_peering_sg_attachment" {
+  provider = aws.cloudgate
   count = length(data.aws_instances.cloudgate_proxy_instances)
   security_group_id = aws_security_group.cloudgate_allow_traffic_from_peering_sg.id
   network_interface_id = data.aws_instance.proxy_instance_array[count.index].network_interface_id

@@ -28,6 +28,7 @@ resource "aws_vpc" "cloudgate_vpc" {
 }
 
 data "aws_availability_zones" "available" {
+  provider = aws.cloudgate
   state = "available"
 }
 
