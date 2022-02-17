@@ -25,7 +25,7 @@ provider "aws" {
 module "proxy_networking" {
   source = "../submodules-aws/networking-aws"
   providers = {
-    aws.cloudgate = aws.cloudgate
+    cloudgate = aws.cloudgate
   }
 
   #aws_profile = var.cloudgate_aws_profile
@@ -42,7 +42,7 @@ module "proxy_networking" {
 module "instances" {
   source = "../submodules-aws/instances-aws"
   providers = {
-    aws.cloudgate = aws.cloudgate
+    cloudgate = aws.cloudgate
   }
 
   // top level variables
@@ -70,8 +70,8 @@ module "instances" {
 module "vpc_peering" {
   source = "../submodules-aws/vpc-peering-aws"
   providers = {
-    aws.cloudgate = aws.cloudgate
-    aws.user = aws.user
+    cloudgate = aws.cloudgate
+    user = aws.user
   }
 
 #  aws_region = var.aws_region
