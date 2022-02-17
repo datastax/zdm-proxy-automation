@@ -120,7 +120,7 @@ resource "aws_eip_association" "monitoring_eip_assoc" {
 ## Generation of Ansible inventory
 ###################################
 resource "local_file" "ansible_inventory" {
-  
+
   content = templatefile("${path.module}/templates/cloudgate_inventory.tpl",
     {
       cloudgate_proxy_private_ips = aws_instance.cloudgate_proxy.*.private_ip
