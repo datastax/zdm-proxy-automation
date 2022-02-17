@@ -11,16 +11,12 @@ terraform {
 
 provider "aws" {
   alias = "cloudgate"
-  source  = "hashicorp/aws"
-  version = "~> 3.27"
   profile = var.cloudgate_aws_profile
   region  = var.aws_region
 }
 
 provider "aws" {
   alias = "user"
-  source  = "hashicorp/aws"
-  version = "~> 3.27"
   profile = (var.user_aws_profile != "" ? var.user_aws_profile : var.cloudgate_aws_profile)
   region  = var.aws_region
 }
