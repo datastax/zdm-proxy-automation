@@ -13,11 +13,21 @@
 #  region = var.aws_region
 #}
 
+provider "aws" {
+  alias = "cloudgate"
+}
+
+provider "aws" {
+  alias = "user"
+}
+
 data "aws_vpc" "cloudgate_vpc" {
+  provider = aws.cloudgate
   id = var.cloudgate_vpc_id
 }
 
 data "aws_vpc" "user_vpc" {
+  provider = aws.user
   id = var.user_vpc_id
 }
 
