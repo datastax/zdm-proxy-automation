@@ -13,12 +13,16 @@
 #  region = var.aws_region
 #}
 
-provider "aws" {
-  alias = "cloudgate"
-}
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 3.27"
+      configuration_aliases = [ cloudgate, user ]
+    }
+  }
 
-provider "aws" {
-  alias = "user"
+  required_version = ">= 0.14.9"
 }
 
 data "aws_vpc" "cloudgate_vpc" {

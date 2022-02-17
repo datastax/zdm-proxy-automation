@@ -1,16 +1,13 @@
 terraform {
-#  required_providers {
-#    aws = {
-#      source  = "hashicorp/aws"
-#      version = "~> 3.27"
-#    }
-#  }
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 3.27"
+      configuration_aliases = [ cloudgate ]
+    }
+  }
 
   required_version = ">= 0.14.9"
-}
-
-provider "aws" {
-  alias = "cloudgate"
 }
 
 #############################
@@ -123,7 +120,6 @@ resource "aws_eip_association" "monitoring_eip_assoc" {
 ## Generation of Ansible inventory
 ###################################
 resource "local_file" "ansible_inventory" {
-  provider = aws.cloudgate
 
   content = templatefile("${path.module}/templates/cloudgate_inventory.tpl",
     {
@@ -138,7 +134,6 @@ resource "local_file" "ansible_inventory" {
 ## Generation of Cloudgate SSH config file for ProxyJump
 ######################################################
 resource "local_file" "cloudgate_ssh_config" {
-  provider = aws.cloudgate
 
   content = templatefile("${path.module}/templates/cloudgate_ssh_config.tpl",
   {
