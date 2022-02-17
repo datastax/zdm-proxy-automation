@@ -18,7 +18,7 @@ terraform {
     aws = {
       source  = "hashicorp/aws"
       version = "~> 3.27"
-      configuration_aliases = [ cloudgate, user ]
+      configuration_aliases = [ aws.cloudgate, aws.user ]
     }
   }
 

@@ -3,7 +3,7 @@ terraform {
     aws = {
       source  = "hashicorp/aws"
       version = "~> 3.27"
-      configuration_aliases = [ cloudgate ]
+      configuration_aliases = [ aws.cloudgate ]
     }
   }
 
