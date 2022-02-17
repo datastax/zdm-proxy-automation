@@ -120,7 +120,7 @@ resource "aws_eip_association" "monitoring_eip_assoc" {
 ## Generation of Ansible inventory
 ###################################
 resource "local_file" "ansible_inventory" {
-  provider = aws.cloudgate
+  
   content = templatefile("${path.module}/templates/cloudgate_inventory.tpl",
     {
       cloudgate_proxy_private_ips = aws_instance.cloudgate_proxy.*.private_ip
@@ -134,7 +134,7 @@ resource "local_file" "ansible_inventory" {
 ## Generation of Cloudgate SSH config file for ProxyJump
 ######################################################
 resource "local_file" "cloudgate_ssh_config" {
-  provider = aws.cloudgate
+
   content = templatefile("${path.module}/templates/cloudgate_ssh_config.tpl",
   {
     cloudgate_proxy_private_ips = aws_instance.cloudgate_proxy.*.private_ip
