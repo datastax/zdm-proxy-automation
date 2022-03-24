@@ -18,3 +18,6 @@ proxy_query_port: 9042
 proxy_metrics_port: 14001
 
 #max_clients_threshold:
+
+#dual_reads_enabled:
+#async_reads_on_secondary:

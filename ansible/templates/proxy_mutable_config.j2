@@ -29,3 +29,10 @@ ENABLE_METRICS={{ enable_metrics }}
 {% if ( max_clients_threshold is defined ) %}
 MAX_CLIENTS_THRESHOLD={{ max_clients_threshold }}
 {% endif %}
+
+{% if ( dual_reads_enabled is defined ) %}
+DUAL_READS_ENABLED={{ dual_reads_enabled }}
+{% endif %}
+{% if ( async_reads_on_secondary is defined ) %}
+ASYNC_READS_ON_SECONDARY={{ async_reads_on_secondary }}
+{% endif %}
