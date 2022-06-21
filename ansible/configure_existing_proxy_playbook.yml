@@ -1,4 +1,18 @@
 ---
+- name: Install Docker Proxy module
+  hosts: proxies
+  become: yes
+
+  tasks:
+    - name: Uninstall incompatible Docker-py Module
+      become: no
+      pip:
+        name: docker-py
+        state: absent
+
+    - name: Install Docker Module for Python
+      pip:
+        name: docker
 
 - name: Create proxy configuration env file based on the latest configuration
   hosts: proxies
