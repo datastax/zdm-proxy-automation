@@ -5,7 +5,10 @@
 #origin_cassandra_username: < Origin username. Required. If Origin is an Astra cluster, this is the clientID of a role with appropriate permissions (see docs)>
 #origin_cassandra_password: < Origin password. Required. If Origin is an Astra cluster, this is the client secret of the same role as above >
 
-# Set the following two parameters only if Origin is an Astra cluster
+# Set the following parameter only if Origin is an Astra cluster and you already have its secure connect bundle.
+#origin_secure_connect_bundle_path_name: <path and filename of the secure connect bundle zip file for Origin >
+
+# Set the following two parameters only if Origin is an Astra cluster and you would like the automation to download the secure connect bundle automatically
 #origin_astra_db_id: <cluster id of the Origin Astra cluster>
 #origin_astra_token: <token of the same role as above >
 
@@ -19,7 +22,10 @@
 #target_cassandra_username: < Target username. Required. If Target is an Astra cluster, this is the clientID of a read-only role >
 #target_cassandra_password: < Target password. Required. If Target is an Astra cluster, this is the client secret of the same role as above >
 
-# Set the following two parameters only if Target is an Astra cluster
+# Set the following parameter only if Target is an Astra cluster and you already have its secure connect bundle.
+#target_secure_connect_bundle_path_name: <path and filename of the secure connect bundle zip file for Target >
+
+# Set the following two parameters only if Target is an Astra cluster and you would like the automation to download the secure connect bundle automatically
 #target_astra_db_id: <cluster id of the Target Astra cluster>
 #target_astra_token: <token of the same role as above >
 

@@ -38,3 +38,6 @@ override.tf.json
 /orchestration-scripts/setup_ansible_control_host.sh
 /ansible/cloudgate_inventory
 /orchestration-scripts/my_ssh_test/
+/ansible/cloudgate_ssh_config
+/terraform/aws/self-contained-deployment-root-aws/cloudgate_output.txt
+/terraform/aws/self-contained-deployment-root-aws/cloudgate_ssh_config

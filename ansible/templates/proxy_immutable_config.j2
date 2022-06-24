@@ -10,8 +10,8 @@ PROXY_ADDRESSES={{ proxy_address_list|join(',') }}
 {% if ( origin_cassandra_contact_points is defined ) %}
 ORIGIN_CASSANDRA_CONTACT_POINTS={{ origin_cassandra_contact_points }}
 ORIGIN_CASSANDRA_PORT={{ origin_cassandra_port }}
-{% elif ( origin_scb_downloaded is defined and origin_scb_downloaded == 'success' ) %}
-ORIGIN_CASSANDRA_SECURE_CONNECT_BUNDLE_PATH={{ shared_assets_dir_path_name }}/{{ origin_scb_dir_name }}/origin_scb_{{ origin_astra_db_id }}.zip
+{% elif ( ( origin_scb_downloaded is defined and origin_scb_downloaded == 'success' ) or ( origin_scb_provided is defined and origin_scb_provided == 'success' ) )%}
+ORIGIN_CASSANDRA_SECURE_CONNECT_BUNDLE_PATH={{ shared_assets_dir_path_name }}/origin_scb.zip
 {% endif %}
 {% if ( origin_datacenter is defined ) %}
 ORIGIN_DATACENTER={{ origin_datacenter }}
@@ -20,8 +20,8 @@ ORIGIN_DATACENTER={{ origin_datacenter }}
 {% if ( target_cassandra_contact_points is defined and target_cassandra_port is defined ) %}
 TARGET_CASSANDRA_CONTACT_POINTS={{ target_cassandra_contact_points }}
 TARGET_CASSANDRA_PORT={{ target_cassandra_port }}
-{% elif ( target_scb_downloaded is defined and target_scb_downloaded == 'success' ) %}
-TARGET_CASSANDRA_SECURE_CONNECT_BUNDLE_PATH={{ shared_assets_dir_path_name }}/{{ target_scb_dir_name }}/target_scb_{{ target_astra_db_id }}.zip
+{% elif ( target_scb_downloaded is defined and target_scb_downloaded == 'success' ) or ( target_scb_provided is defined and target_scb_provided == 'success' ) %}
+TARGET_CASSANDRA_SECURE_CONNECT_BUNDLE_PATH={{ shared_assets_dir_path_name }}/target_scb.zip
 {% endif %}
 {% if ( target_datacenter is defined ) %}
 TARGET_DATACENTER={{ target_datacenter }}
