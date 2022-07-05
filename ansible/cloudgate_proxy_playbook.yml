@@ -34,6 +34,31 @@
       pip:
         name: docker
 
+- name: Clean up any previous installations on proxy hosts
+  hosts: proxies
+  become: yes
+  vars_files:
+    - vars/proxy_container.yml
+    - vars/playbook_internal_config.yml
+
+  tasks:
+    - name: Remove shared asset directory if it already exists
+      file:
+        path: "{{ proxy_home_dir }}/{{ shared_assets_dir_name }}"
+        state: absent
+    - name: Remove configuration fragment directory if it already exists
+      file:
+        path: "{{ proxy_home_dir }}/{{ proxy_config_fragments_dir_name }}"
+        state: absent
+    - name: Remove environment configuration file if it already exists
+      file:
+        path: "{{ proxy_home_dir }}/{{ proxy_environment_config_file_name }}"
+        state: absent
+    - name: Remove any existing proxy container
+      docker_container:
+        name: "{{ cloudgate_proxy_container_name }}"
+        state: absent
+
 - name: Create directory to share assets between host and container
   hosts: proxies
   vars_files:
@@ -42,7 +67,7 @@
   tasks:
     - name: Create directory
       file:
-        path: "{{ shared_assets_dir_path_name }}"
+        path: "{{ proxy_home_dir }}/{{ shared_assets_dir_name }}"
         state: directory
 
 - name: If Origin is Astra and a Secure Connect Bundle was provided, make it available to all proxies
@@ -57,8 +82,8 @@
       vars:
         - secure_connect_bundle_path_name: "{{ origin_secure_connect_bundle_path_name }}"
         - astra_db_id: "{{ origin_astra_db_id }}"
-        - scb_filename: "{{ origin_scb_filename }}"
-        - shared_assets_dir: "{{ shared_assets_dir_path_name }}"
+        - scb_filename: "{{ origin_scb_file_name }}"
+        - shared_assets_dir: "{{ proxy_home_dir }}/{{ shared_assets_dir_name }}"
       when:
         - origin_secure_connect_bundle_path_name is defined
         - origin_secure_connect_bundle_path_name | length > 0
@@ -76,8 +101,8 @@
         - astra_api_base_url: "{{ origin_astra_api_base_url }}"
         - astra_db_id: "{{ origin_astra_db_id }}"
         - astra_token: "{{ origin_astra_token }}"
-        - scb_filename: "{{ origin_scb_filename }}"
-        - shared_assets_dir: "{{ shared_assets_dir_path_name }}"
+        - scb_filename: "{{ origin_scb_file_name }}"
+        - shared_assets_dir: "{{ proxy_home_dir }}/{{ shared_assets_dir_name }}"
       when:
         - origin_astra_token is defined
         - origin_astra_token | length > 0
@@ -98,8 +123,8 @@
       vars:
         - secure_connect_bundle_path_name: "{{ target_secure_connect_bundle_path_name }}"
         - astra_db_id: "{{ target_astra_db_id }}"
-        - scb_filename: "{{ target_scb_filename }}"
-        - shared_assets_dir: "{{ shared_assets_dir_path_name }}"
+        - scb_filename: "{{ target_scb_file_name }}"
+        - shared_assets_dir: "{{ proxy_home_dir }}/{{ shared_assets_dir_path_name }}"
       when:
         - target_secure_connect_bundle_path_name is defined
         - target_secure_connect_bundle_path_name | length > 0
@@ -117,8 +142,8 @@
         - astra_api_base_url: "{{ target_astra_api_base_url }}"
         - astra_db_id: "{{ target_astra_db_id }}"
         - astra_token: "{{ target_astra_token }}"
-        - scb_filename: "{{ target_scb_filename }}"
-        - shared_assets_dir: "{{ shared_assets_dir_path_name }}"
+        - scb_filename: "{{ target_scb_file_name }}"
+        - shared_assets_dir: "{{ proxy_home_dir }}/{{ shared_assets_dir_name }}"
       when:
         - target_astra_token is defined
         - target_astra_token | length > 0
@@ -133,28 +158,39 @@
     - vars/playbook_internal_config.yml
 
   tasks:
-    - name: Copy Origin TLS-related files to shared asset directory
-      include_tasks: tasks/transfer_tls_files_for_cluster.yml
+    - name: Copy Origin TLS-related files to shared asset directory for proxy-to-Origin TLS encryption
+      include_tasks: tasks/transfer_tls_files.yml
       vars:
         - src_tls_dir_path: "{{ origin_tls_user_dir_path_name }}"
-        - dest_tls_dir_path: "{{ shared_assets_dir_path_name }}/{{ origin_tls_proxy_dir_name }}"
-        - server_ca_filename: "{{ origin_tls_server_ca_filename | default('') }}"
-        - client_cert_filename: "{{ origin_tls_client_cert_filename | default('') }}"
-        - client_key_filename: "{{ origin_tls_client_key_filename | default('') }}"
+        - dest_tls_dir_path: "{{ proxy_home_dir }}/{{ shared_assets_dir_name }}/{{ origin_tls_dest_dir_name }}"
+        - ca_filename: "{{ origin_tls_server_ca_filename | default('') }}"
+        - cert_filename: "{{ origin_tls_client_cert_filename | default('') }}"
+        - key_filename: "{{ origin_tls_client_key_filename | default('') }}"
       when:
         - origin_tls_user_dir_path_name is defined
         - origin_tls_user_dir_path_name | length > 0
-    - name: Copy Target TLS-related files to shared asset directory
-      include_tasks: tasks/transfer_tls_files_for_cluster.yml
+    - name: Copy Target TLS-related files to shared asset directory for proxy-to-Target TLS encryption
+      include_tasks: tasks/transfer_tls_files.yml
       vars:
         - src_tls_dir_path: "{{ target_tls_user_dir_path_name }}"
-        - dest_tls_dir_path: "{{ shared_assets_dir_path_name }}/{{ target_tls_proxy_dir_name }}"
-        - server_ca_filename: "{{ target_tls_server_ca_filename | default('') }}"
-        - client_cert_filename: "{{ target_tls_client_cert_filename | default('') }}"
-        - client_key_filename: "{{ target_tls_client_key_filename | default('') }}"
+        - dest_tls_dir_path: "{{ proxy_home_dir }}/{{ shared_assets_dir_name }}/{{ target_tls_dest_dir_name }}"
+        - ca_filename: "{{ target_tls_server_ca_filename | default('') }}"
+        - cert_filename: "{{ target_tls_client_cert_filename | default('') }}"
+        - key_filename: "{{ target_tls_client_key_filename | default('') }}"
       when:
         - target_tls_user_dir_path_name is defined
         - target_tls_user_dir_path_name | length > 0
+    - name: Copy Proxy TLS-related files to shared asset directory for application-to-proxy TLS encryption
+      include_tasks: tasks/transfer_tls_files.yml
+      vars:
+        - src_tls_dir_path: "{{ proxy_tls_user_dir_path_name }}"
+        - dest_tls_dir_path: "{{ proxy_home_dir }}/{{ shared_assets_dir_name }}/{{ proxy_tls_dest_dir_name }}"
+        - ca_filename: "{{ proxy_tls_server_ca_filename | default('') }}"
+        - cert_filename: "{{ proxy_tls_server_cert_filename | default('') }}"
+        - key_filename: "{{ proxy_tls_server_key_filename | default('') }}"
+      when:
+        - proxy_tls_user_dir_path_name is defined
+        - proxy_tls_user_dir_path_name | length > 0
 
 - name: Create proxy configuration env file
   hosts: proxies
@@ -167,20 +203,20 @@
   tasks:
     - name: Create configuration fragment directory
       file:
-        path: "{{ proxy_config_fragments_dir_path_name }}"
+        path: "{{ proxy_home_dir }}/{{ proxy_config_fragments_dir_name }}"
         state: directory
     - name: Generate env var file from template for immutable configuration
       template:
         src: "proxy_immutable_config.j2"
-        dest: "{{ proxy_config_fragments_dir_path_name }}/proxy_immutable_config.env"
+        dest: "{{ proxy_home_dir }}/{{ proxy_config_fragments_dir_name }}/{{ proxy_immutable_config_fragment_file_name }}"
     - name: Generate env var file from template for mutable configuration
       template:
         src: "proxy_mutable_config.j2"
-        dest: "{{ proxy_config_fragments_dir_path_name }}/proxy_mutable_config.env"
+        dest: "{{ proxy_home_dir }}/{{ proxy_config_fragments_dir_name }}/{{ proxy_mutable_config_fragment_file_name }}"
     - name: Merge the immutable and mutable configuration files into a single one
       assemble:
-        src: "{{ proxy_config_fragments_dir_path_name }}"
-        dest: /home/ubuntu/proxy_config.env
+        src: "{{ proxy_home_dir }}/{{ proxy_config_fragments_dir_name }}"
+        dest: "{{ proxy_home_dir }}/{{ proxy_environment_config_file_name }}"
 
 - name: Install Proxy
   hosts: proxies
@@ -200,10 +236,10 @@
       docker_container:
         name: "{{ cloudgate_proxy_container_name }}"
         image: "{{ cloudgate_proxy_image }}"
-        env_file: /home/ubuntu/proxy_config.env
+        env_file: "{{ proxy_home_dir }}/{{ proxy_environment_config_file_name }}"
         mounts:
-          - source: "{{ shared_assets_dir_path_name }}" 
-            target: "{{ shared_assets_dir_path_name }}"
+          - source: "{{ proxy_home_dir }}/{{ shared_assets_dir_name }}"
+            target: "{{ proxy_home_dir }}/{{ shared_assets_dir_name }}"
             type: bind
         network_mode: host
         restart_policy: unless-stopped

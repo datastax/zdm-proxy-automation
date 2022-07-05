@@ -1,30 +1,53 @@
 ---
 ### Important note ###
-### The configuration parameters in this file are only relevant when explicitly configuring TLS for self-managed clusters.
-### Please ignore this file if only using Astra clusters or self-managed clusters that do not have either one-way TLS or Mutual TLS enabled.
+### The configuration parameters in this file for Origin and Target are only relevant when explicitly configuring TLS for self-managed clusters.
+### Please ignore these parameters if only using Astra clusters or self-managed clusters that do not have either one-way TLS or Mutual TLS enabled.
+### To enable application-to-proxy TLS encryption, use the parameters in the third section of this file
 
-### Proxy-to-Origin cluster TLS configuration
+### Proxy-to-Origin cluster TLS configuration. The proxy acts as the TLS client, the Origin cluster acts as the TLS server.
 
-# Path to the directory, on the Ansible Control host, containing all TLS assets (Server CA Cert / Client cert / Client key) for the Origin cluster.
+# Path and name of the user-defined directory, on the Ansible Control host, containing all TLS assets (Server CA Cert / Client cert / Client key) for the Origin cluster.
+# Example: /home/ubuntu/origin_tls_assets
 #origin_tls_user_dir_path_name:
 
-# Origin cluster's Server CA certificate filename. Required for both one-way TLS and Mutual TLS.
+# Origin cluster's Server CA certificate filename (without path). Required for both one-way TLS and Mutual TLS.
 #origin_tls_server_ca_filename:
 
-# Filenames of the Client certificate and Client key that the proxy must present to the Origin cluster to enable TLS client authentication.
+# Filenames (without path) of the Client certificate and Client key that the proxy must present to the Origin cluster to enable TLS client authentication.
 # Only required for Mutual TLS, in which case both must be specified.
 #origin_tls_client_cert_filename:
 #origin_tls_client_key_filename:
 
-### Proxy-to-Target cluster TLS configuration
+### Proxy-to-Target cluster TLS configuration. The proxy acts as the TLS client, the Target cluster acts as the TLS server.
 
-# Path to the directory, on the Ansible Control host, containing all TLS assets (Server CA Cert / Client cert / Client key) for the Target cluster
+# Path and name of the user-defined directory, on the Ansible Control host, containing all TLS assets (Server CA Cert / Client cert / Client key) for the Target cluster
+# Example: /home/ubuntu/target_tls_assets
 #target_tls_user_dir_path_name:
 
-# Target cluster's Server CA certificate filename. Required for both one-way TLS and Mutual TLS.
+# Target cluster's Server CA certificate filename (without path). Required for both one-way TLS and Mutual TLS.
 #target_tls_server_ca_filename:
 
-# Filenames of the Client certificate and Client key that the proxy must present to the Target cluster to enable TLS client authentication.
+# Filenames (without path) of the Client certificate and Client key that the proxy must present to the Target cluster to enable TLS client authentication.
 # Only required for Mutual TLS, in which case both must be specified.
 #target_tls_client_cert_filename:
 #target_tls_client_key_filename:
+
+### Application-to-proxy TLS configuration. The application acts as the TLS client, the proxy acts as the TLS server.
+
+# Path and name of the directory, on the Ansible control host, containing all TLS assets (CA cert / Server cert / Server key) for application-to-proxy TLS encryption
+# Example: /home/ubuntu/proxy_tls_assets
+#proxy_tls_user_dir_path_name:
+
+# Proxy CA certificate filename (without path). This is the CA certificate needed by the proxy to enable TLS encryption between itself and the application.
+# Required for both one-way TLS and Mutual TLS.
+#proxy_tls_server_ca_filename:
+
+# Filenames (without path) of the server certificate and server key needed by the proxy to enable TLS encryption between itself and the application.
+# Required for both one-way TLS and Mutual TLS.
+#proxy_tls_server_cert_filename:
+#proxy_tls_server_key_filename:
+
+# Boolean value indicating whether mutual TLS (mTLS) should be enabled between the application and the proxy. Defaults to false.
+#proxy_tls_require_client_auth:
+
+

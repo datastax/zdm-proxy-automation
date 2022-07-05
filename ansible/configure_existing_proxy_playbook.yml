@@ -25,11 +25,11 @@
     - name: Generate env var file from template for mutable configuration
       template:
         src: "proxy_mutable_config.j2"
-        dest: "{{ proxy_config_fragments_dir_path_name }}/proxy_mutable_config.env"
+        dest: "{{ proxy_home_dir }}/{{ proxy_config_fragments_dir_name }}/{{ proxy_mutable_config_fragment_file_name }}"
     - name: Merge the immutable and mutable configuration files into a single one
       assemble:
-        src: "{{ proxy_config_fragments_dir_path_name }}"
-        dest: /home/ubuntu/proxy_config.env
+        src: "{{ proxy_home_dir }}/{{ proxy_config_fragments_dir_name }}"
+        dest: "{{ proxy_home_dir }}/{{ proxy_environment_config_file_name }}"
 
 - name: Configure and restart proxy
   hosts: proxies
@@ -45,10 +45,10 @@
       docker_container:
         name: "{{ cloudgate_proxy_container_name }}"
         image: "{{ cloudgate_proxy_image }}"
-        env_file: /home/ubuntu/proxy_config.env
+        env_file: "{{ proxy_home_dir }}/{{ proxy_environment_config_file_name }}"
         mounts:
-          - source: "{{ shared_assets_dir_path_name }}"
-            target: "{{ shared_assets_dir_path_name }}"
+          - source: "{{ proxy_home_dir }}/{{ shared_assets_dir_name }}"
+            target: "{{ proxy_home_dir }}/{{ shared_assets_dir_name }}"
             type: bind
         network_mode: host
         restart_policy: unless-stopped

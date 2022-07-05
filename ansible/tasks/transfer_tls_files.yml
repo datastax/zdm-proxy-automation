@@ -1,0 +1,28 @@
+- name: Create TLS directory
+  file:
+    path: "{{ dest_tls_dir_path }}"
+    state: directory
+
+- name: Copy CA
+  copy:
+    src: "{{ src_tls_dir_path }}/{{ ca_filename }}"
+    dest: "{{ dest_tls_dir_path }}/{{ ca_filename }}"
+  when:
+    - ca_filename is defined
+    - ca_filename | length > 0
+
+- name: Copy Certificate
+  copy:
+    src: "{{ src_tls_dir_path }}/{{ cert_filename }}"
+    dest: "{{ dest_tls_dir_path }}/{{ cert_filename }}"
+  when:
+    - cert_filename is defined
+    - cert_filename | length > 0
+
+- name: Copy Key
+  copy:
+    src: "{{ src_tls_dir_path }}/{{ key_filename }}"
+    dest: "{{ dest_tls_dir_path }}/{{ key_filename }}"
+  when:
+    - key_filename is defined
+    - key_filename | length > 0

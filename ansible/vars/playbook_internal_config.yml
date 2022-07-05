@@ -1,13 +1,21 @@
 ---
-proxy_config_fragments_dir_path_name: /home/ubuntu/proxy_config_fragments
+proxy_home_dir: /home/ubuntu
 
-shared_assets_dir_path_name: /home/ubuntu/shared_assets
+proxy_config_fragments_dir_name: proxy_config_fragments
 
-origin_scb_filename: origin_scb
-target_scb_filename: target_scb
+shared_assets_dir_name: shared_assets
+
+proxy_mutable_config_fragment_file_name: proxy_mutable_config.env
+proxy_immutable_config_fragment_file_name: proxy_immutable_config.env
+proxy_environment_config_file_name: proxy_config.env
+
+origin_scb_file_name: origin_scb
+target_scb_file_name: target_scb
 
 origin_astra_api_base_url: https://api.astra.datastax.com/
 target_astra_api_base_url: https://api.astra.datastax.com/
 
-origin_tls_proxy_dir_name: origin_tls
-target_tls_proxy_dir_name: target_tls
+origin_tls_dest_dir_name: origin_tls
+target_tls_dest_dir_name: target_tls
+proxy_tls_dest_dir_name: proxy_tls
+
