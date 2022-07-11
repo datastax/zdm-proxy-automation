@@ -124,7 +124,7 @@
         - secure_connect_bundle_path_name: "{{ target_secure_connect_bundle_path_name }}"
         - astra_db_id: "{{ target_astra_db_id }}"
         - scb_filename: "{{ target_scb_file_name }}"
-        - shared_assets_dir: "{{ proxy_home_dir }}/{{ shared_assets_dir_path_name }}"
+        - shared_assets_dir: "{{ proxy_home_dir }}/{{ shared_assets_dir_name }}"
       when:
         - target_secure_connect_bundle_path_name is defined
         - target_secure_connect_bundle_path_name | length > 0
