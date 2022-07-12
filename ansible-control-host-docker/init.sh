@@ -1,13 +1,13 @@
 #!/bin/bash
 
-cd ~/zdm-proxy-ssh-key-dir/ || return
+cd /home/ubuntu/zdm-proxy-ssh-key-dir/ || return
 
 for f in *
 do
   echo "Copying key $f to the SSH directory and adding it to the SSH config file"
   chmod 400 "$f"
-  sudo cp "$f" ~/.ssh/
-  printf "# proxy instances \nHost 172.18.*\n  IdentityFile /home/ubuntu/.ssh/%s\n" "$f" >> .ssh/config
+  sudo cp "$f" /home/ubuntu/.ssh/
+  printf "# proxy instances \nHost 172.18.*\n  IdentityFile /home/ubuntu/.ssh/%s\n" "$f" >> /home/ubuntu/.ssh/config
   echo
 done
 
