@@ -23,14 +23,16 @@ RUN usermod -aG sudo ubuntu
 USER ubuntu
 WORKDIR /home/ubuntu/
 
+RUN mkdir zdm-proxy-ssh-key-dir/
+
 USER root
 RUN echo 'ubuntu ALL=NOPASSWD: ALL' >> /etc/sudoers
 
 COPY cloudgate-automation-deploy-key .ssh/
 RUN ls -l .ssh/
 RUN chmod 400 .ssh/cloudgate-automation-deploy-key
-RUN echo "# deploy key \nHost cloudgate-automation github.com\n  Hostname github.com\n  IdentityFile /home/ubuntu/.ssh/cloudgate-automation-deploy-key\n"  >> .ssh/config
-RUN chmod 400 .ssh/config
+RUN printf "# deploy key \nHost cloudgate-automation github.com\n  Hostname github.com\n  IdentityFile /home/ubuntu/.ssh/cloudgate-automation-deploy-key\n"  >> .ssh/config
+RUN chmod 664 .ssh/config
 RUN chown -R ubuntu:ubuntu .ssh/*
 
 COPY init.sh .
