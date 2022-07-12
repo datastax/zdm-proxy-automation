@@ -1,13 +1,28 @@
 #!/bin/bash
 
+echo "This script requires the common prefix of the private IP addresses of the proxy instances."
+echo "Please enter its value, or simply press ENTER to use the default of 172.18.* :"
+read -r proxy_private_ip_prefix
+
+if [ -z "$proxy_private_ip_prefix" ]
+then
+  proxy_private_ip_prefix="172.18.*"
+fi
+
 cd /home/ubuntu/zdm-proxy-ssh-key-dir/ || return
 
 for f in *
 do
-  echo "Copying key $f to the SSH directory and adding it to the SSH config file"
+  echo "Copying key $f to the SSH directory"
   chmod 400 "$f"
   sudo cp "$f" /home/ubuntu/.ssh/
-  printf "# proxy instances \nHost 172.18.*\n  IdentityFile /home/ubuntu/.ssh/%s\n" "$f" >> /home/ubuntu/.ssh/config
+  if pcregrep -Mq "Host $proxy_private_ip_prefix\n  IdentityFile /home/ubuntu/.ssh/$f" /home/ubuntu/.ssh/config
+  then
+    echo "Entry for key $f and proxy IP prefix $proxy_private_ip_prefix already exists in the SSH config file"
+  else
+    echo "Adding an entry for key $f and proxy IP prefix $proxy_private_ip_prefix to the SSH config file"
+    printf "# proxy instances \nHost $proxy_private_ip_prefix\n  IdentityFile /home/ubuntu/.ssh/%s\n" "$f" >> /home/ubuntu/.ssh/config
+  fi
   echo
 done
 

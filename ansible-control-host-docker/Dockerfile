@@ -7,7 +7,8 @@ RUN apt-get update && apt-get install -y software-properties-common \
     vim \
     nano \
     git \
-    sudo
+    sudo \
+    pcregrep
 
 RUN add-apt-repository ppa:ansible/ansible && apt-get update && apt-get install -y \
     ansible \
