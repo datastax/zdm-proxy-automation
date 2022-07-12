@@ -1,6 +1,10 @@
 #!/bin/bash
 
 SSH_KEY_DIR="/home/ubuntu/zdm-proxy-ssh-key-dir/"
+echo "****************************************************************** "
+echo "*** This script initializes the Ansible Control Host container *** "
+echo "****************************************************************** "
+echo
 
 echo "Please enter the common prefix of the private IP addresses of the proxy instances. Simply press ENTER to use the default of 172.18.* "
 read -r PROXY_PRIVATE_IP_PREFIX
@@ -81,7 +85,10 @@ sudo chown ubuntu:ubuntu /home/ubuntu/$ANSIBLE_INVENTORY
 mv /home/ubuntu/$ANSIBLE_INVENTORY /home/ubuntu/cloudgate-automation/ansible
 echo
 
+echo "************************************************************************ "
 echo "*** The Ansible container is now fully initialized and ready to use. *** "
+echo "************************************************************************ "
+echo
 echo "You can proceed to configure and run the Ansible playbooks to deploy and manage the proxies."
 echo "As a reminder, your Ansible inventory file is called $ANSIBLE_INVENTORY and is now located in cloudgate-automation/ansible"
 
