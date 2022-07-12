@@ -1,15 +1,21 @@
 #!/bin/bash
 
-for f in ~/zdm-proxy-ssh-key-dir/*
+cd ~/zdm-proxy-ssh-key-dir/ || return
+
+for f in *
 do
   echo "Copying key $f to the SSH directory and adding it to the SSH config file"
   chmod 400 "$f"
-  cp ~/zdm-proxy-ssh-key-dir/"$f" ~/.ssh/
+  sudo cp "$f" ~/.ssh/
   printf "# proxy instances \nHost 172.18.*\n  IdentityFile /home/ubuntu/.ssh/%s\n" "$f" >> .ssh/config
+  echo
 done
 
 echo "Changing ownership of all keys to user ubuntu"
 sudo chown -R ubuntu:ubuntu /home/ubuntu/.ssh/
+echo
+
+cd
 
 echo "Cloning the automation git repo"
 git clone git@cloudgate-automation:riptano/cloudgate-automation.git
