@@ -81,8 +81,8 @@ printf "[ssh_connection]\nssh_args = -o StrictHostKeyChecking=no\n" > ansible.cf
 echo
 
 echo "Making the inventory file available to Ansible"
-sudo chown ubuntu:ubuntu /home/ubuntu/$ANSIBLE_INVENTORY
-mv /home/ubuntu/$ANSIBLE_INVENTORY /home/ubuntu/cloudgate-automation/ansible
+sudo chown ubuntu:ubuntu $ANSIBLE_INVENTORY
+mv $ANSIBLE_INVENTORY /home/ubuntu/cloudgate-automation/ansible
 echo
 
 echo "************************************************************************ "
