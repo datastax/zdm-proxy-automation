@@ -36,9 +36,9 @@ RUN printf "# deploy key \nHost cloudgate-automation github.com\n  Hostname gith
 RUN chmod 664 .ssh/config
 RUN chown -R ubuntu:ubuntu .ssh/*
 
-COPY init.sh .
-RUN chown ubuntu:ubuntu init.sh
-RUN chmod +x init.sh
+COPY init_container_internal.sh .
+RUN chown ubuntu:ubuntu init_container_internal.sh
+RUN chmod +x init_container_internal.sh
 
 USER ubuntu
 
