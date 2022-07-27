@@ -74,7 +74,7 @@ do
   esac
 done
 
-PROXY_IP_ADDRESS_PREFIX=$(PROXY_IP_ADDRESS_PREFIX_RAW | xargs)
+PROXY_IP_ADDRESS_PREFIX="$(echo -e "$PROXY_IP_ADDRESS_PREFIX_RAW" | tr -d '[:space:]')"
 if [ -z "$PROXY_IP_ADDRESS_PREFIX" ]
 then
   echo "ERROR: Missing mandatory parameter proxy_ip_address_prefix"
@@ -82,7 +82,7 @@ then
   exit 1
 fi
 
-ANSIBLE_INVENTORY_NAME=$($ANSIBLE_INVENTORY_NAME_RAW | xargs)
+ANSIBLE_INVENTORY_NAME="$(echo -e "$ANSIBLE_INVENTORY_NAME_RAW" | tr -d '[:space:]')"
 if [ -z "$ANSIBLE_INVENTORY_NAME" ]
 then
   echo "ERROR: Missing mandatory parameter ansible_inventory_name"
