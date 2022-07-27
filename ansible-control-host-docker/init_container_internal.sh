@@ -27,9 +27,10 @@ print_help_message () {
 # Exit if any command fails
 set -e
 SSH_KEY_DIR="/home/ubuntu/zdm-proxy-ssh-key-dir/"
-echo "****************************************************************** "
-echo "*** This script initializes the Ansible Control Host container *** "
-echo "****************************************************************** "
+echo
+echo
+echo "***** Configuring the newly created container ***** "
+echo
 echo
 
 # Parse named command-line arguments
@@ -50,11 +51,11 @@ while :
 do
   case "$1" in
     -p | --proxy_ip_address_prefix )
-      PROXY_IP_ADDRESS_PREFIX="$2"
+      PROXY_IP_ADDRESS_PREFIX_RAW="$2"
       shift 2
       ;;
     -i | --ansible_inventory_name )
-      ANSIBLE_INVENTORY_NAME="$2"
+      ANSIBLE_INVENTORY_NAME_RAW="$2"
       shift 2
       ;;
     -h | --help )
@@ -73,6 +74,7 @@ do
   esac
 done
 
+PROXY_IP_ADDRESS_PREFIX="$(PROXY_IP_ADDRESS_PREFIX_RAW | xargs)"
 if [ -z "$PROXY_IP_ADDRESS_PREFIX" ]
 then
   echo "ERROR: Missing mandatory parameter proxy_ip_address_prefix"
@@ -80,6 +82,7 @@ then
   exit 1
 fi
 
+ANSIBLE_INVENTORY_NAME="$($ANSIBLE_INVENTORY_NAME_RAW | xargs)"
 if [ -z "$ANSIBLE_INVENTORY_NAME" ]
 then
   echo "ERROR: Missing mandatory parameter ansible_inventory_name"
