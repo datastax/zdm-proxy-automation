@@ -102,8 +102,8 @@ if [ "$(ls -A $SSH_KEY_DIR)" ]; then
      then
        echo "Entry for key $KEY_FILE and proxy IP prefix $PROXY_IP_ADDRESS_PREFIX already exists in the SSH config file"
      else
-       echo "Adding an entry for key $f and proxy IP prefix $PROXY_IP_ADDRESS_PREFIX to the SSH config file"
-       printf "# proxy instances \nHost $PROXY_IP_ADDRESS_PREFIX\n  IdentityFile /home/ubuntu/.ssh/%s\n" "$f" >> /home/ubuntu/.ssh/config
+       echo "Adding an entry for key $KEY_FILE and proxy IP prefix $PROXY_IP_ADDRESS_PREFIX to the SSH config file"
+       printf "# proxy instances \nHost $PROXY_IP_ADDRESS_PREFIX\n  IdentityFile /home/ubuntu/.ssh/%s\n" "$KEY_FILE" >> /home/ubuntu/.ssh/config
      fi
      echo
    done
