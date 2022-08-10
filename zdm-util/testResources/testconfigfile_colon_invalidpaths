@@ -1,0 +1,3 @@
+ssh_key_path_on_host: /home/invalid_dir/invalid_ssh_key
+proxy_ip_address_prefix: 172.18.*
+ansible_inventory_path_on_host: /home/invalid_dir/invalid_ansible_inventory
