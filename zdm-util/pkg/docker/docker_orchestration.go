@@ -39,7 +39,7 @@ func ValidateDockerPrerequisites() error {
 	return nil
 }
 
-func CreateAndInitializeContainer(containerConfig *config.ContainerInitConfig) error {
+func CreateAndInitializeContainer(containerConfig *config.ContainerInitConfig, userInputFile *os.File) error {
 
 	orchestrator, err := createDockerOrchestrator()
 	if err != nil {
@@ -64,13 +64,13 @@ func CreateAndInitializeContainer(containerConfig *config.ContainerInitConfig) e
 			fmt.Printf("The container %v already exists and is in running state. \n\n", dockerContainerName)
 			fmt.Printf("If you are happy to use the existing container, this utility will exit. \n")
 			fmt.Printf("Otherwise, this utility will destroy the existing container and recreate it from scratch. Note: in this case, all data and configuration in the container will be lost. \n\n")
-			ynUseExistingContainer := userinteraction.YesNoPrompt("Do you wish to use this existing container?", false, false)
+			ynUseExistingContainer := userinteraction.YesNoPrompt("Do you wish to use this existing container?", false, false, userInputFile, 0)
 			if ynUseExistingContainer {
 				fmt.Printf("You decided to use the existing container. \n")
 				return nil
 			} else {
 				fmt.Println()
-				ynDestroyAndRecreateContainer := userinteraction.YesNoPrompt("You decided to remove and recreate the container. All its data and configuration will be lost. Are you sure you want to proceed?", true, false)
+				ynDestroyAndRecreateContainer := userinteraction.YesNoPrompt("You decided to remove and recreate the container. All its data and configuration will be lost. Are you sure you want to proceed?", true, false, userInputFile, 0)
 				if ynDestroyAndRecreateContainer {
 					err = orchestrator.removeExistingContainer(containerId)
 					if err != nil {
@@ -87,7 +87,6 @@ func CreateAndInitializeContainer(containerConfig *config.ContainerInitConfig) e
 		}
 	}
 
-
 	if containerId == "" {
 		containerId, err = orchestrator.createContainer(dockerImageName, dockerContainerName)
 		if err != nil {
@@ -96,7 +95,7 @@ func CreateAndInitializeContainer(containerConfig *config.ContainerInitConfig) e
 		fmt.Printf("Container successfully created with ID %v and name %v \n", containerId, dockerContainerName)
 	}
 
-	if ! isContainerRunning {
+	if !isContainerRunning {
 		if err = orchestrator.startContainer(containerId); err != nil {
 			return fmt.Errorf("unable to start the Docker container with id %v due to %v. \n", containerId, err)
 		}
@@ -175,7 +174,7 @@ func (o *Orchestrator) pullImageIfNotAlreadyPresent(imageName string) error {
 	return nil
 }
 
-func (o *Orchestrator) retrieveExistingContainer(containerName string) (string, bool, error){
+func (o *Orchestrator) retrieveExistingContainer(containerName string) (string, bool, error) {
 	containerFilters := filters.NewArgs()
 	containerFilters.Add("name", containerName)
 	containerListOptions := types.ContainerListOptions{
@@ -204,7 +203,7 @@ func (o *Orchestrator) retrieveExistingContainer(containerName string) (string, 
 
 func (o *Orchestrator) removeExistingContainer(containerId string) error {
 	containerRemoveOptions := types.ContainerRemoveOptions{
-		Force:         true,
+		Force: true,
 	}
 	return o.cli.ContainerRemove(o.ctx, containerId, containerRemoveOptions)
 }

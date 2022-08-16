@@ -17,44 +17,56 @@ const (
 	ProvideValueMessage               = "Please provide a valid value. "
 )
 
-func CreateContainerConfiguration(customConfigFilePath string) (*config.ContainerInitConfig, error) {
+type InteractionOrchestrator struct {
+	containerConfig *config.ContainerInitConfig
+	userInputReader *bufio.Reader
+}
+
+func NewInteractionOrchestrator(reader *bufio.Reader) *InteractionOrchestrator {
+	return &InteractionOrchestrator{
+		containerConfig: nil,
+		userInputReader: reader,
+	}
+}
+
+func (o *InteractionOrchestrator) CreateContainerConfiguration(customConfigFilePath string) (*config.ContainerInitConfig, error) {
 
 	printUtilityGeneralPreamble()
 	var err error
 
-	containerConfig := loadConfigurationFromExistingFile(customConfigFilePath)
+	o.containerConfig = o.loadConfigurationFromExistingFile(customConfigFilePath)
 
 	fmt.Println()
 
-	if !containerConfig.IsFullyPopulated() {
+	if !o.containerConfig.IsFullyPopulated() {
 		printInteractivePreamble()
 
-		err = promptForSshKeyPath(containerConfig)
+		err = o.promptForSshKeyPath()
 		if err != nil {
 			return nil, err
 		}
 		fmt.Println()
 
-		err = promptForProxyPrivateIpAddressPrefix(containerConfig)
+		err = o.promptForProxyPrivateIpAddressPrefix()
 		if err != nil {
 			return nil, err
 		}
 		fmt.Println()
 
-		err = promptForAnsibleInventory(containerConfig)
+		err = o.promptForAnsibleInventory()
 		if err != nil {
 			return nil, err
 		}
 		fmt.Println()
 
-		err = persistCurrentConfigToFile(containerConfig)
+		err = persistCurrentConfigToFile(o.containerConfig)
 		if err != nil {
 			fmt.Printf("The configuration file %v could not be created due to %v. This utility will continue without persisting its configuration. \n", DefaultConfigurationFilePath, err)
 		}
 		fmt.Printf("Configuration successfully written to file %v \n", DefaultConfigurationFilePath)
 	}
 
-	return containerConfig, nil
+	return o.containerConfig, nil
 }
 
 func printUtilityGeneralPreamble() {
@@ -64,16 +76,17 @@ func printUtilityGeneralPreamble() {
 	fmt.Println()
 }
 
-func loadConfigurationFromExistingFile(customConfigFilePath string) *config.ContainerInitConfig {
+func (o *InteractionOrchestrator) loadConfigurationFromExistingFile(customConfigFilePath string) *config.ContainerInitConfig {
 
 	var containerConfig *config.ContainerInitConfig
 	existingConfigFilePath := customConfigFilePath
 
 	if existingConfigFilePath == "" {
 		// look if a conf file already exists in the current directory
-		if config.ValidateFilePath(DefaultConfigurationFilePath) {
-			ynUseDefaultFile := YesNoPrompt(fmt.Sprintf("Found existing configuration file %v. Do you wish to use this file?", DefaultConfigurationFilePath), true, true)
-			if ynUseDefaultFile {
+		if config.ValidateFilePathSilently(DefaultConfigurationFilePath) {
+			ynUseDefaultFile, err := YesNoPrompt(fmt.Sprintf("Found existing configuration file %v. Do you wish to use this file?", DefaultConfigurationFilePath),
+				true, true, o.userInputReader, DefaultMaxAttempts)
+			if err == nil && ynUseDefaultFile {
 				existingConfigFilePath = DefaultConfigurationFilePath
 			}
 		}
@@ -81,7 +94,11 @@ func loadConfigurationFromExistingFile(customConfigFilePath string) *config.Cont
 
 	if existingConfigFilePath != "" {
 		containerConfig = populateConfigFromConfigurationFile(existingConfigFilePath)
-		if !containerConfig.IsFullyPopulated() && !containerConfig.IsEmpty(){
+		if containerConfig.IsEmpty() {
+			fmt.Println()
+			fmt.Printf("No configuration properties were specified.\n")
+		}
+		if !containerConfig.IsFullyPopulated() && !containerConfig.IsEmpty() {
 			fmt.Println()
 			fmt.Println("The configuration file was incomplete or not fully valid. ")
 		}
@@ -104,14 +121,13 @@ func populateConfigFromConfigurationFile(existingConfigurationFilePath string) *
 func printInteractivePreamble() {
 	fmt.Printf("***** Running this utility in interactive mode. ***** \n")
 	fmt.Printf("The results will be saved to a configuration file called %v and located in the current execution directory. This file can be passed to this utility if it needs to be run again. \n", DefaultConfigurationFilePath)
-	fmt.Println()
 }
 
-func promptForSshKeyPath(containerConfig *config.ContainerInitConfig) error {
-	if _, found := containerConfig.Properties[config.SshKeyPathOnHostPropertyName]; !found {
+func (o *InteractionOrchestrator) promptForSshKeyPath() error {
+	if _, found := o.containerConfig.Properties[config.SshKeyPathOnHostPropertyName]; !found {
 
 		sshKeyPathOnHost := StringPrompt("Please enter the path and name of the SSH private key to access the proxy hosts",
-			RequiredParameterNoDefaultMessage+ProvideValueMessage, false, DefaultMaxAttempts, config.ValidateFilePath)
+			RequiredParameterNoDefaultMessage+ProvideValueMessage, false, DefaultMaxAttempts, config.ValidateFilePath, o.userInputReader)
 
 		if sshKeyPathOnHost == "" {
 			fmt.Println()
@@ -120,36 +136,36 @@ func promptForSshKeyPath(containerConfig *config.ContainerInitConfig) error {
 		}
 
 		if absoluteSshKeyPathOnHost, ok := config.ConvertToAbsolutePath(sshKeyPathOnHost); ok {
-			containerConfig.AddProperty(config.SshKeyPathOnHostPropertyName, absoluteSshKeyPathOnHost)
+			o.containerConfig.AddProperty(config.SshKeyPathOnHostPropertyName, absoluteSshKeyPathOnHost)
 		}
 	}
 	return nil
 }
 
-func promptForProxyPrivateIpAddressPrefix(containerConfig *config.ContainerInitConfig) error {
-	if _, found := containerConfig.Properties[config.ProxyIpAddressPrefixPropertyName]; !found {
+func (o *InteractionOrchestrator) promptForProxyPrivateIpAddressPrefix() error {
+	if _, found := o.containerConfig.Properties[config.ProxyIpAddressPrefixPropertyName]; !found {
 
 		proxyPrivateIpAddressPrefix := StringPrompt("Please enter the common prefix of the private IP addresses of the proxy hosts (examples: 172.* or 172.18.* or 172.18.10.*)",
 			RequiredParameterNoDefaultMessage+ProvideValueMessage,
-			false, DefaultMaxAttempts, config.ValidateIpAddressPrefix)
+			false, DefaultMaxAttempts, config.ValidateIpAddressPrefix, o.userInputReader)
 
 		if proxyPrivateIpAddressPrefix == "" {
 			fmt.Println()
 			fmt.Println("The common prefix of the private IP addresses of the proxy hosts was not provided or was not valid. " + RequiredParameterNoDefaultMessage)
 			return fmt.Errorf("missing required configuration")
 		}
-		containerConfig.AddProperty(config.ProxyIpAddressPrefixPropertyName, proxyPrivateIpAddressPrefix)
+		o.containerConfig.AddProperty(config.ProxyIpAddressPrefixPropertyName, proxyPrivateIpAddressPrefix)
 	}
 	return nil
 }
 
-func promptForAnsibleInventory(containerConfig *config.ContainerInitConfig) error {
-	if _, found := containerConfig.Properties[config.AnsibleInventoryPathOnHostPropertyName]; !found {
+func (o *InteractionOrchestrator) promptForAnsibleInventory() error {
+	if _, found := o.containerConfig.Properties[config.AnsibleInventoryPathOnHostPropertyName]; !found {
 		ansibleInventoryPathOnHost := ""
-		if ynInventory := YesNoPrompt("Do you have an existing Ansible inventory file?", false, false); ynInventory {
+		if ynInventory, err := YesNoPrompt("Do you have an existing Ansible inventory file?", false, false, o.userInputReader, DefaultMaxAttempts); err == nil && ynInventory {
 			fmt.Println()
 			ansibleInventoryPathOnHost = StringPrompt("Please enter the path and name of your Ansible inventory file. Simply press ENTER if your inventory is "+DefaultAnsibleInventoryFilePath+DefaultAnsibleInventoryFileName,
-				"", true, DefaultMaxAttempts, config.ValidateFilePath)
+				"", true, DefaultMaxAttempts, config.ValidateFilePath, o.userInputReader)
 
 			if ansibleInventoryPathOnHost == "" {
 				if config.ValidateFilePath(DefaultAnsibleInventoryFilePath + DefaultAnsibleInventoryFileName) {
@@ -163,7 +179,7 @@ func promptForAnsibleInventory(containerConfig *config.ContainerInitConfig) erro
 		}
 		if ansibleInventoryPathOnHost == "" {
 			fmt.Println()
-			proxyIpsAddresses, monitoringIpAddress := promptForInventoryFileValues()
+			proxyIpsAddresses, monitoringIpAddress := o.promptForInventoryFileValues()
 
 			err := populateInventoryFile(DefaultAnsibleInventoryFileName, proxyIpsAddresses, monitoringIpAddress)
 			if err != nil {
@@ -177,7 +193,7 @@ func promptForAnsibleInventory(containerConfig *config.ContainerInitConfig) erro
 		}
 
 		if absoluteAnsibleInventoryPathOnHost, ok := config.ConvertToAbsolutePath(ansibleInventoryPathOnHost); ok {
-			containerConfig.AddProperty(config.AnsibleInventoryPathOnHostPropertyName, absoluteAnsibleInventoryPathOnHost)
+			o.containerConfig.AddProperty(config.AnsibleInventoryPathOnHostPropertyName, absoluteAnsibleInventoryPathOnHost)
 		}
 	}
 	return nil
@@ -186,17 +202,17 @@ func promptForAnsibleInventory(containerConfig *config.ContainerInitConfig) erro
 // promptForInventoryFileValues asks the user to provide:
 //  - the IP addresses of their proxy instances (requesting the appropriate minimum based on the type of deployment)
 //  - the IP address of their monitoring instance (optional)
-func promptForInventoryFileValues() ([]string, string) {
+func (o *InteractionOrchestrator) promptForInventoryFileValues() ([]string, string) {
 	fmt.Printf("This utility will create a new inventory file and populate it interactively.\n")
 	fmt.Printf("The file will be called %v and will be located in the current directory \n", DefaultAnsibleInventoryFileName)
 	fmt.Println()
 
-	ynDemoEnv := YesNoPrompt("Is this proxy deployment for local testing and evaluation?", false, false)
+	ynDemoEnv, err := YesNoPrompt("Is this proxy deployment for local testing and evaluation?", false, false, o.userInputReader, DefaultMaxAttempts)
 
-	fmt.Println("You will now be prompted for the private IP addresses of all your proxy instances.")
+	fmt.Printf("\nYou will now be prompted for the private IP addresses of all your proxy instances.\n")
 
 	var minNumberOfProxies int
-	if ynDemoEnv {
+	if err != nil && ynDemoEnv {
 		fmt.Println("At least one proxy instance is required for local testing and evaluation purposes. ")
 		minNumberOfProxies = 1
 	} else {
@@ -206,13 +222,13 @@ func promptForInventoryFileValues() ([]string, string) {
 
 	fmt.Println()
 	fmt.Println("Please enter one address at a time and press ENTER. When you have finished, simply press ENTER. ")
-	proxyIpsAddresses := StringPromptLoopingForMultipleValues("Proxy private IP address", config.ValidateIPAddress)
+	proxyIpsAddresses := StringPromptLoopingForMultipleValues("Proxy private IP address", config.ValidateIPAddress, o.userInputReader)
 	if len(proxyIpsAddresses) < minNumberOfProxies {
 		fmt.Printf("A minimum of %v private IP addresses must be specified\n", minNumberOfProxies)
 	}
 	fmt.Println()
 	monitoringIpAddress := StringPrompt("Please enter the private IP address of your monitoring instance. Simply press ENTER to leave it empty",
-		"", true, DefaultMaxAttempts, config.ValidateIPAddress)
+		"", true, DefaultMaxAttempts, config.ValidateIPAddress, o.userInputReader)
 	fmt.Println()
 
 	return proxyIpsAddresses, monitoringIpAddress
@@ -288,6 +304,17 @@ func persistCurrentConfigToFile(containerConfig *config.ContainerInitConfig) err
 	}
 
 	return nil
+}
+
+func (o *InteractionOrchestrator) DisplayConfigurationAndPromptForConfirmation() (bool, error) {
+	o.containerConfig.PrintProperties()
+	fmt.Println()
+
+	ynProceed, err := YesNoPrompt("Do you wish to proceed?", true, true, o.userInputReader, DefaultMaxAttempts)
+	if err != nil {
+		return false, fmt.Errorf("confirmation could not be obtained: %v", err)
+	}
+	return ynProceed, nil
 }
 
 // TODO unify with closeFile used in the docker utils

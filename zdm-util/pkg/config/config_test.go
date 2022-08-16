@@ -17,43 +17,43 @@ func TestConfig_WithExistingFile(t *testing.T) {
 	}{
 		{
 			name:           "valid path to valid config file with : separator",
-			configFilePath: "../../../testResources/testconfigfile_colon",
+			configFilePath: "../../testResources/testconfigfile_colon",
 			expectedConfig: &ContainerInitConfig{
 				Properties: map[string]string{
-					SshKeyPathOnHostPropertyName:           convertRelativePathToAbsolute("../../../testResources/dummy_dir/dummy_sub_dir/dummy_ssh_key"),
+					SshKeyPathOnHostPropertyName:           ConvertRelativePathToAbsoluteForTests("../../testResources/dummy_dir/dummy_sub_dir/dummy_ssh_key"),
 					ProxyIpAddressPrefixPropertyName:       "172.18.*",
-					AnsibleInventoryPathOnHostPropertyName: convertRelativePathToAbsolute("../../../testResources/dummy_dir/dummy_sub_dir/dummy_ansible_inventory"),
+					AnsibleInventoryPathOnHostPropertyName: ConvertRelativePathToAbsoluteForTests("../../testResources/dummy_dir/dummy_sub_dir/dummy_ansible_inventory"),
 				},
 			},
 			isErrorExpected: false,
 		},
 		{
 			name:           "valid path to valid config file with : separator and quotes",
-			configFilePath: "../../../testResources/testconfigfile_colon_quotes",
+			configFilePath: "../../testResources/testconfigfile_colon_quotes",
 			expectedConfig: &ContainerInitConfig{
 				Properties: map[string]string{
-					SshKeyPathOnHostPropertyName:           convertRelativePathToAbsolute("../../../testResources/dummy_dir/dummy_sub_dir/dummy_ssh_key"),
+					SshKeyPathOnHostPropertyName:           ConvertRelativePathToAbsoluteForTests("../../testResources/dummy_dir/dummy_sub_dir/dummy_ssh_key"),
 					ProxyIpAddressPrefixPropertyName:       "172.18.*",
-					AnsibleInventoryPathOnHostPropertyName: convertRelativePathToAbsolute("../../../testResources/dummy_dir/dummy_sub_dir/dummy_ansible_inventory"),
+					AnsibleInventoryPathOnHostPropertyName: ConvertRelativePathToAbsoluteForTests("../../testResources/dummy_dir/dummy_sub_dir/dummy_ansible_inventory"),
 				},
 			},
 			isErrorExpected: false,
 		},
 		{
 			name:           "valid path to valid config file with = separator",
-			configFilePath: "../../../testResources/testconfigfile_equals",
+			configFilePath: "../../testResources/testconfigfile_equals",
 			expectedConfig: &ContainerInitConfig{
 				Properties: map[string]string{
-					SshKeyPathOnHostPropertyName:           convertRelativePathToAbsolute("../../../testResources/dummy_dir/dummy_sub_dir/dummy_ssh_key"),
+					SshKeyPathOnHostPropertyName:           ConvertRelativePathToAbsoluteForTests("../../testResources/dummy_dir/dummy_sub_dir/dummy_ssh_key"),
 					ProxyIpAddressPrefixPropertyName:       "172.18.*",
-					AnsibleInventoryPathOnHostPropertyName: convertRelativePathToAbsolute("../../../testResources/dummy_dir/dummy_sub_dir/dummy_ansible_inventory"),
+					AnsibleInventoryPathOnHostPropertyName: ConvertRelativePathToAbsoluteForTests("../../testResources/dummy_dir/dummy_sub_dir/dummy_ansible_inventory"),
 				},
 			},
 			isErrorExpected: false,
 		},
 		{
 			name:                 "valid path to empty config file",
-			configFilePath:       "../../../testResources/testconfigfile_empty",
+			configFilePath:       "../../testResources/testconfigfile_empty",
 			expectedConfig:       &ContainerInitConfig{},
 			isErrorExpected:      true,
 			expectedErrorMessage: "the specified configuration file was empty",
@@ -67,7 +67,7 @@ func TestConfig_WithExistingFile(t *testing.T) {
 		},
 		{
 			name:           "valid path to config file with invalid path variables",
-			configFilePath: "../../../testResources/testconfigfile_colon_invalidpaths",
+			configFilePath: "../../testResources/testconfigfile_colon_invalidpaths",
 			expectedConfig: &ContainerInitConfig{
 				Properties: map[string]string{
 					ProxyIpAddressPrefixPropertyName: "172.18.*",
@@ -210,44 +210,44 @@ func TestValidateIpAddressPrefix(t *testing.T) {
 
 func TestValidateFilePath(t *testing.T) {
 	tests := []struct {
-		name string
-		filePath string
+		name          string
+		filePath      string
 		expectedValid bool
 	}{
 		{
-			name: "valid relative file path",
-			filePath: "../../../testResources/dummy_dir/dummy_sub_dir/dummy_ssh_key",
+			name:          "valid relative file path",
+			filePath:      "../../testResources/dummy_dir/dummy_sub_dir/dummy_ssh_key",
 			expectedValid: true,
 		},
 		{
 			name:          "valid absolute file path",
-			filePath:      convertRelativePathToAbsolute("../../../testResources/dummy_dir/dummy_sub_dir/dummy_ssh_key"),
+			filePath:      ConvertRelativePathToAbsoluteForTests("../../testResources/dummy_dir/dummy_sub_dir/dummy_ssh_key"),
 			expectedValid: true,
 		},
 		{
-			name: "valid relative path but is a directory",
-			filePath: "../../../testResources/dummy_dir/dummy_sub_dir",
+			name:          "valid relative path but is a directory",
+			filePath:      "../../testResources/dummy_dir/dummy_sub_dir",
 			expectedValid: false,
 		},
 		{
 			name:          "valid absolute path but is a directory",
-			filePath:      convertRelativePathToAbsolute("../../../testResources/dummy_dir/dummy_sub_dir"),
+			filePath:      ConvertRelativePathToAbsoluteForTests("../../testResources/dummy_dir/dummy_sub_dir"),
 			expectedValid: false,
 		},
 		{
-			name: "path to file that does not exist",
-			filePath: "../../../testResources/dummy_dir/invalid",
+			name:          "path to file that does not exist",
+			filePath:      "../../testResources/dummy_dir/invalid",
 			expectedValid: false,
 		},
 		{
-			name: "path to directory that does not exist",
-			filePath: "../../../testResources/invalid_dir",
+			name:          "path to directory that does not exist",
+			filePath:      "../../testResources/invalid_dir",
 			expectedValid: false,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			actualValid := ValidateFilePath(tt.filePath)
+			actualValid := ValidateFilePath(tt.filePath, true)
 			require.Equal(t, tt.expectedValid, actualValid)
 		})
 	}
@@ -258,28 +258,28 @@ func TestResolveTildeInPath(t *testing.T) {
 	homeDir, _ := os.UserHomeDir()
 
 	tests := []struct {
-		name string
-		filePath string
+		name             string
+		filePath         string
 		expectedFilePath string
 	}{
 		{
-			name: "path with leading tilde",
-			filePath: "~/my_file",
+			name:             "path with leading tilde",
+			filePath:         "~/my_file",
 			expectedFilePath: filepath.Join(homeDir, "my_file"),
 		},
 		{
-			name: "path without tilde",
-			filePath: "my_dir/my_file",
+			name:             "path without tilde",
+			filePath:         "my_dir/my_file",
 			expectedFilePath: "my_dir/my_file",
 		},
 		{
-			name: "path with tilde in the middle",
-			filePath: "my_dir/~/my_file",
+			name:             "path with tilde in the middle",
+			filePath:         "my_dir/~/my_file",
 			expectedFilePath: "my_dir/~/my_file",
 		},
 		{
-			name: "path with tilde at the end",
-			filePath: "my_dir/my_file/~",
+			name:             "path with tilde at the end",
+			filePath:         "my_dir/my_file/~",
 			expectedFilePath: "my_dir/my_file/~",
 		},
 	}
@@ -291,8 +291,7 @@ func TestResolveTildeInPath(t *testing.T) {
 	}
 }
 
-
-func convertRelativePathToAbsolute(relativePath string) string {
+func ConvertRelativePathToAbsoluteForTests(relativePath string) string {
 	absolutePath, _ := filepath.Abs(relativePath)
 	return absolutePath
 }

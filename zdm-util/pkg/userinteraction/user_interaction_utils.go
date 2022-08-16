@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"cloudgate-automation/zdm-util/pkg/config"
 	"fmt"
-	"os"
 	"strings"
 )
 
@@ -16,15 +15,16 @@ const (
 // If the value is invalid, the try again message and the value prompt is displayed again for the specified maximum number of attempts.
 // If the value is empty and returnOnEmptyValue is true, the empty value is returned, otherwise an empty value is considered invalid
 // If the attempts are exhausted, an empty string is returned.
-func StringPrompt(promptMessage string, tryAgainMessage string, returnOnEmptyValue bool, maxAttempts int, validateValue func(string) bool) string {
-
-	r := bufio.NewReader(os.Stdin)
+func StringPrompt(promptMessage string, tryAgainMessage string, returnOnEmptyValue bool, maxAttempts int, validateValue func(string) bool, userInputReader *bufio.Reader) string {
 
 	trimmedString := ""
 
 	for remainingAttempts := maxAttempts; remainingAttempts > 0; remainingAttempts-- {
-		fmt.Printf(promptMessage + ": ")
-		s, _ := r.ReadString('\n')
+		fmt.Printf("\n" + promptMessage + ": ")
+		s, err := userInputReader.ReadString('\n')
+		if err != nil {
+			fmt.Printf("Error reading line %v \n", err)
+		}
 		trimmedString = config.FormatString(s)
 		if trimmedString != "" {
 			if validateValue(trimmedString) {
@@ -56,14 +56,13 @@ func StringPrompt(promptMessage string, tryAgainMessage string, returnOnEmptyVal
 }
 
 // StringPromptLoopingForMultipleValues prompts for input repeatedly until it receives an empty input value
-func StringPromptLoopingForMultipleValues(promptMessage string, validateValue func(string) bool) []string {
+func StringPromptLoopingForMultipleValues(promptMessage string, validateValue func(string) bool, userInputReader *bufio.Reader) []string {
 
-	r := bufio.NewReader(os.Stdin)
 	values := make([]string, 0)
 	var s string
 	for {
-		fmt.Printf(promptMessage + ": ")
-		s, _ = r.ReadString('\n')
+		fmt.Printf("\n" + promptMessage + ": ")
+		s, _ = userInputReader.ReadString('\n')
 		trimmedValue := config.FormatString(s)
 		if trimmedValue != "" {
 			if validateValue(trimmedValue) {
@@ -78,8 +77,7 @@ func StringPromptLoopingForMultipleValues(promptMessage string, validateValue fu
 
 // YesNoPrompt asks yes/no questions using the label.
 // If hasDefault is true, it uses the specified default.
-// TODO decide if having a default is useful in any case
-func YesNoPrompt(promptMessage string, hasDefault bool, defaultToYes bool) bool {
+func YesNoPrompt(promptMessage string, hasDefault bool, defaultToYes bool, userInputReader *bufio.Reader, maxAttempts int) (bool, error) {
 	var choices string
 	if hasDefault {
 		choices = "Y/n"
@@ -90,23 +88,23 @@ func YesNoPrompt(promptMessage string, hasDefault bool, defaultToYes bool) bool 
 		choices = "y/n"
 	}
 
-	r := bufio.NewReader(os.Stdin)
 	var s string
-	for {
-		fmt.Printf("%s (%s) ", promptMessage, choices)
-		s, _ = r.ReadString('\n')
+	for remainingAttempts := maxAttempts; remainingAttempts > 0; remainingAttempts-- {
+		fmt.Printf("\n%s (%s) ", promptMessage, choices)
+		s, _ = userInputReader.ReadString('\n')
 		s = config.FormatString(s)
 		if s == "" {
 			if hasDefault {
-				return defaultToYes
+				return defaultToYes, nil
 			}
 		}
 		s = strings.ToLower(s)
 		if s == "y" || s == "yes" {
-			return true
+			return true, nil
 		}
 		if s == "n" || s == "no" {
-			return false
+			return false, nil
 		}
 	}
+	return false, fmt.Errorf("no valid y/n input was provided")
 }

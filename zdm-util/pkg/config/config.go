@@ -137,6 +137,14 @@ func separatorIndex(s string) int {
 }
 
 func ValidateFilePath(path string) bool {
+	return checkFilePathIsValid(path, true)
+}
+
+func ValidateFilePathSilently(path string) bool {
+	return checkFilePathIsValid(path, false)
+}
+
+func checkFilePathIsValid(path string, displayOutput bool) bool {
 
 	absPath, ok := ConvertToAbsolutePath(path)
 	if !ok {
@@ -144,11 +152,15 @@ func ValidateFilePath(path string) bool {
 	}
 	fileInfo, err := os.Stat(absPath)
 	if err != nil {
-		fmt.Printf("File %v is invalid. Error: %v \n", path, err)
+		if displayOutput {
+			fmt.Printf("File %v is invalid. Error: %v \n", path, err)
+		}
 		return false
 	}
 	if fileInfo.IsDir() {
-		fmt.Printf("File %v is actually a directory, not a file \n", path)
+		if displayOutput {
+			fmt.Printf("File %v is actually a directory, not a file \n", path)
+		}
 		return false
 	}
 	return true
@@ -209,7 +221,7 @@ func ValidateIPAddress(ipAddress string) bool {
 	return true
 }
 
-func ConvertToAbsolutePath(path string) (string, bool){
+func ConvertToAbsolutePath(path string) (string, bool) {
 
 	pathWithoutTilde := resolveTildeInPathIfPresent(path)
 

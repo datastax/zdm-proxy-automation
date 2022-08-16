@@ -1,4 +1,4 @@
-ssh_key_path_on_host: "../../../testResources/dummy_dir/dummy_sub_dir/dummy_ssh_key"
+ssh_key_path_on_host: "../../testResources/dummy_dir/dummy_sub_dir/dummy_ssh_key"
 proxy_ip_address_prefix: "172.18.*  "
-ansible_inventory_path_on_host: "  ../../../testResources/dummy_dir/dummy_sub_dir/dummy_ansible_inventory   "
+ansible_inventory_path_on_host: "  ../../testResources/dummy_dir/dummy_sub_dir/dummy_ansible_inventory   "
 some_other_property: "ignoreme"
