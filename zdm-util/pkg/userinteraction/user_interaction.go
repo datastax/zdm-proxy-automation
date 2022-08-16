@@ -9,7 +9,7 @@ import (
 
 const (
 	DefaultConfigurationFilePath    = "ansible_container_init_config"
-	DefaultAnsibleInventoryFilePath = "/home/ubuntu/"
+	DefaultAnsibleInventoryDir      = "/home/ubuntu/"
 	DefaultAnsibleInventoryFileName = "cloudgate_inventory"
 
 	DefaultMaxAttempts                = 5
@@ -132,7 +132,8 @@ func (o *InteractionOrchestrator) promptForSshKeyPath() error {
 		if sshKeyPathOnHost == "" {
 			fmt.Println()
 			fmt.Println("The SSH private key to access the proxy hosts was not provided or was not valid. " + RequiredParameterNoDefaultMessage)
-			return fmt.Errorf("missing required configuration")
+			err := fmt.Errorf("missing required configuration")
+			return err
 		}
 
 		if absoluteSshKeyPathOnHost, ok := config.ConvertToAbsolutePath(sshKeyPathOnHost); ok {
@@ -164,12 +165,12 @@ func (o *InteractionOrchestrator) promptForAnsibleInventory() error {
 		ansibleInventoryPathOnHost := ""
 		if ynInventory, err := YesNoPrompt("Do you have an existing Ansible inventory file?", false, false, o.userInputReader, DefaultMaxAttempts); err == nil && ynInventory {
 			fmt.Println()
-			ansibleInventoryPathOnHost = StringPrompt("Please enter the path and name of your Ansible inventory file. Simply press ENTER if your inventory is "+DefaultAnsibleInventoryFilePath+DefaultAnsibleInventoryFileName,
+			ansibleInventoryPathOnHost = StringPrompt("Please enter the path and name of your Ansible inventory file. Simply press ENTER if your inventory is "+DefaultAnsibleInventoryDir+DefaultAnsibleInventoryFileName,
 				"", true, DefaultMaxAttempts, config.ValidateFilePath, o.userInputReader)
 
 			if ansibleInventoryPathOnHost == "" {
-				if config.ValidateFilePath(DefaultAnsibleInventoryFilePath + DefaultAnsibleInventoryFileName) {
-					ansibleInventoryPathOnHost = DefaultAnsibleInventoryFilePath + DefaultAnsibleInventoryFileName
+				if config.ValidateFilePath(DefaultAnsibleInventoryDir + DefaultAnsibleInventoryFileName) {
+					ansibleInventoryPathOnHost = DefaultAnsibleInventoryDir + DefaultAnsibleInventoryFileName
 				} else {
 					fmt.Printf("The Ansible inventory file path %v  is not valid. \n", DefaultAnsibleInventoryFileName)
 					return fmt.Errorf("missing required configuration")

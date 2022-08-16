@@ -1,6 +1,7 @@
 package docker
 
 import (
+	"bufio"
 	"cloudgate-automation/zdm-util/pkg/config"
 	"cloudgate-automation/zdm-util/pkg/userinteraction"
 	"context"
@@ -39,7 +40,7 @@ func ValidateDockerPrerequisites() error {
 	return nil
 }
 
-func CreateAndInitializeContainer(containerConfig *config.ContainerInitConfig, userInputFile *os.File) error {
+func CreateAndInitializeContainer(containerConfig *config.ContainerInitConfig, userInputReader *bufio.Reader) error {
 
 	orchestrator, err := createDockerOrchestrator()
 	if err != nil {
@@ -64,13 +65,14 @@ func CreateAndInitializeContainer(containerConfig *config.ContainerInitConfig, u
 			fmt.Printf("The container %v already exists and is in running state. \n\n", dockerContainerName)
 			fmt.Printf("If you are happy to use the existing container, this utility will exit. \n")
 			fmt.Printf("Otherwise, this utility will destroy the existing container and recreate it from scratch. Note: in this case, all data and configuration in the container will be lost. \n\n")
-			ynUseExistingContainer := userinteraction.YesNoPrompt("Do you wish to use this existing container?", false, false, userInputFile, 0)
+			ynUseExistingContainer, _ := userinteraction.YesNoPrompt("Do you wish to use this existing container?", false, false, userInputReader, 0)
 			if ynUseExistingContainer {
 				fmt.Printf("You decided to use the existing container. \n")
 				return nil
 			} else {
 				fmt.Println()
-				ynDestroyAndRecreateContainer := userinteraction.YesNoPrompt("You decided to remove and recreate the container. All its data and configuration will be lost. Are you sure you want to proceed?", true, false, userInputFile, 0)
+				ynDestroyAndRecreateContainer, _ := userinteraction.YesNoPrompt("You decided to remove and recreate the container. All its data and configuration will be lost. Are you sure you want to proceed?",
+					true, false, userInputReader, 0)
 				if ynDestroyAndRecreateContainer {
 					err = orchestrator.removeExistingContainer(containerId)
 					if err != nil {

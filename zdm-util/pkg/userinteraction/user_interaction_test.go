@@ -12,15 +12,21 @@ import (
 	"testing"
 )
 
+type configCreationTest struct {
+	name                  string
+	configurationFilePath string
+	expectedConfig        *config.ContainerInitConfig
+	userInputValues       []string
+	isExpectedError      bool
+	expectedErrorMessage string
+	generateInventoryFile bool
+
+}
+
 func TestCreateContainerConfiguration_FromExistingFile(t *testing.T) {
-	tests := []struct {
-		name                  string
-		configurationFilePath string
-		expectedConfig        *config.ContainerInitConfig
-		userInputValues       []string
-	}{
+	tests := []configCreationTest{
 		{
-			name:                  "Complete and valid configuration file does not result in user interaction",
+			name: "Complete and valid configuration file does not result in user interaction",
 			configurationFilePath: "../../testResources/testconfigfile_colon",
 			expectedConfig: &config.ContainerInitConfig{
 				Properties: map[string]string{
@@ -32,7 +38,7 @@ func TestCreateContainerConfiguration_FromExistingFile(t *testing.T) {
 			userInputValues: []string{},
 		},
 		{
-			name:                  "Empty configuration file results in full user interaction",
+			name: "Existing but empty configuration file results in full user interaction",
 			configurationFilePath: "../../testResources/testconfigfile_empty",
 			expectedConfig: &config.ContainerInitConfig{
 				Properties: map[string]string{
@@ -49,8 +55,8 @@ func TestCreateContainerConfiguration_FromExistingFile(t *testing.T) {
 			},
 		},
 		{
-			name:                  "No configuration file results in full user interaction",
-			configurationFilePath: "",
+			name: "Completely invalid configuration file results in full user interaction",
+			configurationFilePath: "../../testResources/testconfigfile_invalid_ip_prefix",
 			expectedConfig: &config.ContainerInitConfig{
 				Properties: map[string]string{
 					config.SshKeyPathOnHostPropertyName:           ConvertRelativePathToAbsoluteForTests("../../testResources/dummy_dir/dummy_sub_dir/dummy_ssh_key"),
@@ -66,7 +72,7 @@ func TestCreateContainerConfiguration_FromExistingFile(t *testing.T) {
 			},
 		},
 		{
-			name:                  "Partly invalid configuration file results in partial user interaction",
+			name: "Partly invalid configuration file results in partial user interaction",
 			configurationFilePath: "../../testResources/testconfigfile_colon_invalidpaths",
 			expectedConfig: &config.ContainerInitConfig{
 				Properties: map[string]string{
@@ -85,50 +91,181 @@ func TestCreateContainerConfiguration_FromExistingFile(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			// always remove any existing config file to isolate each test
-			cleanUpDefaultConfigTestFile(t)
-
-			var interactionOrchestrator *InteractionOrchestrator
-			var userInputFile *os.File
-			var err error
-			if len(tt.userInputValues) > 0 {
-				userInputFile, err = createSimulatedUserInputFile(tt.userInputValues)
-				if err != nil {
-					t.Fatalf("Error creating file to simulate user input")
-				}
-				defer cleanUpTestFile(userInputFile, t)
-				interactionOrchestrator = NewInteractionOrchestrator(bufio.NewReader(userInputFile))
-			} else {
-				interactionOrchestrator = NewInteractionOrchestrator(bufio.NewReader(os.Stdin))
-			}
-
-			actualConfig, err := interactionOrchestrator.CreateContainerConfiguration(tt.configurationFilePath)
-
-			if userInputFile != nil {
-				if err = userInputFile.Close(); err != nil {
-					t.Fatalf("Failed to close temp input file")
-				}
-			}
-
-			if err != nil {
-				t.Fatalf("Unexpected error: %v", err)
-			} else {
-				if expectedSshKeyPath, ok := tt.expectedConfig.Properties[config.SshKeyPathOnHostPropertyName]; ok {
-					require.Equal(t, expectedSshKeyPath, actualConfig.Properties[config.SshKeyPathOnHostPropertyName])
-				}
-				if expectedProxyIpPrefix, ok := tt.expectedConfig.Properties[config.ProxyIpAddressPrefixPropertyName]; ok {
-					require.Equal(t, expectedProxyIpPrefix, actualConfig.Properties[config.ProxyIpAddressPrefixPropertyName])
-				}
-				if expectedInventoryPath, ok := tt.expectedConfig.Properties[config.AnsibleInventoryPathOnHostPropertyName]; ok {
-					require.Equal(t, expectedInventoryPath, actualConfig.Properties[config.AnsibleInventoryPathOnHostPropertyName])
-				}
-
-			}
+			runContainerConfigurationTest(t, tt)
 		})
 	}
 }
 
-func createSimulatedUserInputFile(userInputValues []string) (*os.File, error) {
+func TestCreateContainerConfiguration_UserInteraction(t *testing.T) {
+	tests := []configCreationTest{
+		{
+			name: "No configuration file, full user interaction, valid user input",
+			configurationFilePath: "",
+			expectedConfig: &config.ContainerInitConfig{
+				Properties: map[string]string{
+					config.SshKeyPathOnHostPropertyName:           ConvertRelativePathToAbsoluteForTests("../../testResources/dummy_dir/dummy_sub_dir/dummy_ssh_key"),
+					config.ProxyIpAddressPrefixPropertyName:       "172.18.*",
+					config.AnsibleInventoryPathOnHostPropertyName: ConvertRelativePathToAbsoluteForTests("../../testResources/dummy_dir/dummy_sub_dir/dummy_ansible_inventory"),
+				},
+			},
+			userInputValues: []string{
+				"../../testResources/dummy_dir/dummy_sub_dir/dummy_ssh_key",
+				"172.18.*",
+				"y",
+				"../../testResources/dummy_dir/dummy_sub_dir/dummy_ansible_inventory",
+			},
+		},
+		{
+			name: "User unable to specify ssh key path, exhausts attempts",
+			configurationFilePath: "",
+			expectedConfig: &config.ContainerInitConfig{
+				Properties: map[string]string{},
+			},
+			userInputValues: []string{
+				"/home/invalid_dir/invalid_ssh_key_1",
+				"/home/invalid_dir/invalid_ssh_key_2",
+				"/home/invalid_dir/invalid_ssh_key_3",
+				"/home/invalid_dir/invalid_ssh_key_4",
+				"/home/invalid_dir/invalid_ssh_key_5",
+			},
+			isExpectedError:      true,
+			expectedErrorMessage: "missing required configuration",
+		},
+		{
+			name: "User able to specify ssh key path on fifth attempt",
+			configurationFilePath: "",
+			expectedConfig: &config.ContainerInitConfig{
+				Properties: map[string]string{
+					config.SshKeyPathOnHostPropertyName:           ConvertRelativePathToAbsoluteForTests("../../testResources/dummy_dir/dummy_sub_dir/dummy_ssh_key"),
+					config.ProxyIpAddressPrefixPropertyName:       "172.18.*",
+					config.AnsibleInventoryPathOnHostPropertyName: ConvertRelativePathToAbsoluteForTests("../../testResources/dummy_dir/dummy_sub_dir/dummy_ansible_inventory"),
+				},
+			},
+			userInputValues: []string{
+				"/home/invalid_dir/invalid_ssh_key_1",
+				"/home/invalid_dir/invalid_ssh_key_2",
+				"/home/invalid_dir/invalid_ssh_key_3",
+				"/home/invalid_dir/invalid_ssh_key_4",
+				"../../testResources/dummy_dir/dummy_sub_dir/dummy_ssh_key",
+				"172.18.*",
+				"y",
+				"../../testResources/dummy_dir/dummy_sub_dir/dummy_ansible_inventory",
+			},
+		},
+		{
+			name: "User unable to specify proxy address prefix, exhausts attempts",
+			configurationFilePath: "",
+			expectedConfig: &config.ContainerInitConfig{
+				Properties: map[string]string{},
+			},
+			userInputValues: []string{
+				"../../testResources/dummy_dir/dummy_sub_dir/dummy_ssh_key",
+				"172.18.300.*",
+				"*",
+				"*.172.18",
+				"*.172.18.*",
+				"172.18.*.*",
+			},
+			isExpectedError:      true,
+			expectedErrorMessage: "missing required configuration",
+		},
+		{
+			name: "User able to specify proxy address prefix on fifth attempt",
+			configurationFilePath: "",
+			expectedConfig: &config.ContainerInitConfig{
+				Properties: map[string]string{
+					config.SshKeyPathOnHostPropertyName:           ConvertRelativePathToAbsoluteForTests("../../testResources/dummy_dir/dummy_sub_dir/dummy_ssh_key"),
+					config.ProxyIpAddressPrefixPropertyName:       "172.18.*",
+					config.AnsibleInventoryPathOnHostPropertyName: ConvertRelativePathToAbsoluteForTests("../../testResources/dummy_dir/dummy_sub_dir/dummy_ansible_inventory"),
+				},
+			},
+			userInputValues: []string{
+				"../../testResources/dummy_dir/dummy_sub_dir/dummy_ssh_key",
+				"172.18.300.*",
+				"*",
+				"*.172.18",
+				"*.172.18.*",
+				"172.18.*",
+				"y",
+				"../../testResources/dummy_dir/dummy_sub_dir/dummy_ansible_inventory",
+			},
+		},
+		{
+			name: "Generate Ansible Inventory interactively, 3 proxies, monitoring, valid parameters",
+			configurationFilePath: "",
+			expectedConfig: &config.ContainerInitConfig{
+				Properties: map[string]string{
+					config.SshKeyPathOnHostPropertyName:           ConvertRelativePathToAbsoluteForTests("../../testResources/dummy_dir/dummy_sub_dir/dummy_ssh_key"),
+					config.ProxyIpAddressPrefixPropertyName:       "172.18.*",
+					config.AnsibleInventoryPathOnHostPropertyName: ConvertRelativePathToAbsoluteForTests("cloudgate_inventory"),
+				},
+			},
+			userInputValues: []string{
+				"../../testResources/dummy_dir/dummy_sub_dir/dummy_ssh_key",
+				"172.18.*",
+				"n",
+				"n",
+				"172.18.10.134",
+				"172.18.11.65",
+				"172.18.12.27\n",
+				"172.18.100.42",
+			},
+			generateInventoryFile: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			runContainerConfigurationTest(t, tt)
+		})
+	}
+}
+
+func runContainerConfigurationTest(t *testing.T, tt configCreationTest) {
+	// always remove any generated config file or inventory file to isolate each test
+	defer cleanUpDefaultConfigFileForTests(t)
+	defer cleanUpDefaultInventoryFileForTests(t)
+
+	var interactionOrchestrator *InteractionOrchestrator
+	var userInputFile *os.File
+	var err error
+	if len(tt.userInputValues) > 0 {
+		userInputFile, err = createSimulatedUserInputFileForTests(tt.userInputValues)
+		if err != nil {
+			t.Fatalf("Error creating file to simulate user input")
+		}
+		defer cleanUpFileForTests(userInputFile, t)
+		interactionOrchestrator = NewInteractionOrchestrator(bufio.NewReader(userInputFile))
+	} else {
+		interactionOrchestrator = NewInteractionOrchestrator(bufio.NewReader(os.Stdin))
+	}
+
+	actualConfig, err := interactionOrchestrator.CreateContainerConfiguration(tt.configurationFilePath)
+
+	if err != nil {
+		if tt.isExpectedError {
+			require.Equal(t, tt.expectedErrorMessage, err.Error())
+		} else {
+			t.Fatalf("Unexpected error: %v", err)
+		}
+	} else {
+		if expectedSshKeyPath, ok := tt.expectedConfig.Properties[config.SshKeyPathOnHostPropertyName]; ok {
+			require.Equal(t, expectedSshKeyPath, actualConfig.Properties[config.SshKeyPathOnHostPropertyName])
+		}
+		if expectedProxyIpPrefix, ok := tt.expectedConfig.Properties[config.ProxyIpAddressPrefixPropertyName]; ok {
+			require.Equal(t, expectedProxyIpPrefix, actualConfig.Properties[config.ProxyIpAddressPrefixPropertyName])
+		}
+		if expectedInventoryPath, ok := tt.expectedConfig.Properties[config.AnsibleInventoryPathOnHostPropertyName]; ok {
+			require.Equal(t, expectedInventoryPath, actualConfig.Properties[config.AnsibleInventoryPathOnHostPropertyName])
+		}
+
+		if tt.generateInventoryFile {
+			checkFileExistsForTests(DefaultAnsibleInventoryFileName, t)
+		}
+	}
+}
+
+func createSimulatedUserInputFileForTests(userInputValues []string) (*os.File, error) {
 	userInputFile, err := ioutil.TempFile("", "user_input_test_file")
 	if err != nil {
 		return nil, err
@@ -146,62 +283,47 @@ func createSimulatedUserInputFile(userInputValues []string) (*os.File, error) {
 		return nil, err
 	}
 
-	// TODO this will have to be moved to each line
 	if _, err = userInputFile.Seek(0, io.SeekStart); err != nil {
 		return nil, err
 	}
 
-	// TODO remove these
-	//oldStdin := os.Stdin
-	//defer func() { os.Stdin = oldStdin }() // Restore original Stdin
-
-	//os.Stdin = tmpInputFile
 	return userInputFile, nil
 }
 
-func cleanUpDefaultConfigTestFile(t *testing.T) {
+func checkFileExistsForTests(filePath string, t *testing.T) {
+	fileInfo, err := os.Stat(filePath)
+	require.Nil(t, err)
+	require.False(t, fileInfo.IsDir())
+	require.True(t, fileInfo.Size() > 0)
+}
+
+func cleanUpDefaultConfigFileForTests(t *testing.T) {
 	file, err := os.Open(DefaultConfigurationFilePath)
 	if err == nil {
-		cleanUpTestFile(file, t)
+		cleanUpFileForTests(file, t)
 	}
 }
 
-func cleanUpTestFile(file *os.File, t *testing.T) {
+func cleanUpDefaultInventoryFileForTests(t *testing.T) {
+	file, err := os.Open(DefaultAnsibleInventoryFileName)
+	if err == nil {
+		cleanUpFileForTests(file, t)
+	}
+}
+
+func cleanUpFileForTests(file *os.File, t *testing.T) {
 	if file != nil {
-		if err := os.Remove(file.Name()); err != nil {
-			t.Fatalf("Could not remove file %v due to %v", file.Name(), err)
+		fileName := file.Name()
+		if err := file.Close(); err != nil {
+			t.Fatalf("Failed to close temp input file")
 		}
+
+		if err := os.Remove(fileName); err != nil {
+			t.Fatalf("Could not remove file %v due to %v", fileName, err)
+		}
+		fmt.Printf("\nFile %v closed and removed \n", fileName)
 	}
 }
-
-//func provideUserInputInTest(userInputMap map[string]string, inputName string) error {
-//	content := []byte(userInputMap[inputName])
-//	tmpfile, err := ioutil.TempFile("", "example")
-//	if err != nil {
-//		return err
-//	}
-//	defer os.Remove(tmpfile.Name()) // clean up
-//
-//	if _, err = tmpfile.Write(content); err != nil {
-//		return err
-//	}
-//
-//	if _, err = tmpfile.Seek(0, 0); err != nil {
-//		return err
-//	}
-//
-//	oldStdin := os.Stdin
-//	defer func() { os.Stdin = oldStdin }() // Restore original Stdin
-//
-//	os.Stdin = tmpfile
-//	if err := userInput(); err != nil {
-//		t.Errorf("userInput failed: %v", err)
-//	}
-//
-//	if err := tmpfile.Close(); err != nil {
-//		log.Fatal(err)
-//	}
-//}
 
 func ConvertRelativePathToAbsoluteForTests(relativePath string) string {
 	absolutePath, _ := filepath.Abs(relativePath)

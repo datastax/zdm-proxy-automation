@@ -24,9 +24,9 @@ func main() {
 
 func launchUtil(customConfigFilePath string, userInputFile *os.File) {
 
-	r := bufio.NewReader(userInputFile)
+	reader := bufio.NewReader(userInputFile)
 
-	interactionOrchestrator := userinteraction.NewInteractionOrchestrator(r)
+	interactionOrchestrator := userinteraction.NewInteractionOrchestrator(reader)
 
 	err := docker.ValidateDockerPrerequisites()
 	if err != nil {
@@ -48,7 +48,7 @@ func launchUtil(customConfigFilePath string, userInputFile *os.File) {
 	}
 
 	if ynAcceptAndProceed {
-		err = docker.CreateAndInitializeContainer(containerConfig, userInputFile)
+		err = docker.CreateAndInitializeContainer(containerConfig, reader)
 		if err != nil {
 			fmt.Printf("ERROR: %v. %v \n", err, UtilityExitingMessage)
 		}
