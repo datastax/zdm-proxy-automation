@@ -20,7 +20,7 @@ type configCreationTest struct {
 	isExpectedError      bool
 	expectedErrorMessage string
 	generateInventoryFile bool
-
+	persistConfigToFile bool
 }
 
 func TestCreateContainerConfiguration_UserInteraction_General(t *testing.T) {
@@ -41,6 +41,7 @@ func TestCreateContainerConfiguration_UserInteraction_General(t *testing.T) {
 				"y",
 				"../../testResources/dummy_dir/dummy_sub_dir/dummy_ansible_inventory",
 			},
+			persistConfigToFile: true,
 		},
 	}
 
@@ -73,6 +74,7 @@ func TestCreateContainerConfiguration_FromExistingFile(t *testing.T) {
 				},
 			},
 			userInputValues: []string{},
+			persistConfigToFile: false,
 		},
 		{
 			name: "Existing but empty configuration file results in full user interaction",
@@ -90,6 +92,7 @@ func TestCreateContainerConfiguration_FromExistingFile(t *testing.T) {
 				"y",
 				"../../testResources/dummy_dir/dummy_sub_dir/dummy_ansible_inventory",
 			},
+			persistConfigToFile: true,
 		},
 		{
 			name: "Completely invalid configuration file results in full user interaction",
@@ -107,6 +110,7 @@ func TestCreateContainerConfiguration_FromExistingFile(t *testing.T) {
 				"y",
 				"../../testResources/dummy_dir/dummy_sub_dir/dummy_ansible_inventory",
 			},
+			persistConfigToFile: true,
 		},
 		{
 			name: "Partly invalid configuration file results in partial user interaction",
@@ -123,6 +127,7 @@ func TestCreateContainerConfiguration_FromExistingFile(t *testing.T) {
 				"y",
 				"../../testResources/dummy_dir/dummy_sub_dir/dummy_ansible_inventory",
 			},
+			persistConfigToFile: true,
 		},
 	}
 
@@ -156,6 +161,7 @@ func TestCreateContainerConfiguration_UserInteraction_SshKey(t *testing.T) {
 			},
 			isExpectedError:      true,
 			expectedErrorMessage: "missing required configuration",
+			persistConfigToFile: false,
 		},
 		{
 			name: "User able to specify ssh key path on third attempt",
@@ -175,6 +181,7 @@ func TestCreateContainerConfiguration_UserInteraction_SshKey(t *testing.T) {
 				"y",
 				"../../testResources/dummy_dir/dummy_sub_dir/dummy_ansible_inventory",
 			},
+			persistConfigToFile: true,
 		},
 		{
 			name: "User able to specify ssh key path on fifth attempt",
@@ -196,6 +203,7 @@ func TestCreateContainerConfiguration_UserInteraction_SshKey(t *testing.T) {
 				"y",
 				"../../testResources/dummy_dir/dummy_sub_dir/dummy_ansible_inventory",
 			},
+			persistConfigToFile: true,
 		},
 	}
 
@@ -230,6 +238,7 @@ func TestCreateContainerConfiguration_UserInteraction_ProxyAddressPrefix(t *test
 			},
 			isExpectedError:      true,
 			expectedErrorMessage: "missing required configuration",
+			persistConfigToFile: false,
 		},
 		{
 			name: "User able to specify proxy address prefix on second attempt",
@@ -248,6 +257,7 @@ func TestCreateContainerConfiguration_UserInteraction_ProxyAddressPrefix(t *test
 				"y",
 				"../../testResources/dummy_dir/dummy_sub_dir/dummy_ansible_inventory",
 			},
+			persistConfigToFile: true,
 		},
 		{
 			name: "User able to specify proxy address prefix on fifth attempt",
@@ -269,6 +279,7 @@ func TestCreateContainerConfiguration_UserInteraction_ProxyAddressPrefix(t *test
 				"y",
 				"../../testResources/dummy_dir/dummy_sub_dir/dummy_ansible_inventory",
 			},
+			persistConfigToFile: true,
 		},
 	}
 
@@ -575,6 +586,10 @@ func runContainerConfigurationTest(t *testing.T, tt configCreationTest) {
 			require.Equal(t, expectedInventoryPath, actualConfig.Properties[config.AnsibleInventoryPathOnHostPropertyName])
 		}
 
+		// checking only for existence here. content of each file is checked in a separate set of tests
+		if tt.persistConfigToFile {
+			testutils.CheckFileExistsForTests(DefaultConfigurationFilePath, t)
+		}
 		if tt.generateInventoryFile {
 			testutils.CheckFileExistsForTests(DefaultAnsibleInventoryFileName, t)
 		}
