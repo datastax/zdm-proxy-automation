@@ -1,6 +1,7 @@
 package config
 
 import (
+	"cloudgate-automation/zdm-util/pkg/testutils"
 	"github.com/stretchr/testify/require"
 	"os"
 	"path/filepath"
@@ -20,9 +21,9 @@ func TestConfig_WithExistingFile(t *testing.T) {
 			configFilePath: "../../testResources/testconfigfile_colon",
 			expectedConfig: &ContainerInitConfig{
 				Properties: map[string]string{
-					SshKeyPathOnHostPropertyName:           ConvertRelativePathToAbsoluteForTests("../../testResources/dummy_dir/dummy_sub_dir/dummy_ssh_key"),
+					SshKeyPathOnHostPropertyName:           testutils.ConvertRelativePathToAbsoluteForTests("../../testResources/dummy_dir/dummy_sub_dir/dummy_ssh_key"),
 					ProxyIpAddressPrefixPropertyName:       "172.18.*",
-					AnsibleInventoryPathOnHostPropertyName: ConvertRelativePathToAbsoluteForTests("../../testResources/dummy_dir/dummy_sub_dir/dummy_ansible_inventory"),
+					AnsibleInventoryPathOnHostPropertyName: testutils.ConvertRelativePathToAbsoluteForTests("../../testResources/dummy_dir/dummy_sub_dir/dummy_ansible_inventory"),
 				},
 			},
 			isErrorExpected: false,
@@ -32,9 +33,9 @@ func TestConfig_WithExistingFile(t *testing.T) {
 			configFilePath: "../../testResources/testconfigfile_colon_quotes",
 			expectedConfig: &ContainerInitConfig{
 				Properties: map[string]string{
-					SshKeyPathOnHostPropertyName:           ConvertRelativePathToAbsoluteForTests("../../testResources/dummy_dir/dummy_sub_dir/dummy_ssh_key"),
+					SshKeyPathOnHostPropertyName:           testutils.ConvertRelativePathToAbsoluteForTests("../../testResources/dummy_dir/dummy_sub_dir/dummy_ssh_key"),
 					ProxyIpAddressPrefixPropertyName:       "172.18.*",
-					AnsibleInventoryPathOnHostPropertyName: ConvertRelativePathToAbsoluteForTests("../../testResources/dummy_dir/dummy_sub_dir/dummy_ansible_inventory"),
+					AnsibleInventoryPathOnHostPropertyName: testutils.ConvertRelativePathToAbsoluteForTests("../../testResources/dummy_dir/dummy_sub_dir/dummy_ansible_inventory"),
 				},
 			},
 			isErrorExpected: false,
@@ -44,9 +45,9 @@ func TestConfig_WithExistingFile(t *testing.T) {
 			configFilePath: "../../testResources/testconfigfile_equals",
 			expectedConfig: &ContainerInitConfig{
 				Properties: map[string]string{
-					SshKeyPathOnHostPropertyName:           ConvertRelativePathToAbsoluteForTests("../../testResources/dummy_dir/dummy_sub_dir/dummy_ssh_key"),
+					SshKeyPathOnHostPropertyName:           testutils.ConvertRelativePathToAbsoluteForTests("../../testResources/dummy_dir/dummy_sub_dir/dummy_ssh_key"),
 					ProxyIpAddressPrefixPropertyName:       "172.18.*",
-					AnsibleInventoryPathOnHostPropertyName: ConvertRelativePathToAbsoluteForTests("../../testResources/dummy_dir/dummy_sub_dir/dummy_ansible_inventory"),
+					AnsibleInventoryPathOnHostPropertyName: testutils.ConvertRelativePathToAbsoluteForTests("../../testResources/dummy_dir/dummy_sub_dir/dummy_ansible_inventory"),
 				},
 			},
 			isErrorExpected: false,
@@ -221,7 +222,7 @@ func TestValidateFilePath(t *testing.T) {
 		},
 		{
 			name:          "valid absolute file path",
-			filePath:      ConvertRelativePathToAbsoluteForTests("../../testResources/dummy_dir/dummy_sub_dir/dummy_ssh_key"),
+			filePath:      testutils.ConvertRelativePathToAbsoluteForTests("../../testResources/dummy_dir/dummy_sub_dir/dummy_ssh_key"),
 			expectedValid: true,
 		},
 		{
@@ -231,7 +232,7 @@ func TestValidateFilePath(t *testing.T) {
 		},
 		{
 			name:          "valid absolute path but is a directory",
-			filePath:      ConvertRelativePathToAbsoluteForTests("../../testResources/dummy_dir/dummy_sub_dir"),
+			filePath:      testutils.ConvertRelativePathToAbsoluteForTests("../../testResources/dummy_dir/dummy_sub_dir"),
 			expectedValid: false,
 		},
 		{
@@ -247,7 +248,7 @@ func TestValidateFilePath(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			actualValid := ValidateFilePath(tt.filePath, true)
+			actualValid := ValidateFilePath(tt.filePath)
 			require.Equal(t, tt.expectedValid, actualValid)
 		})
 	}
@@ -289,9 +290,4 @@ func TestResolveTildeInPath(t *testing.T) {
 			require.Equal(t, tt.expectedFilePath, actualFilePath)
 		})
 	}
-}
-
-func ConvertRelativePathToAbsoluteForTests(relativePath string) string {
-	absolutePath, _ := filepath.Abs(relativePath)
-	return absolutePath
 }

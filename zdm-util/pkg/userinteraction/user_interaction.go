@@ -15,6 +15,10 @@ const (
 	DefaultMaxAttempts                = 5
 	RequiredParameterNoDefaultMessage = "This is a required parameter and does not have a default value. "
 	ProvideValueMessage               = "Please provide a valid value. "
+
+	InventoryHeadingForProxyGroup = "[proxies]"
+	InventoryHeadingForMonitoringGroup = "[monitoring]"
+	InventoryAddressLineSuffix = "ansible_connection=ssh ansible_user=ubuntu"
 )
 
 type InteractionOrchestrator struct {
@@ -250,13 +254,14 @@ func populateInventoryFile(filePath string, proxyIpAddresses []string, monitorin
 
 	w := bufio.NewWriter(ansibleInventoryFile)
 
-	_, err = fmt.Fprintf(w, "[proxies]\n")
+	_, err = fmt.Fprintln(w, InventoryHeadingForProxyGroup)
 	if err != nil {
 		return err
 	}
 
 	for _, proxyIpAddress := range proxyIpAddresses {
-		_, err = fmt.Fprintf(w, "%v ansible_connection=ssh ansible_user=ubuntu\n", proxyIpAddress)
+		//_, err = fmt.Fprintf(w, "%v ansible_connection=ssh ansible_user=ubuntu\n", proxyIpAddress)
+		_, err = fmt.Fprintf(w, "%v %v\n", proxyIpAddress, InventoryAddressLineSuffix)
 		if err != nil {
 			return err
 		}
@@ -267,11 +272,11 @@ func populateInventoryFile(filePath string, proxyIpAddresses []string, monitorin
 	}
 
 	if monitoringIpAddress != "" {
-		_, err = fmt.Fprintf(w, "[monitoring]\n")
+		_, err = fmt.Fprintln(w, InventoryHeadingForMonitoringGroup)
 		if err != nil {
 			return err
 		}
-		_, err = fmt.Fprintf(w, "%v ansible_connection=ssh ansible_user=ubuntu\n", monitoringIpAddress)
+		_, err = fmt.Fprintf(w, "%v %v\n", monitoringIpAddress, InventoryAddressLineSuffix)
 		if err != nil {
 			return err
 		}
