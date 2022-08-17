@@ -96,7 +96,8 @@ func TestCreateContainerConfiguration_FromExistingFile(t *testing.T) {
 	}
 }
 
-func TestCreateContainerConfiguration_UserInteraction(t *testing.T) {
+
+func TestCreateContainerConfiguration_UserInteraction_General(t *testing.T) {
 	tests := []configCreationTest{
 		{
 			name: "No configuration file, full user interaction, valid user input",
@@ -115,6 +116,17 @@ func TestCreateContainerConfiguration_UserInteraction(t *testing.T) {
 				"../../testResources/dummy_dir/dummy_sub_dir/dummy_ansible_inventory",
 			},
 		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			runContainerConfigurationTest(t, tt)
+		})
+	}
+}
+
+func TestCreateContainerConfiguration_UserInteraction_SshKey(t *testing.T) {
+	tests := []configCreationTest{
 		{
 			name: "User unable to specify ssh key path, exhausts attempts",
 			configurationFilePath: "",
@@ -152,6 +164,17 @@ func TestCreateContainerConfiguration_UserInteraction(t *testing.T) {
 				"../../testResources/dummy_dir/dummy_sub_dir/dummy_ansible_inventory",
 			},
 		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			runContainerConfigurationTest(t, tt)
+		})
+	}
+}
+
+func TestCreateContainerConfiguration_UserInteraction_ProxyAddressPrefix(t *testing.T) {
+	tests := []configCreationTest{
 		{
 			name: "User unable to specify proxy address prefix, exhausts attempts",
 			configurationFilePath: "",
@@ -190,8 +213,75 @@ func TestCreateContainerConfiguration_UserInteraction(t *testing.T) {
 				"../../testResources/dummy_dir/dummy_sub_dir/dummy_ansible_inventory",
 			},
 		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			runContainerConfigurationTest(t, tt)
+		})
+	}
+}
+
+
+func TestCreateContainerConfiguration_UserInteraction_GenerateInventory(t *testing.T) {
+	tests := []configCreationTest{
 		{
-			name: "Generate Ansible Inventory interactively, 3 proxies, monitoring, valid parameters",
+			name: "Generate Ansible Inventory interactively, demo, 1 proxy, monitoring, valid",
+			configurationFilePath: "",
+			expectedConfig: &config.ContainerInitConfig{
+				Properties: map[string]string{
+					config.SshKeyPathOnHostPropertyName:           ConvertRelativePathToAbsoluteForTests("../../testResources/dummy_dir/dummy_sub_dir/dummy_ssh_key"),
+					config.ProxyIpAddressPrefixPropertyName:       "172.18.*",
+					config.AnsibleInventoryPathOnHostPropertyName: ConvertRelativePathToAbsoluteForTests("cloudgate_inventory"),
+				},
+			},
+			userInputValues: []string{
+				"../../testResources/dummy_dir/dummy_sub_dir/dummy_ssh_key",
+				"172.18.*",
+				"n",
+				"y",
+				"172.18.12.27\n",
+				"172.18.100.42",
+			},
+			generateInventoryFile: true,
+		},
+		{
+			name: "Generate Ansible Inventory interactively, demo, 1 proxy, no monitoring, valid",
+			configurationFilePath: "",
+			expectedConfig: &config.ContainerInitConfig{
+				Properties: map[string]string{
+					config.SshKeyPathOnHostPropertyName:           ConvertRelativePathToAbsoluteForTests("../../testResources/dummy_dir/dummy_sub_dir/dummy_ssh_key"),
+					config.ProxyIpAddressPrefixPropertyName:       "172.18.*",
+					config.AnsibleInventoryPathOnHostPropertyName: ConvertRelativePathToAbsoluteForTests("cloudgate_inventory"),
+				},
+			},
+			userInputValues: []string{
+				"../../testResources/dummy_dir/dummy_sub_dir/dummy_ssh_key",
+				"172.18.*",
+				"n",
+				"y",
+				"172.18.12.27\n",
+			},
+			generateInventoryFile: true,
+		},
+		{
+			name:  "Generate Ansible Inventory interactively, demo, no proxies, invalid",
+			configurationFilePath: "",
+			expectedConfig: &config.ContainerInitConfig{
+				Properties: map[string]string{},
+			},
+			userInputValues: []string{
+				"../../testResources/dummy_dir/dummy_sub_dir/dummy_ssh_key",
+				"172.18.*",
+				"n",
+				"y",
+				"\n",
+			},
+			isExpectedError: true,
+			expectedErrorMessage: "missing required configuration",
+		},
+		{
+			name: "Generate Ansible Inventory interactively, 3 proxies, monitoring, valid",
 			configurationFilePath: "",
 			expectedConfig: &config.ContainerInitConfig{
 				Properties: map[string]string{
@@ -211,6 +301,76 @@ func TestCreateContainerConfiguration_UserInteraction(t *testing.T) {
 				"172.18.100.42",
 			},
 			generateInventoryFile: true,
+		},
+		{
+			name: "Generate Ansible Inventory interactively, production, 3 proxies, no monitoring, valid",
+			configurationFilePath: "",
+			expectedConfig: &config.ContainerInitConfig{
+				Properties: map[string]string{
+					config.SshKeyPathOnHostPropertyName:           ConvertRelativePathToAbsoluteForTests("../../testResources/dummy_dir/dummy_sub_dir/dummy_ssh_key"),
+					config.ProxyIpAddressPrefixPropertyName:       "172.18.*",
+					config.AnsibleInventoryPathOnHostPropertyName: ConvertRelativePathToAbsoluteForTests("cloudgate_inventory"),
+				},
+			},
+			userInputValues: []string{
+				"../../testResources/dummy_dir/dummy_sub_dir/dummy_ssh_key",
+				"172.18.*",
+				"n",
+				"n",
+				"172.18.10.134",
+				"172.18.11.65",
+				"172.18.12.27\n",
+			},
+			generateInventoryFile: true,
+		},
+		{
+			name: "Generate Ansible Inventory interactively, production, no proxies, invalid",
+			configurationFilePath: "",
+			expectedConfig: &config.ContainerInitConfig{
+				Properties: map[string]string{},
+			},
+			userInputValues: []string{
+				"../../testResources/dummy_dir/dummy_sub_dir/dummy_ssh_key",
+				"172.18.*",
+				"n",
+				"n",
+				"\n",
+			},
+			isExpectedError: true,
+			expectedErrorMessage: "missing required configuration",
+		},
+		{
+			name: "Generate Ansible Inventory interactively, production, one proxy, invalid",
+			configurationFilePath: "",
+			expectedConfig: &config.ContainerInitConfig{
+				Properties: map[string]string{},
+			},
+			userInputValues: []string{
+				"../../testResources/dummy_dir/dummy_sub_dir/dummy_ssh_key",
+				"172.18.*",
+				"n",
+				"n",
+				"172.18.10.134\n",
+			},
+			isExpectedError: true,
+			expectedErrorMessage: "missing required configuration",
+		},
+		{
+			name: "Generate Ansible Inventory interactively, production, two proxies, invalid",
+			configurationFilePath: "",
+			expectedConfig: &config.ContainerInitConfig{
+				Properties: map[string]string{},
+			},
+			userInputValues: []string{
+				"../../testResources/dummy_dir/dummy_sub_dir/dummy_ssh_key",
+				"172.18.*",
+				"n",
+				"n",
+				"172.18.10.134",
+				"172.18.11.65\n",
+			},
+			isExpectedError: true,
+			expectedErrorMessage: "missing required configuration",
 		},
 	}
 

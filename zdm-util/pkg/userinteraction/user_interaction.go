@@ -180,9 +180,13 @@ func (o *InteractionOrchestrator) promptForAnsibleInventory() error {
 		}
 		if ansibleInventoryPathOnHost == "" {
 			fmt.Println()
-			proxyIpsAddresses, monitoringIpAddress := o.promptForInventoryFileValues()
+			proxyIpsAddresses, monitoringIpAddress, err := o.promptForInventoryFileValues()
 
-			err := populateInventoryFile(DefaultAnsibleInventoryFileName, proxyIpsAddresses, monitoringIpAddress)
+			if err != nil {
+				return err
+			}
+
+			err = populateInventoryFile(DefaultAnsibleInventoryFileName, proxyIpsAddresses, monitoringIpAddress)
 			if err != nil {
 				fmt.Printf("The creation of a new Ansible inventory file with name %v in the current directory failed, due to %v \n", DefaultAnsibleInventoryFileName, err)
 				return fmt.Errorf("missing required configuration")
@@ -203,7 +207,7 @@ func (o *InteractionOrchestrator) promptForAnsibleInventory() error {
 // promptForInventoryFileValues asks the user to provide:
 //  - the IP addresses of their proxy instances (requesting the appropriate minimum based on the type of deployment)
 //  - the IP address of their monitoring instance (optional)
-func (o *InteractionOrchestrator) promptForInventoryFileValues() ([]string, string) {
+func (o *InteractionOrchestrator) promptForInventoryFileValues() ([]string, string, error) {
 	fmt.Printf("This utility will create a new inventory file and populate it interactively.\n")
 	fmt.Printf("The file will be called %v and will be located in the current directory \n", DefaultAnsibleInventoryFileName)
 	fmt.Println()
@@ -213,7 +217,7 @@ func (o *InteractionOrchestrator) promptForInventoryFileValues() ([]string, stri
 	fmt.Printf("\nYou will now be prompted for the private IP addresses of all your proxy instances.\n")
 
 	var minNumberOfProxies int
-	if err != nil && ynDemoEnv {
+	if err == nil && ynDemoEnv {
 		fmt.Println("At least one proxy instance is required for local testing and evaluation purposes. ")
 		minNumberOfProxies = 1
 	} else {
@@ -226,13 +230,14 @@ func (o *InteractionOrchestrator) promptForInventoryFileValues() ([]string, stri
 	proxyIpsAddresses := StringPromptLoopingForMultipleValues("Proxy private IP address", config.ValidateIPAddress, o.userInputReader)
 	if len(proxyIpsAddresses) < minNumberOfProxies {
 		fmt.Printf("A minimum of %v private IP addresses must be specified\n", minNumberOfProxies)
+		return nil, "", fmt.Errorf("missing required configuration")
 	}
 	fmt.Println()
 	monitoringIpAddress := StringPrompt("Please enter the private IP address of your monitoring instance. Simply press ENTER to leave it empty",
 		"", true, DefaultMaxAttempts, config.ValidateIPAddress, o.userInputReader)
 	fmt.Println()
 
-	return proxyIpsAddresses, monitoringIpAddress
+	return proxyIpsAddresses, monitoringIpAddress, nil
 }
 
 // populateInventoryFile creates a new Ansible inventory file populating it with the provided addresses
