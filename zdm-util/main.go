@@ -41,7 +41,6 @@ func launchUtil(customConfigFilePath string, userInputFile *os.File) {
 	}
 
 	ynAcceptAndProceed, err := interactionOrchestrator.DisplayConfigurationAndPromptForConfirmation()
-
 	if err != nil {
 		fmt.Printf("ERROR: %v. %v \n", err, UtilityExitingMessage+RectifyAndRerunMessage)
 		return
@@ -50,7 +49,7 @@ func launchUtil(customConfigFilePath string, userInputFile *os.File) {
 	if ynAcceptAndProceed {
 		err = docker.CreateAndInitializeContainer(containerConfig, reader)
 		if err != nil {
-			fmt.Printf("ERROR: %v. %v \n", err, UtilityExitingMessage)
+			fmt.Printf("ERROR: %v. %v \n", err, UtilityExitingMessage+RectifyAndRerunMessage)
 		}
 	}
 

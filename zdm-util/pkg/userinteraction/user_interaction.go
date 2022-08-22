@@ -38,7 +38,10 @@ func (o *InteractionOrchestrator) CreateContainerConfiguration(customConfigFileP
 	printUtilityGeneralPreamble()
 	var err error
 
-	o.containerConfig = o.loadConfigurationFromExistingFile(customConfigFilePath)
+	o.containerConfig, err = o.loadConfigurationFromExistingFile(customConfigFilePath)
+	if err != nil {
+		return nil, err
+	}
 
 	fmt.Println()
 
@@ -80,7 +83,7 @@ func printUtilityGeneralPreamble() {
 	fmt.Println()
 }
 
-func (o *InteractionOrchestrator) loadConfigurationFromExistingFile(customConfigFilePath string) *config.ContainerInitConfig {
+func (o *InteractionOrchestrator) loadConfigurationFromExistingFile(customConfigFilePath string) (*config.ContainerInitConfig, error) {
 
 	var containerConfig *config.ContainerInitConfig
 	existingConfigFilePath := customConfigFilePath
@@ -90,9 +93,13 @@ func (o *InteractionOrchestrator) loadConfigurationFromExistingFile(customConfig
 		if config.ValidateFilePathSilently(DefaultConfigurationFilePath) {
 			ynUseDefaultFile, err := YesNoPrompt(fmt.Sprintf("Found existing configuration file %v. Do you wish to use this file?", DefaultConfigurationFilePath),
 				true, true, o.userInputReader, DefaultMaxAttempts)
-			if err == nil && ynUseDefaultFile {
+			if err != nil {
+				return nil, fmt.Errorf("no clear indication was given about whether to use the existing configuration file: %v", err)
+			}
+			if ynUseDefaultFile {
 				existingConfigFilePath = DefaultConfigurationFilePath
 			}
+			// if err != nil, meaning that the user was not able to confirm whether to use the file or not, the file will not be used and an empty config will be returned
 		}
 	}
 
@@ -109,7 +116,7 @@ func (o *InteractionOrchestrator) loadConfigurationFromExistingFile(customConfig
 	} else {
 		containerConfig = config.NewEmptyContainerInitConfig()
 	}
-	return containerConfig
+	return containerConfig, nil
 }
 
 func populateConfigFromConfigurationFile(existingConfigurationFilePath string) *config.ContainerInitConfig {
@@ -167,7 +174,11 @@ func (o *InteractionOrchestrator) promptForProxyPrivateIpAddressPrefix() error {
 func (o *InteractionOrchestrator) promptForAnsibleInventory() error {
 	if _, found := o.containerConfig.Properties[config.AnsibleInventoryPathOnHostPropertyName]; !found {
 		ansibleInventoryPathOnHost := ""
-		if ynInventory, err := YesNoPrompt("Do you have an existing Ansible inventory file?", false, false, o.userInputReader, DefaultMaxAttempts); err == nil && ynInventory {
+		ynInventory, ynErr := YesNoPrompt("Do you have an existing Ansible inventory file?", false, false, o.userInputReader, DefaultMaxAttempts)
+		if ynErr != nil {
+			return fmt.Errorf("no indication was given about whether an Ansible inventory file exists or should be created interactively: %v", ynErr)
+		}
+		if ynInventory {
 			fmt.Println()
 			ansibleInventoryPathOnHost = StringPrompt("Please enter the path and name of your Ansible inventory file. Simply press ENTER if your inventory is "+DefaultAnsibleInventoryDir+DefaultAnsibleInventoryFileName,
 				"", true, DefaultMaxAttempts, config.ValidateFilePath, o.userInputReader)
@@ -214,18 +225,21 @@ func (o *InteractionOrchestrator) promptForAnsibleInventory() error {
 func (o *InteractionOrchestrator) promptForInventoryFileValues() ([]string, string, error) {
 	fmt.Printf("This utility will create a new inventory file and populate it interactively.\n")
 	fmt.Printf("The file will be called %v and will be located in the current directory \n", DefaultAnsibleInventoryFileName)
-	fmt.Println()
 
-	ynDemoEnv, err := YesNoPrompt("Is this proxy deployment for local testing and evaluation?", false, false, o.userInputReader, DefaultMaxAttempts)
+	ynDemoEnv, err := YesNoPrompt("Is this proxy deployment for local testing and evaluation?", true, false, o.userInputReader, DefaultMaxAttempts)
+	if err != nil {
+		fmt.Printf("\nNo valid answer was given, considering this a production deployment.\n")
+		ynDemoEnv = false
+	}
 
-	fmt.Printf("\nYou will now be prompted for the private IP addresses of all your proxy instances.\n")
+	fmt.Printf("\nYou will now be prompted for the private IP addresses of all your proxy instances. ")
 
 	var minNumberOfProxies int
-	if err == nil && ynDemoEnv {
-		fmt.Println("At least one proxy instance is required for local testing and evaluation purposes. ")
+	if ynDemoEnv {
+		fmt.Printf("At least one proxy instance is required for local testing and evaluation purposes. \n")
 		minNumberOfProxies = 1
 	} else {
-		fmt.Println("At least three proxy instances are required for general testing and production deployments. ")
+		fmt.Printf("At least three proxy instances are required for general testing and production deployments. \n")
 		minNumberOfProxies = 3
 	}
 

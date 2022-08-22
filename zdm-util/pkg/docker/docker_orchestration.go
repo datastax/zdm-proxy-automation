@@ -65,14 +65,20 @@ func CreateAndInitializeContainer(containerConfig *config.ContainerInitConfig, u
 			fmt.Printf("The container %v already exists and is in running state. \n\n", dockerContainerName)
 			fmt.Printf("If you are happy to use the existing container, this utility will exit. \n")
 			fmt.Printf("Otherwise, this utility will destroy the existing container and recreate it from scratch. Note: in this case, all data and configuration in the container will be lost. \n\n")
-			ynUseExistingContainer, _ := userinteraction.YesNoPrompt("Do you wish to use this existing container?", false, false, userInputReader, 0)
+			ynUseExistingContainer, ynUseErr := userinteraction.YesNoPrompt("Do you wish to use this existing container?", false, false, userInputReader, userinteraction.DefaultMaxAttempts)
+			if ynUseErr != nil {
+				return fmt.Errorf("found existing container, but it is not clear whether you wish to use it or recreate it: %v", ynUseErr)
+			}
 			if ynUseExistingContainer {
 				fmt.Printf("You decided to use the existing container. \n")
 				return nil
 			} else {
 				fmt.Println()
-				ynDestroyAndRecreateContainer, _ := userinteraction.YesNoPrompt("You decided to remove and recreate the container. All its data and configuration will be lost. Are you sure you want to proceed?",
-					true, false, userInputReader, 0)
+				ynDestroyAndRecreateContainer, ynRecreateErr := userinteraction.YesNoPrompt("You decided to remove and recreate the container. All its data and configuration will be lost. Are you sure you want to proceed?",
+					true, false, userInputReader, userinteraction.DefaultMaxAttempts)
+				if ynRecreateErr != nil {
+					return fmt.Errorf("found existing container. You indicated that you do not wish to use it, but no clear confirmation was given about proceeding to destroy and recreate it: %v", ynRecreateErr)
+				}
 				if ynDestroyAndRecreateContainer {
 					err = orchestrator.removeExistingContainer(containerId)
 					if err != nil {
