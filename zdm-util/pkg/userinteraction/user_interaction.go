@@ -10,7 +10,7 @@ import (
 const (
 	DefaultConfigurationFilePath    = "ansible_container_init_config"
 	DefaultAnsibleInventoryDir      = "/home/ubuntu/"
-	DefaultAnsibleInventoryFileName = "cloudgate_inventory"
+	DefaultAnsibleInventoryFileName = "zdm_proxy_ansible_inventory"
 
 	DefaultMaxAttempts                = 5
 	RequiredParameterNoDefaultMessage = "This is a required parameter and does not have a default value. "

@@ -313,7 +313,7 @@ func TestCreateContainerConfiguration_UserInteraction_GenerateInventory(t *testi
 				Properties: map[string]string{
 					config.SshKeyPathOnHostPropertyName:           testutils.ConvertRelativePathToAbsoluteForTests("../../testResources/dummy_dir/dummy_sub_dir/dummy_ssh_key"),
 					config.ProxyIpAddressPrefixPropertyName:       "172.18.*",
-					config.AnsibleInventoryPathOnHostPropertyName: testutils.ConvertRelativePathToAbsoluteForTests("cloudgate_inventory"),
+					config.AnsibleInventoryPathOnHostPropertyName: testutils.ConvertRelativePathToAbsoluteForTests("zdm_proxy_ansible_inventory"),
 				},
 			},
 			userInputValues: []string{
@@ -333,7 +333,7 @@ func TestCreateContainerConfiguration_UserInteraction_GenerateInventory(t *testi
 				Properties: map[string]string{
 					config.SshKeyPathOnHostPropertyName:           testutils.ConvertRelativePathToAbsoluteForTests("../../testResources/dummy_dir/dummy_sub_dir/dummy_ssh_key"),
 					config.ProxyIpAddressPrefixPropertyName:       "172.18.*",
-					config.AnsibleInventoryPathOnHostPropertyName: testutils.ConvertRelativePathToAbsoluteForTests("cloudgate_inventory"),
+					config.AnsibleInventoryPathOnHostPropertyName: testutils.ConvertRelativePathToAbsoluteForTests("zdm_proxy_ansible_inventory"),
 				},
 			},
 			userInputValues: []string{
@@ -352,7 +352,7 @@ func TestCreateContainerConfiguration_UserInteraction_GenerateInventory(t *testi
 				Properties: map[string]string{
 					config.SshKeyPathOnHostPropertyName:           testutils.ConvertRelativePathToAbsoluteForTests("../../testResources/dummy_dir/dummy_sub_dir/dummy_ssh_key"),
 					config.ProxyIpAddressPrefixPropertyName:       "172.18.*",
-					config.AnsibleInventoryPathOnHostPropertyName: testutils.ConvertRelativePathToAbsoluteForTests("cloudgate_inventory"),
+					config.AnsibleInventoryPathOnHostPropertyName: testutils.ConvertRelativePathToAbsoluteForTests("zdm_proxy_ansible_inventory"),
 				},
 			},
 			userInputValues: []string{
@@ -373,7 +373,7 @@ func TestCreateContainerConfiguration_UserInteraction_GenerateInventory(t *testi
 				Properties: map[string]string{
 					config.SshKeyPathOnHostPropertyName:           testutils.ConvertRelativePathToAbsoluteForTests("../../testResources/dummy_dir/dummy_sub_dir/dummy_ssh_key"),
 					config.ProxyIpAddressPrefixPropertyName:       "172.18.*",
-					config.AnsibleInventoryPathOnHostPropertyName: testutils.ConvertRelativePathToAbsoluteForTests("cloudgate_inventory"),
+					config.AnsibleInventoryPathOnHostPropertyName: testutils.ConvertRelativePathToAbsoluteForTests("zdm_proxy_ansible_inventory"),
 				},
 			},
 			userInputValues: []string{
@@ -409,7 +409,7 @@ func TestCreateContainerConfiguration_UserInteraction_GenerateInventory(t *testi
 				Properties: map[string]string{
 					config.SshKeyPathOnHostPropertyName:           testutils.ConvertRelativePathToAbsoluteForTests("../../testResources/dummy_dir/dummy_sub_dir/dummy_ssh_key"),
 					config.ProxyIpAddressPrefixPropertyName:       "172.18.*",
-					config.AnsibleInventoryPathOnHostPropertyName: testutils.ConvertRelativePathToAbsoluteForTests("cloudgate_inventory"),
+					config.AnsibleInventoryPathOnHostPropertyName: testutils.ConvertRelativePathToAbsoluteForTests("zdm_proxy_ansible_inventory"),
 				},
 			},
 			userInputValues: []string{
@@ -431,7 +431,7 @@ func TestCreateContainerConfiguration_UserInteraction_GenerateInventory(t *testi
 				Properties: map[string]string{
 					config.SshKeyPathOnHostPropertyName:           testutils.ConvertRelativePathToAbsoluteForTests("../../testResources/dummy_dir/dummy_sub_dir/dummy_ssh_key"),
 					config.ProxyIpAddressPrefixPropertyName:       "172.18.*",
-					config.AnsibleInventoryPathOnHostPropertyName: testutils.ConvertRelativePathToAbsoluteForTests("cloudgate_inventory"),
+					config.AnsibleInventoryPathOnHostPropertyName: testutils.ConvertRelativePathToAbsoluteForTests("zdm_proxy_ansible_inventory"),
 				},
 			},
 			userInputValues: []string{
@@ -452,7 +452,7 @@ func TestCreateContainerConfiguration_UserInteraction_GenerateInventory(t *testi
 				Properties: map[string]string{
 					config.SshKeyPathOnHostPropertyName:           testutils.ConvertRelativePathToAbsoluteForTests("../../testResources/dummy_dir/dummy_sub_dir/dummy_ssh_key"),
 					config.ProxyIpAddressPrefixPropertyName:       "172.18.*",
-					config.AnsibleInventoryPathOnHostPropertyName: testutils.ConvertRelativePathToAbsoluteForTests("cloudgate_inventory"),
+					config.AnsibleInventoryPathOnHostPropertyName: testutils.ConvertRelativePathToAbsoluteForTests("zdm_proxy_ansible_inventory"),
 				},
 			},
 			userInputValues: []string{
@@ -475,7 +475,7 @@ func TestCreateContainerConfiguration_UserInteraction_GenerateInventory(t *testi
 				Properties: map[string]string{
 					config.SshKeyPathOnHostPropertyName:           testutils.ConvertRelativePathToAbsoluteForTests("../../testResources/dummy_dir/dummy_sub_dir/dummy_ssh_key"),
 					config.ProxyIpAddressPrefixPropertyName:       "172.18.*",
-					config.AnsibleInventoryPathOnHostPropertyName: testutils.ConvertRelativePathToAbsoluteForTests("cloudgate_inventory"),
+					config.AnsibleInventoryPathOnHostPropertyName: testutils.ConvertRelativePathToAbsoluteForTests("zdm_proxy_ansible_inventory"),
 				},
 			},
 			userInputValues: []string{

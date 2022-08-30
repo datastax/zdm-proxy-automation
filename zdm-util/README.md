@@ -76,7 +76,7 @@ The container is now running and ready to use.
 ## Playbook execution
 
 After running the utility, you can simply open a shell on the running container with the command 
-`docker exec -it ach-test-container bash`, go to `cloudgate-automation/ansible` and start configuring and executing playbooks.
+`docker exec -it ach-test-container bash`, go to `zdm-proxy-automation/ansible` and start configuring and executing playbooks.
 
 Each playbook will still require the usual configuration - for example to run the installation playbook you will need to 
 populate at least `vars/proxy_core_config_input.yml`. 
