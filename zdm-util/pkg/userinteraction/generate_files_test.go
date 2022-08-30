@@ -2,13 +2,13 @@ package userinteraction
 
 import (
 	"bufio"
-	"cloudgate-automation/zdm-util/pkg/config"
-	"cloudgate-automation/zdm-util/pkg/testutils"
 	"fmt"
 	"github.com/stretchr/testify/require"
 	"os"
 	"strings"
 	"testing"
+	"zdm-proxy-automation/zdm-util/pkg/config"
+	"zdm-proxy-automation/zdm-util/pkg/testutils"
 )
 
 const testInventoryFilePath = "tmp_ansible_inventory"

@@ -2,9 +2,9 @@ package userinteraction
 
 import (
 	"bufio"
-	"cloudgate-automation/zdm-util/pkg/config"
 	"fmt"
 	"strings"
+	"zdm-proxy-automation/zdm-util/pkg/config"
 )
 
 const (

@@ -2,8 +2,6 @@ package docker
 
 import (
 	"bufio"
-	"cloudgate-automation/zdm-util/pkg/config"
-	"cloudgate-automation/zdm-util/pkg/userinteraction"
 	"context"
 	"fmt"
 	"github.com/docker/docker/api/types"
@@ -16,6 +14,8 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"zdm-proxy-automation/zdm-util/pkg/config"
+	"zdm-proxy-automation/zdm-util/pkg/userinteraction"
 )
 
 const (

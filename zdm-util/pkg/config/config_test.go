@@ -1,11 +1,11 @@
 package config
 
 import (
-	"cloudgate-automation/zdm-util/pkg/testutils"
 	"github.com/stretchr/testify/require"
 	"os"
 	"path/filepath"
 	"testing"
+	"zdm-proxy-automation/zdm-util/pkg/testutils"
 )
 
 func TestConfig_WithExistingFile(t *testing.T) {

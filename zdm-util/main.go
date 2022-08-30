@@ -2,11 +2,11 @@ package main
 
 import (
 	"bufio"
-	"cloudgate-automation/zdm-util/pkg/docker"
-	"cloudgate-automation/zdm-util/pkg/userinteraction"
 	"flag"
 	"fmt"
 	"os"
+	"zdm-proxy-automation/zdm-util/pkg/docker"
+	"zdm-proxy-automation/zdm-util/pkg/userinteraction"
 )
 
 const (
