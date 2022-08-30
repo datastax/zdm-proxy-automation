@@ -4,10 +4,10 @@
 ### Prerequisites ###
 ### Please make sure that the following files exist and are in the correct location:
 
-###  - ~/.ssh/<cloudgate_keypair_name>
-###  - ~/.ssh/<cloudgate_keypair_name>.pub
-###  - ~/.ssh/cloudgate-automation-deploy-key
-###  - ~/cloudgate-inventory
+###  - ~/.ssh/<zdm_keypair_name>
+###  - ~/.ssh/<zdm_keypair_name>.pub
+###  - ~/.ssh/zdm-proxy-automation-deploy-key
+###  - ~/zdm_ansible_inventory
 
 #####################################################################################
 
@@ -17,8 +17,8 @@
 
 ### REQUIRED variables - Please uncomment and specify
 
-# Name of the keypair that enables access to the Cloudgate infrastructure.
-#cloudgate_keypair_name=
+# Name of the keypair that enables access to the ZDM infrastructure.
+#zdm_keypair_name=
 
 ### End of REQUIRED variables
 
@@ -26,26 +26,26 @@
 # SSH config directory used by the SSH agent. Typically it is .ssh in the home of the OS user (default "ubuntu")
 ssh_dir="/home/ubuntu/.ssh"
 
-# Prefix of the private IP addresses of the Cloudgate proxies.
-# This defaults to the first two octets of the Cloudgate VPC created by Terraform in the standard configuration.
+# Prefix of the private IP addresses of the ZDM proxies.
+# This defaults to the first two octets of the ZDM VPC created by Terraform in the standard configuration.
 # Please uncomment and change as appropriate, to match the prefix of the private IPs of the proxy machines.
-proxy_private_ip_address_prefix="172.18"
+zdm_proxy_private_ip_address_prefix="172.18"
 
 ###################################################
 ### Main script
 ###################################################
 
-# Change the permissions of the Cloudgate key pair
-chmod 400 "${ssh_dir}"/"${cloudgate_keypair_name}"*
+# Change the permissions of the ZDM key pair
+chmod 400 "${ssh_dir}"/"${zdm_keypair_name}"*
 
 #Ensure that the ssh agent is running
 eval $(ssh-agent -s)
 
 # Add the private ssh key to the ssh agent
-ssh-add "${ssh_dir}"/"${cloudgate_keypair_name}"
+ssh-add "${ssh_dir}"/"${zdm_keypair_name}"
 
 # Append the following lines to the ssh config file (creating it if it doesn't exist)
-printf "# proxy instances \nHost %s.*\n  IdentityFile %s/%s\n" "${proxy_private_ip_address_prefix}" "${ssh_dir}" "${cloudgate_keypair_name}" >> "${ssh_dir}"/config
+printf "# proxy instances \nHost %s.*\n  IdentityFile %s/%s\n" "${zdm_proxy_private_ip_address_prefix}" "${ssh_dir}" "${zdm_keypair_name}" >> "${ssh_dir}"/config
 
 # Install Ansible if it has not already been installed
 if ! command -v ansible &> /dev/null; then
@@ -65,20 +65,20 @@ ansible-galaxy collection install community.docker
 # Install the community.general dependency
 ansible-galaxy collection install community.general
 
-# Set up the Cloudgate repository deploy key
-chmod 400 "${ssh_dir}"/cloudgate-automation-deploy-key
+# Set up the ZDM proxy automation repository deploy key
+chmod 400 "${ssh_dir}"/zdm-proxy-automation-deploy-key
 
 # Append the following lines to the ssh config file (creating it if it doesn't exist)
-printf "# deploy key \nHost cloudgate-automation github.com\n  Hostname github.com\n  IdentityFile %s/cloudgate-automation-deploy-key\n"  "${ssh_dir}" >> "${ssh_dir}"/config
+printf "# deploy key \nHost zdm-proxy-automation github.com\n  Hostname github.com\n  IdentityFile %s/zdm-proxy-automation-deploy-key\n"  "${ssh_dir}" >> "${ssh_dir}"/config
 
 # Clone the automation repo
-git clone git@cloudgate-automation:riptano/cloudgate-automation.git
+git clone git@zdm-proxy-automation:riptano/zdm-proxy-automation.git
 
-# Put the inventory file into the ansible directory of the cloudgate automation code
-mv /home/ubuntu/cloudgate_inventory /home/ubuntu/cloudgate-automation/ansible
+# Put the inventory file into the Ansible directory of the ZDM proxy automation code
+mv /home/ubuntu/zdm_ansible_inventory /home/ubuntu/zdm-proxy-automation/ansible
 
 # Overwrite the ansible.cfg file with the appropriate parameters to run playbooks from the jumphost
-cd cloudgate-automation/ansible
+cd zdm-proxy-automation/ansible || return
 printf "[ssh_connection]\nssh_args = -o StrictHostKeyChecking=no\n" > ansible.cfg
 
 

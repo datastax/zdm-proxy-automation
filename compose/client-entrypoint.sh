@@ -26,10 +26,10 @@ echo "Installing cqlsh"
 pip install -U cqlsh
 
 echo "Testing cqlsh"
-test_conn cloudgate-automation_proxy_1
+test_conn zdm-automation_proxy_1
 
 echo "Running SELECT statement"
-select_all cloudgate-automation_proxy_1
+select_all zdm-automation_proxy_1
 
 echo "Ready"
 tail -F /dev/null # keeps container running

@@ -2,7 +2,7 @@
 - name: Copy SCB to shared asset directory
   copy:
     src: "{{ secure_connect_bundle_path_name }}"
-    dest: "{{ shared_assets_dir }}/{{ scb_filename }}.zip"
+    dest: "{{ zdm_proxy_shared_assets_dir }}/{{ scb_filename }}.zip"
 
 - name: Set a value to indicate that the SCB was provided and passed to the proxies for this cluster
   set_fact: '{{ scb_filename }}_provided="success"'

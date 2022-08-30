@@ -1,0 +1,32 @@
+## *****
+## This is an example custom SSH config file that can be used as a guideline when manually creating the custom SSH config file for a certain ZDM deployment.
+##
+## IMPORTANT NOTE: Manually creating this file is ONLY needed if the infrastructure was NOT provisioned using the ZDM Terraform automation in this project.
+## This is because the ZDM Terraform automation creates the custom SSH config file automatically and places it in the correct location - in which case no manual operation is needed.
+##
+## Please remove this comment from the manually created file.
+## *****
+
+Host <jumphost_private_IP_address> jumphost
+  Hostname <jumphost_public_IP_address>
+  Port 22
+
+Host <private_IP_address_of_proxy_instance_0> zdm-proxy-0
+  Hostname <private_IP_address_of_proxy_instance_0>
+  ProxyJump jumphost
+
+Host <private_IP_address_of_proxy_instance_1> zdm-proxy-1
+  Hostname <private_IP_address_of_proxy_instance_1>
+  ProxyJump jumphost
+
+Host <private_IP_address_of_proxy_instance_2> zdm-proxy-2
+  Hostname <private_IP_address_of_proxy_instance_2>
+  ProxyJump jumphost
+
+Host *
+    User ubuntu
+    IdentityFile < Filename (with absolute path) of the locally-generated key pair for the ZDM infrastructure. Example ~/.ssh/zdm-key-XXX >
+    IdentitiesOnly yes
+    StrictHostKeyChecking no
+    GlobalKnownHostsFile /dev/null
+    UserKnownHostsFile /dev/null
