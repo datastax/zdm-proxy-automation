@@ -18,6 +18,7 @@ provider "aws" {
 module "zdm_proxy_networking" {
   source = "../submodules-aws/networking-aws"
 
+  custom_name_suffix = var.custom_name_suffix
   zdm_aws_profile = var.zdm_aws_profile
   zdm_aws_region = var.zdm_aws_region
 
@@ -31,18 +32,16 @@ module "zdm_proxy_networking" {
 module "zdm_instances" {
   source = "../submodules-aws/instances-aws"
 
-  // top level variables
+  custom_name_suffix = var.custom_name_suffix
   zdm_aws_profile = var.zdm_aws_profile
   zdm_aws_region = var.zdm_aws_region
   zdm_public_key_local_path = var.zdm_public_key_local_path
   zdm_keypair_name = var.zdm_keypair_name
 
-  // variable wirings for the instance module
   zdm_proxy_instance_count = var.zdm_proxy_instance_count
   zdm_proxy_instance_type = var.zdm_proxy_instance_type
   zdm_monitoring_instance_type = var.zdm_monitoring_instance_type
 
-  // variables from modules
   private_subnet_ids = module.zdm_proxy_networking.zdm_private_subnet_ids
   public_subnet_id = module.zdm_proxy_networking.zdm_public_subnet_id
 

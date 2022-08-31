@@ -20,7 +20,7 @@ resource "aws_vpc" "zdm_vpc" {
   enable_dns_support = true
 
   tags = {
-    Name = "zdm_vpc"
+    Name = "zdm_vpc${var.custom_name_suffix}"
   }
 }
 
@@ -38,7 +38,7 @@ resource "aws_subnet" "private_subnets" {
   availability_zone= data.aws_availability_zones.available.names[count.index]
   map_public_ip_on_launch = false
   tags = {
-    Name = "private_subnet_${data.aws_availability_zones.available.names[count.index]}"
+    Name = "private_subnet_${data.aws_availability_zones.available.names[count.index]}${var.custom_name_suffix}"
   }
 }
 
@@ -50,7 +50,7 @@ resource "aws_subnet" "private_subnets" {
 resource "aws_route_table" "private_subnet_rt" {
   vpc_id = aws_vpc.zdm_vpc.id
   tags = {
-    Name = "private_subnet_rt"
+    Name = "private_subnet_rt${var.custom_name_suffix}"
   }
 }
 
@@ -106,7 +106,7 @@ resource "aws_security_group" "private_instance_sg" {
   }
 
   tags = {
-    Name = "private_instance_sg"
+    Name = "private_instance_sg${var.custom_name_suffix}"
   }
 }
 
@@ -118,7 +118,7 @@ resource "aws_subnet" "public_subnet" {
   cidr_block = cidrsubnet(aws_vpc.zdm_vpc.cidr_block, 8, 100 )
   vpc_id = aws_vpc.zdm_vpc.id
   tags = {
-    Name = "public_subnet_${data.aws_availability_zones.available.names[0]}"
+    Name = "public_subnet_${data.aws_availability_zones.available.names[0]}${var.custom_name_suffix}"
   }
 }
 
@@ -130,7 +130,7 @@ resource "aws_nat_gateway" "nat_gateway" {
   allocation_id = aws_eip.nat_gateway_eip.id
   subnet_id = aws_subnet.public_subnet.id
   tags = {
-    Name = "zdm_nat_gateway"
+    Name = "zdm_nat_gateway${var.custom_name_suffix}"
   }
 }
 
@@ -160,7 +160,7 @@ resource "aws_default_route_table" "default_route_table_for_vpc" {
 resource "aws_internet_gateway" "internet_gateway" {
   vpc_id = aws_vpc.zdm_vpc.id
   tags = {
-    Name = "zdm_internet_gateway"
+    Name = "zdm_internet_gateway${var.custom_name_suffix}"
   }
 }
 
@@ -170,7 +170,7 @@ resource "aws_internet_gateway" "internet_gateway" {
 resource "aws_route_table" "internet_gateway_rt" {
   vpc_id = aws_vpc.zdm_vpc.id
   tags = {
-    Name = "zdm_internet_gateway_rt"
+    Name = "zdm_internet_gateway_rt${var.custom_name_suffix}"
   }
 }
 
@@ -233,6 +233,6 @@ resource "aws_security_group" "public_instance_sg" {
   }
 
   tags = {
-      Name = "public_instance_sg"
+      Name = "public_instance_sg${var.custom_name_suffix}"
   }
 }

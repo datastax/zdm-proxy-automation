@@ -26,7 +26,6 @@ variable "whitelisted_outbound_ip_ranges" {
 }
 
 variable "user_vpc_id" {
-  // TODO make this a list of strings so the user can specify multiple VPCs if necessary
   type = string
 }
 
@@ -46,10 +45,15 @@ variable "zdm_monitoring_instance_type" {
   default = "c5.2xlarge"
 }
 
-variable "zdm_public_key_localpath" {
-  # path where the key pair is stored, without trailing slash
+variable "zdm_public_key_local_path" {
+  description = "Path where the key pair is stored, without trailing slash"
   default = "~/.ssh"
 }
 
 variable "zdm_keypair_name" {}
+
+variable "custom_name_suffix" {
+  description = "Suffix to append to the name of all the resources that are being provisioned"
+  default = ""
+}
 

@@ -48,3 +48,5 @@ variable "zdm_monitoring_security_group_ids" {
 variable "public_subnet_id" {
   description = "Public subnet ID in the ZDM VPC"
 }
+
+variable "custom_name_suffix" {}

@@ -15,3 +15,5 @@ variable "whitelisted_outbound_ip_ranges" {
   # defaults to everything (unrestricted)
   default = ["0.0.0.0/0"]
 }
+
+variable "custom_name_suffix" {}

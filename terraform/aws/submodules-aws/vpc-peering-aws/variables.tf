@@ -16,3 +16,5 @@ variable "user_aws_profile" {
 
 variable "zdm_aws_region" {}
 
+variable "custom_name_suffix" {}
+

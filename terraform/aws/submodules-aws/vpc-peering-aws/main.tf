@@ -112,7 +112,7 @@ resource "aws_security_group" "zdm_allow_traffic_from_peering_sg" {
   provider = aws.zdm
 
 
-  name = "zdm_allow_traffic_from_peering_sg"
+  name = "zdm_allow_traffic_from_peering_sg${var.custom_name_suffix}"
   vpc_id = data.aws_vpc.zdm_vpc.id
   ingress {
     description      = "Inbound Native Cassandra Protocol from user VPC"
@@ -134,7 +134,7 @@ resource "aws_security_group" "zdm_allow_traffic_from_peering_sg" {
 resource "aws_security_group" "user_allow_traffic_from_peering_sg" {
   provider = aws.user
 
-  name = "user_allow_traffic_from_peering_sg"
+  name = "user_allow_traffic_from_peering_sg${var.custom_name_suffix}"
   vpc_id = data.aws_vpc.user_vpc.id
 
   ingress {

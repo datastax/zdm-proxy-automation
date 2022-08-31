@@ -29,9 +29,13 @@ variable "zdm_monitoring_instance_type" {
 }
 
 variable "zdm_public_key_local_path" {
-  # path where the key pair is stored, without trailing slash
+  description = "Path where the key pair is stored, without trailing slash"
   default = "~/.ssh"
 }
 
 variable "zdm_keypair_name" {}
 
+variable "custom_name_suffix" {
+  description = "Suffix to append to the name of all the resources that are being provisioned"
+  default = ""
+}

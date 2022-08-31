@@ -36,6 +36,11 @@ whitelisted_outbound_ip_ranges="0.0.0.0/0"
 # zdm_vpc_cidr_prefix=
 zdm_vpc_cidr_prefix="172.18"
 
+# OPTIONAL: Suffix to append to the name of each resource that is being provisioned.
+# This can be useful to distinguish the resources of different deployments in the same region.
+# Defaults to an empty string.
+#custom_name_suffix=
+
 # OPTIONAL: AWS instance type to be used for each ZDM proxy. Defaults to c5.xlarge, almost always fine.
 #zdm_proxy_instance_type=
 
@@ -43,7 +48,7 @@ zdm_vpc_cidr_prefix="172.18"
 #zdm_monitoring_instance_type=
 
 # OPTIONAL: Path to the locally-generated key pair for the ZDM infrastructure. Defaults to ~./ssh.
-#zdm_public_key_localpath=
+#zdm_public_key_local_path=
 
 ###################################################
 ### End of configuration variables
@@ -114,16 +119,20 @@ build_terraform_var_str () {
       terraform_vars+="-var \"zdm_vpc_cidr_prefix=${zdm_vpc_cidr_prefix}\" "
   fi
 
-  if [ -n "${proxy_instance_type}" ]; then
+  if [ -n "${zdm_proxy_instance_type}" ]; then
       terraform_vars+="-var \"zdm_proxy_instance_type=${zdm_proxy_instance_type}\" "
   fi
 
-  if [ -n "${monitoring_instance_type}" ]; then
+  if [ -n "${zdm_monitoring_instance_type}" ]; then
       terraform_vars+="-var \"zdm_monitoring_instance_type=${zdm_monitoring_instance_type}\" "
   fi
 
-  if [ -n "${zdm_public_key_localpath}" ]; then
-      terraform_vars+="-var \"zdm_public_key_localpath=${zdm_public_key_localpath}\" "
+  if [ -n "${zdm_public_key_local_path}" ]; then
+      terraform_vars+="-var \"zdm_public_key_local_path=${zdm_public_key_local_path}\" "
+  fi
+
+  if [ -n "${custom_name_suffix}" ]; then
+    terraform_vars+="-var \"custom_name_suffix=${custom_name_suffix}\" "
   fi
 
   echo "${terraform_vars}"
@@ -178,8 +187,11 @@ if [[ "$yesno" == "yes" ]]; then
   echo "#### Command apply executed with arguments: " "${tf_var_str}"
 fi
 
-terraform output > zdm_output.txt
+terraform output > ../../../zdm_output.txt
 
 chmod -x zdm_ansible_inventory
 cp zdm_ansible_inventory ../../../ansible/
-
+echo "ZDM Ansible inventory file created and copied into Ansible directory"
+chmod 600 zdm_ssh_config
+cp zdm_ssh_config ../../../ansible/
+echo "ZDM custom SSH file created and copied into Ansible directory"
