@@ -11,4 +11,4 @@ jobs:
           sleep 720
           docker-compose logs
           docker ps -a
-          docker exec cloudgate-automation_client_1 cqlsh cloudgate-automation_proxy_1 -e 'select * from system.local;'
+          docker exec zdm-proxy-automation_client_1 cqlsh zdm-proxy-automation_proxy_1 -e 'select * from system.local;'

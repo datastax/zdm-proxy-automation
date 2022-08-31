@@ -1,20 +1,20 @@
-output "cloudgate_vpc_id" {
-  description = "IDs of the Cloudgate VPC"
-  value = aws_vpc.cloudgate_vpc.id
+output "zdm_vpc_id" {
+  description = "IDs of the ZDM VPC"
+  value = aws_vpc.zdm_vpc.id
 }
 
 output "default_security_group_id" {
-  description = "Default security group of the Cloudgate VPC"
-  value = aws_vpc.cloudgate_vpc.default_security_group_id
+  description = "Default security group of the ZDM VPC"
+  value = aws_vpc.zdm_vpc.default_security_group_id
 }
 
-output "cloudgate_private_subnet_ids" {
-  description = "IDs of the private subnets in the Cloudgate VPC"
+output "zdm_private_subnet_ids" {
+  description = "IDs of the private subnets in the ZDM VPC"
   value = aws_subnet.private_subnets.*.id
 }
 
-output "cloudgate_public_subnet_id" {
-  description = "ID of the public subnet in the Cloudgate VPC"
+output "zdm_public_subnet_id" {
+  description = "ID of the public subnet in the ZDM VPC"
   value = aws_subnet.public_subnet.id
 }
 

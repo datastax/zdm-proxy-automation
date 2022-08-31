@@ -12,29 +12,28 @@ terraform {
 #############################
 ## AWS Key Pair
 #############################
-resource "aws_key_pair" "cloudgate_key_pair" {
-  key_name = var.cloudgate_keypair_name
-  //public_key = file("${var.cloudgate_public_key_localpath}/${var.cloudgate_keypair_name}.pub")
-  public_key = file(format("%s/%s.pub", var.cloudgate_public_key_localpath, var.cloudgate_keypair_name))
+resource "aws_key_pair" "zdm_key_pair" {
+  key_name = var.zdm_keypair_name
+  public_key = file(format("%s/%s.pub", var.zdm_public_key_local_path, var.zdm_keypair_name))
 
   tags = {
-    Name = var.cloudgate_keypair_name
+    Name = var.zdm_keypair_name
   }
 }
 
 #############################
-## Cloudgate proxy instances
+## ZDM proxy instances
 #############################
-resource "aws_instance" "cloudgate_proxy" {
-  count = var.proxy_instance_count
+resource "aws_instance" "zdm_proxy" {
+  count = var.zdm_proxy_instance_count
   
-  ami = lookup(var.ami, var.aws_region)
-  instance_type = var.proxy_instance_type
-  key_name = aws_key_pair.cloudgate_key_pair.key_name
+  ami = lookup(var.ami, var.zdm_aws_region)
+  instance_type = var.zdm_proxy_instance_type
+  key_name = aws_key_pair.zdm_key_pair.key_name
   associate_public_ip_address = false
 
   subnet_id = var.private_subnet_ids[count.index % length(var.private_subnet_ids)]
-  vpc_security_group_ids = var.proxy_security_group_ids
+  vpc_security_group_ids = var.zdm_proxy_security_group_ids
   
   root_block_device {
     volume_size = 100
@@ -42,22 +41,22 @@ resource "aws_instance" "cloudgate_proxy" {
   }
 
   tags = {
-    Name = "CloudgateProxy-${count.index}"
+    Name = "ZdmProxy-${count.index}"
   }
 
 }
 
 #############################
-## Monitoring instance
+## ZDM Jumphost / Monitoring instance
 #############################
-resource "aws_instance" "monitoring" {
-  ami = lookup(var.ami, var.aws_region)
-  instance_type = var.monitoring_instance_type
-  key_name      = aws_key_pair.cloudgate_key_pair.key_name
+resource "aws_instance" "zdm_monitoring" {
+  ami = lookup(var.ami, var.zdm_aws_region)
+  instance_type = var.zdm_monitoring_instance_type
+  key_name      = aws_key_pair.zdm_key_pair.key_name
   
   subnet_id = var.public_subnet_id
 
-  vpc_security_group_ids = var.monitoring_security_group_ids
+  vpc_security_group_ids = var.zdm_monitoring_security_group_ids
 
   root_block_device {
     volume_size = 200
@@ -65,44 +64,44 @@ resource "aws_instance" "monitoring" {
   }
 
   tags = {
-    Name = "MonitoringInstance"
+    Name = "ZdmMonitoringInstance"
   }
 }
 
-resource "aws_eip" "monitoring_eip" {
+resource "aws_eip" "zdm_monitoring_eip" {
   vpc      = true
 }
 
-resource "aws_eip_association" "monitoring_eip_assoc" {
-  instance_id   = aws_instance.monitoring.id
-  allocation_id = aws_eip.monitoring_eip.id
+resource "aws_eip_association" "zdm_monitoring_eip_assoc" {
+  instance_id   = aws_instance.zdm_monitoring.id
+  allocation_id = aws_eip.zdm_monitoring_eip.id
 }
 
 ###################################
 ## Generation of Ansible inventory
 ###################################
-resource "local_file" "ansible_inventory" {
-  content = templatefile("${path.module}/templates/cloudgate_inventory.tpl",
+resource "local_file" "zdm_ansible_inventory" {
+  content = templatefile("${path.module}/templates/zdm_ansible_inventory.tpl",
     {
-      cloudgate_proxy_private_ips = aws_instance.cloudgate_proxy.*.private_ip
-      monitoring_private_ip = aws_instance.monitoring.private_ip
+      zdm_proxy_private_ips = aws_instance.zdm_proxy.*.private_ip
+      zdm_monitoring_private_ip = aws_instance.zdm_monitoring.private_ip
     }
   )
-  filename = "cloudgate_inventory"
+  filename = "zdm_ansible_inventory"
 }
 
 ######################################################
-## Generation of Cloudgate SSH config file for ProxyJump
+## Generation of ZDM SSH config file for ProxyJump
 ######################################################
-resource "local_file" "cloudgate_ssh_config" {
-  content = templatefile("${path.module}/templates/cloudgate_ssh_config.tpl",
+resource "local_file" "zdm_ssh_config" {
+  content = templatefile("${path.module}/templates/zdm_ssh_config.tpl",
   {
-    cloudgate_proxy_private_ips = aws_instance.cloudgate_proxy.*.private_ip
-    jumphost_private_ip = aws_instance.monitoring.private_ip
-    jumphost_public_ip = aws_eip.monitoring_eip.public_ip
-    keypath = var.cloudgate_public_key_localpath
-    keyname = var.cloudgate_keypair_name
+    zdm_proxy_private_ips = aws_instance.zdm_proxy.*.private_ip
+    jumphost_private_ip = aws_instance.zdm_monitoring.private_ip
+    jumphost_public_ip = aws_eip.zdm_monitoring_eip.public_ip
+    keypath = var.zdm_public_key_local_path
+    keyname = var.zdm_keypair_name
   }
   )
-  filename = "cloudgate_ssh_config"
+  filename = "zdm_ssh_config"
 }

@@ -1,8 +1,8 @@
-variable "aws_region" {}
+variable "zdm_aws_profile" {}
 
-variable "proxy_instance_count" {}
+variable "zdm_aws_region" {}
 
-variable "cloudgate_aws_profile" {}
+variable "zdm_proxy_instance_count" {}
 
 variable "whitelisted_inbound_ip_ranges" {
   type = list(string)
@@ -16,22 +16,22 @@ variable "whitelisted_outbound_ip_ranges" {
   default = ["0.0.0.0/0"]
 }
 
-variable "aws_cloudgate_vpc_cidr_prefix" {
+variable "zdm_vpc_cidr_prefix" {
   default = "172.18"
 }
 
-variable "proxy_instance_type" {
+variable "zdm_proxy_instance_type" {
   default = "c5.xlarge"
 }
 
-variable "monitoring_instance_type" {
+variable "zdm_monitoring_instance_type" {
   default = "c5.2xlarge"
 }
 
-variable "cloudgate_public_key_localpath" {
+variable "zdm_public_key_local_path" {
   # path where the key pair is stored, without trailing slash
   default = "~/.ssh"
 }
 
-variable "cloudgate_keypair_name" {}
+variable "zdm_keypair_name" {}
 

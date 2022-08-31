@@ -54,14 +54,14 @@ if ! id "ubuntu" &>/dev/null; then
 	echo "Adding proxy servers to SSH known_hosts"
 	gosu ubuntu touch /home/ubuntu/.ssh/known_hosts
 
-	scan_key zdm-automation_jumphost_1
-	scan_key zdm-automation_proxy_1
-	scan_key  zdm-automation_proxy_2
-	scan_key  zdm-automation_proxy_3
+	scan_key zdm-proxy-automation_jumphost_1
+	scan_key zdm-proxy-automation_proxy_1
+	scan_key  zdm-proxy-automation_proxy_2
+	scan_key  zdm-proxy-automation_proxy_3
 
-	test_conn zdm-automation_proxy_1
-	test_conn  zdm-automation_proxy_2
-	test_conn  zdm-automation_proxy_3
+	test_conn zdm-proxy-automation_proxy_1
+	test_conn  zdm-proxy-automation_proxy_2
+	test_conn  zdm-proxy-automation_proxy_3
 
 	# remove shared keys once applied to remote servers
 	rm /run/keys/*.pub
@@ -76,24 +76,24 @@ fi
 echo "Starting SSH server"
 /etc/init.d/ssh start
 
-test_conn zdm-automation_proxy_1
-test_conn zdm-automation_proxy_2
-test_conn zdm-automation_proxy_3
+test_conn zdm-proxy-automation_proxy_1
+test_conn zdm-proxy-automation_proxy_2
+test_conn zdm-proxy-automation_proxy_3
 
-export PROXY_IP_1=$(get_ip zdm-automation_proxy_1)
-export PROXY_IP_2=$(get_ip zdm-automation_proxy_2)
-export PROXY_IP_3=$(get_ip zdm-automation_proxy_3)
-export JUMPHOST_IP=$(get_ip zdm-automation_jumphost_1)
+export PROXY_IP_1=$(get_ip zdm-proxy-automation_proxy_1)
+export PROXY_IP_2=$(get_ip zdm-proxy-automation_proxy_2)
+export PROXY_IP_3=$(get_ip zdm-proxy-automation_proxy_3)
+export JUMPHOST_IP=$(get_ip zdm-proxy-automation_jumphost_1)
 
-cd /opt/zdm-proxy-automation
+cd /opt/zdm-proxy-automation || return
 
 echo "Setting up Inventory file"
 envsubst < compose/zdm_ansible_inventory > ansible/zdm_ansible_inventory
 
 echo "Overwriting ansible.cfg"
-echo "[ssh_connection]\nssh_args = -o StrictHostKeyChecking=no\n" > ansible/ansible.cfg
+printf "[ssh_connection]\nssh_args = -o StrictHostKeyChecking=no\n" > ansible/ansible.cfg
 
-cd ansible
+cd ansible || return
 
 gosu ubuntu ansible-playbook install_zdm_proxy.yml -i zdm_ansible_inventory \
 	-e "origin_cassandra_username=foo" \
