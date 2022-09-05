@@ -50,10 +50,10 @@ printf "# proxy instances \nHost %s.*\n  IdentityFile %s/%s\n" "${zdm_proxy_priv
 # Install Ansible if it has not already been installed
 if ! command -v ansible &> /dev/null; then
   echo "Installing Ansible"
-  sudo apt-add-repository "deb http://ppa.launchpad.net/ansible/ansible/ubuntu bionic main"
   sudo apt update
   sudo apt install --yes software-properties-common
-  sudo add-apt-repository --yes --update ppa:ansible/ansible
+  #sudo add-apt-repository --yes --update ppa:ansible/ansible
+  sudo apt-add-repository "deb http://ppa.launchpad.net/ansible/ansible/ubuntu bionic main"
   sudo apt install --yes ansible
 fi
 
