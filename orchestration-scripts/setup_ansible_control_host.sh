@@ -72,7 +72,7 @@ chmod 400 "${ssh_dir}"/zdm-proxy-automation-deploy-key
 printf "# deploy key \nHost zdm-proxy-automation github.com\n  Hostname github.com\n  IdentityFile %s/zdm-proxy-automation-deploy-key\n"  "${ssh_dir}" >> "${ssh_dir}"/config
 
 # Clone the automation repo
-git clone git@zdm-proxy-automation:riptano/zdm-proxy-automation.git
+git clone git@github.com:datastax/zdm-proxy-automation.git
 
 # Put the inventory file into the Ansible directory of the ZDM proxy automation code
 mv /home/ubuntu/zdm_ansible_inventory /home/ubuntu/zdm-proxy-automation/ansible

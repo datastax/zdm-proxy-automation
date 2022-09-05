@@ -41,7 +41,7 @@ resource "aws_instance" "zdm_proxy" {
   }
 
   tags = {
-    Name = "ZdmProxy-${count.index}${var.custom_name_suffix}"
+    Name = "ZDM_Proxy_${count.index}${var.custom_name_suffix}"
   }
 
 }
@@ -64,7 +64,7 @@ resource "aws_instance" "zdm_monitoring" {
   }
 
   tags = {
-    Name = "ZdmMonitoringInstance${var.custom_name_suffix}"
+    Name = "ZDM_Monitoring${var.custom_name_suffix}"
   }
 }
 
