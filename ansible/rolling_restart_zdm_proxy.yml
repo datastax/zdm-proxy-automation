@@ -6,7 +6,7 @@
   become: yes
   vars_files:
     - vars/zdm_proxy_container.yml
-    - vars/zdm_proxy_advanced_config_input.yml
+    - vars/zdm_proxy_advanced_config.yml
 
   tasks:
     - name: Restart one ZDM proxy instance at a time

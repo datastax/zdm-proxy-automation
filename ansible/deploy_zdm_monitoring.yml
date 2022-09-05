@@ -8,7 +8,7 @@
     - ansible-grafana
   vars_files:
     - vars/zdm_monitoring_config.yml
-    - vars/zdm_proxy_advanced_config_input.yml
+    - vars/zdm_proxy_advanced_config.yml
   vars:
     prometheus_zdm_metrics_port: "{{ zdm_proxy_metrics_port }}"
     grafana_version: "{{ grafana_version }}"

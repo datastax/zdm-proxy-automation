@@ -17,8 +17,8 @@
 - name: Create ZDM proxy configuration env file based on the latest configuration
   hosts: proxies
   vars_files:
-    - vars/zdm_proxy_core_config_input.yml
-    - vars/zdm_proxy_advanced_config_input.yml
+    - vars/zdm_proxy_core_config.yml
+    - vars/zdm_proxy_advanced_config.yml
     - vars/zdm_playbook_internal_config.yml
 
   tasks:
@@ -37,7 +37,7 @@
   become: yes
   vars_files:
     - vars/zdm_proxy_container.yml
-    - vars/zdm_proxy_advanced_config_input.yml
+    - vars/zdm_proxy_advanced_config.yml
     - vars/zdm_playbook_internal_config.yml
 
   tasks:
