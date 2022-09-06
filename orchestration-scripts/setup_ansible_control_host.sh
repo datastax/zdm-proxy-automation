@@ -52,10 +52,12 @@ if ! command -v ansible &> /dev/null; then
   echo "Installing Ansible"
   sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 93C4A3FD7BB9C367
   sudo apt-add-repository "deb http://ppa.launchpad.net/ansible/ansible/ubuntu bionic main"
-  sudo apt update
-  sudo apt upgrade
+  sudo apt update --yes
+  sudo apt upgrade --yes
   sudo apt install --yes software-properties-common
   sudo apt install --yes ansible
+  sudo apt-get autoremove
+  sudo apt-get autoclean
 fi
 
 # Install the jmespath dependency
