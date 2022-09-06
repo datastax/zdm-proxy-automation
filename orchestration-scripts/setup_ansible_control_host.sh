@@ -50,10 +50,11 @@ printf "# proxy instances \nHost %s.*\n  IdentityFile %s/%s\n" "${zdm_proxy_priv
 # Install Ansible if it has not already been installed
 if ! command -v ansible &> /dev/null; then
   echo "Installing Ansible"
-  sudo apt update
-  sudo apt install --yes software-properties-common
-  #sudo add-apt-repository --yes --update ppa:ansible/ansible
+  sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 93C4A3FD7BB9C367
   sudo apt-add-repository "deb http://ppa.launchpad.net/ansible/ansible/ubuntu bionic main"
+  sudo apt update
+  sudo apt upgrade
+  sudo apt install --yes software-properties-common
   sudo apt install --yes ansible
 fi
 
@@ -61,10 +62,10 @@ fi
 sudo apt-get install --yes python-jmespath
 
 # Install the community.docker dependency
-ansible-galaxy collection install community.docker
+ansible-galaxy collection install community.docker:3.0.2
 
 # Install the community.general dependency
-ansible-galaxy collection install community.general
+ansible-galaxy collection install community.general:4.8.6
 
 # Set up the ZDM proxy automation repository deploy key
 chmod 400 "${ssh_dir}"/zdm-proxy-automation-deploy-key
