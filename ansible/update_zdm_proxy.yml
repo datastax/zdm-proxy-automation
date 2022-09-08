@@ -1,0 +1,70 @@
+---
+- name: Install Docker Python module
+  hosts: proxies
+  become: yes
+
+  tasks:
+    - name: Uninstall incompatible Docker-py Module
+      become: no
+      pip:
+        name: docker-py
+        state: absent
+
+    - name: Install Docker Module for Python
+      pip:
+        name: docker
+
+- name: Create ZDM proxy configuration env file based on the latest configuration
+  hosts: proxies
+  vars_files:
+    - vars/zdm_proxy_core_config.yml
+    - vars/zdm_proxy_advanced_config.yml
+    - vars/zdm_playbook_internal_config.yml
+
+  tasks:
+    - name: Generate env var file from template for mutable configuration
+      template:
+        src: "zdm_proxy_mutable_config.j2"
+        dest: "{{ zdm_proxy_home_dir }}/{{ zdm_proxy_config_fragments_dir_name }}/{{ zdm_proxy_mutable_config_fragment_file_name }}"
+    - name: Merge the immutable and mutable configuration files into a single one
+      assemble:
+        src: "{{ zdm_proxy_home_dir }}/{{ zdm_proxy_config_fragments_dir_name }}"
+        dest: "{{ zdm_proxy_home_dir }}/{{ zdm_proxy_environment_config_file_name }}"
+
+- name: Configure and restart each ZDM proxy in a rolling fashion
+  hosts: proxies
+  serial: 1
+  become: yes
+  vars_files:
+    - vars/zdm_proxy_container.yml
+    - vars/zdm_proxy_advanced_config.yml
+    - vars/zdm_playbook_internal_config.yml
+
+  tasks:
+    - name: Create ZDM proxy container with updated configuration
+      docker_container:
+        name: "{{ zdm_proxy_container_name }}"
+        image: "{{ zdm_proxy_image }}"
+        env_file: "{{ zdm_proxy_home_dir }}/{{ zdm_proxy_environment_config_file_name }}"
+        mounts:
+          - source: "{{ zdm_proxy_home_dir }}/{{ zdm_proxy_shared_assets_dir_name }}"
+            target: "{{ zdm_proxy_home_dir }}/{{ zdm_proxy_shared_assets_dir_name }}"
+            type: bind
+        network_mode: host
+        restart_policy: unless-stopped
+        restart: yes
+        state: started
+    - name: Wait for this ZDM proxy to come up
+      uri:
+        url: "http://{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}:{{ zdm_proxy_metrics_port }}/health/readiness"
+        status_code: 200
+      register: result
+      until: result.status == 200
+      retries: 6
+      delay: 5
+    - pause:
+        prompt: "Pause for 10s after restarting this ZDM proxy"
+        seconds: 10
+
+
+

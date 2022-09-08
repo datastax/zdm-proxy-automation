@@ -28,10 +28,10 @@ services:
     tty: true
     privileged: true
     volumes:
-      - .:/opt/cloudgate-automation
+      - .:/opt/zdm-proxy-automation
       - ./compose/keys:/run/keys
     entrypoint:
-      - /opt/cloudgate-automation/compose/proxy-entrypoint.sh
+      - /opt/zdm-proxy-automation/compose/proxy-entrypoint.sh
     networks:
       proxy:
     deploy:
@@ -43,10 +43,10 @@ services:
     restart: unless-stopped
     tty: true
     volumes:
-      - .:/opt/cloudgate-automation
+      - .:/opt/zdm-proxy-automation
       - ./compose/keys:/run/keys
     entrypoint:
-      - /opt/cloudgate-automation/compose/jumphost-entrypoint.sh
+      - /opt/zdm-proxy-automation/compose/jumphost-entrypoint.sh
     networks:
       proxy:
 
@@ -55,8 +55,8 @@ services:
     restart: unless-stopped
     tty: true
     volumes:
-      - .:/opt/cloudgate-automation
+      - .:/opt/zdm-proxy-automation
     entrypoint:
-      - /opt/cloudgate-automation/compose/client-entrypoint.sh
+      - /opt/zdm-proxy-automation/compose/client-entrypoint.sh
     networks:
       proxy:

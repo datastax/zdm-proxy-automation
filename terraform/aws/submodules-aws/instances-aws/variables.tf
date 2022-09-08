@@ -1,8 +1,8 @@
-variable "aws_profile" {}
-variable "aws_region" {}
+variable "zdm_aws_profile" {}
+variable "zdm_aws_region" {}
 
-variable "cloudgate_public_key_localpath" {}
-variable "cloudgate_keypair_name" {}
+variable "zdm_public_key_local_path" {}
+variable "zdm_keypair_name" {}
 
 
 variable "ami" {
@@ -25,26 +25,28 @@ variable "ami" {
   }
 }
 
-variable "proxy_instance_count" {}
+variable "zdm_proxy_instance_count" {}
 
-variable "proxy_instance_type" {}
+variable "zdm_proxy_instance_type" {}
 
-variable "monitoring_instance_type" {}
+variable "zdm_monitoring_instance_type" {}
 
 variable "private_subnet_ids" {
-  description = "Private subnets IDs in the Cloudgate VPC"
+  description = "Private subnets IDs in the ZDM VPC"
 }
 
-variable "proxy_security_group_ids" {
+variable "zdm_proxy_security_group_ids" {
   description = "Security group IDs to add to the proxy instances"
   type = list(string)
 }
 
-variable "monitoring_security_group_ids" {
+variable "zdm_monitoring_security_group_ids" {
   description = "Security group IDs to add to the monitoring instance"
   type = list(string)
 }
 
 variable "public_subnet_id" {
-  description = "Public subnet ID in the Cloudgate VPC"
+  description = "Public subnet ID in the ZDM VPC"
 }
+
+variable "custom_name_suffix" {}

@@ -10,60 +10,57 @@ terraform {
 }
 
 provider "aws" {
-  profile = var.cloudgate_aws_profile
-  region  = var.aws_region
+  profile = var.zdm_aws_profile
+  region  = var.zdm_aws_region
 }
 
-// creates the Cloudgate VPC and all the networking infrastructure
-module "proxy_networking" {
+// creates the ZDM VPC and all the networking infrastructure
+module "zdm_proxy_networking" {
   source = "../submodules-aws/networking-aws"
 
-  aws_profile = var.cloudgate_aws_profile
-  aws_region = var.aws_region
+  custom_name_suffix = var.custom_name_suffix
+  zdm_aws_profile = var.zdm_aws_profile
+  zdm_aws_region = var.zdm_aws_region
 
-  // variable wirings for the networking module
-  aws_cloudgate_vpc_cidr_prefix = var.aws_cloudgate_vpc_cidr_prefix
+  zdm_vpc_cidr_prefix = var.zdm_vpc_cidr_prefix
 
   whitelisted_inbound_ip_ranges = var.whitelisted_inbound_ip_ranges
   whitelisted_outbound_ip_ranges = var.whitelisted_outbound_ip_ranges
 }
 
-// peers the Cloudgate VPC with all the existing VPCs specified by the user
+// peers the ZDM VPC with the existing VPC specified by the user
 module "vpc_peering" {
   source = "../submodules-aws/vpc-peering-aws"
 
-  aws_region = var.aws_region
+  custom_name_suffix = var.custom_name_suffix
+  zdm_aws_region = var.zdm_aws_region
+  zdm_aws_profile = var.zdm_aws_profile
+  // if no user AWS profile was specified, default the user AWS profile to the ZDM AWS profile
+  user_aws_profile = (var.user_aws_profile != "" ? var.user_aws_profile : var.zdm_aws_profile)
 
-  cloudgate_aws_profile = var.cloudgate_aws_profile
-  // if no user AWS profile was specified, default the user AWS profile to the Cloudgate AWS profile
-  user_aws_profile = (var.user_aws_profile != "" ? var.user_aws_profile : var.cloudgate_aws_profile)
-
-  cloudgate_vpc_id = module.proxy_networking.cloudgate_vpc_id
-  cloudgate_route_table_ids = tolist([module.proxy_networking.private_subnet_route_table_id, module.proxy_networking.public_subnet_route_table_id])
+  zdm_vpc_id = module.zdm_proxy_networking.zdm_vpc_id
+  zdm_route_table_ids = tolist([module.zdm_proxy_networking.private_subnet_route_table_id, module.zdm_proxy_networking.public_subnet_route_table_id])
   user_vpc_id = var.user_vpc_id
   user_route_table_ids = var.user_route_table_ids
 }
 
-module "instances" {
+module "zdm_instances" {
   source = "../submodules-aws/instances-aws"
 
-  // top level variables
-  aws_profile = var.cloudgate_aws_profile
-  aws_region = var.aws_region
-  cloudgate_public_key_localpath = var.cloudgate_public_key_localpath
-  cloudgate_keypair_name = var.cloudgate_keypair_name
+  zdm_aws_profile = var.zdm_aws_profile
+  zdm_aws_region = var.zdm_aws_region
+  zdm_public_key_local_path = var.zdm_public_key_local_path
+  zdm_keypair_name = var.zdm_keypair_name
+  custom_name_suffix = var.custom_name_suffix
 
-  // variable wirings for the instance module
-  proxy_instance_count = var.proxy_instance_count
-  proxy_instance_type = var.proxy_instance_type
-  monitoring_instance_type = var.monitoring_instance_type
+  zdm_proxy_instance_count = var.zdm_proxy_instance_count
+  zdm_proxy_instance_type = var.zdm_proxy_instance_type
+  zdm_monitoring_instance_type = var.zdm_monitoring_instance_type
 
-  // variables from modules
-  private_subnet_ids = module.proxy_networking.cloudgate_private_subnet_ids
-  public_subnet_id = module.proxy_networking.cloudgate_public_subnet_id
+  private_subnet_ids = module.zdm_proxy_networking.zdm_private_subnet_ids
+  public_subnet_id = module.zdm_proxy_networking.zdm_public_subnet_id
 
-  //proxy_security_group_ids = [module.proxy_networking.private_instance_sg_id]
-  proxy_security_group_ids = concat(module.vpc_peering.user_to_cloudgate_security_group_ids,[module.proxy_networking.private_instance_sg_id])
+  zdm_proxy_security_group_ids = concat(module.vpc_peering.user_to_zdm_security_group_ids,[module.zdm_proxy_networking.private_instance_sg_id])
 
-  monitoring_security_group_ids = [module.proxy_networking.public_instance_sg_id]
+  zdm_monitoring_security_group_ids = [module.zdm_proxy_networking.public_instance_sg_id]
 }
