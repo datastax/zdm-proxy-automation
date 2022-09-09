@@ -122,16 +122,16 @@ cd || return
 ssh-keyscan github.com >> ~/.ssh/known_hosts
 
 # Clone the automation if it is not already present
-if [ -d "/home/ubuntu/cloudgate-automation" ]
+if [ -d "/home/ubuntu/zdm-proxy-automation" ]
 then
   echo "The automation git repo has already been cloned."
 else
   echo "Cloning the automation git repo"
-  git clone git@cloudgate-automation:riptano/cloudgate-automation.git
+  git clone git@github.com:datastax/zdm-proxy-automation.git
 fi
 echo
 
-cd cloudgate-automation/ansible || return
+cd zdm-proxy-automation/ansible || return
 
 # Overwrite the ansible.cfg file with the appropriate parameters to run playbooks from the jumphost
 echo "Setting the appropriate options in the global Ansible configuration file"
@@ -143,7 +143,7 @@ cd || return
 # Copy the Ansible inventory into the Ansible automation directory
 echo "Making the inventory file available to Ansible"
 sudo chown ubuntu:ubuntu "$ANSIBLE_INVENTORY_NAME"
-mv "$ANSIBLE_INVENTORY_NAME" /home/ubuntu/cloudgate-automation/ansible
+mv "$ANSIBLE_INVENTORY_NAME" /home/ubuntu/zdm-proxy-automation/ansible
 echo
 
 echo "************************************************************************ "
@@ -151,5 +151,5 @@ echo "*** The Ansible container is now fully initialized and ready to use. *** "
 echo "************************************************************************ "
 echo
 echo "You can proceed to configure and run the Ansible playbooks to deploy and manage the proxies."
-echo "As a reminder, your Ansible inventory file is called $ANSIBLE_INVENTORY_NAME and is now located in cloudgate-automation/ansible"
+echo "As a reminder, your Ansible inventory file is called $ANSIBLE_INVENTORY_NAME and is now located in zdm-proxy-automation/ansible"
 
