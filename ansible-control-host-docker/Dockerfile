@@ -15,8 +15,8 @@ RUN add-apt-repository ppa:ansible/ansible && apt-get update && apt-get install 
     python-jmespath \
  && rm -rf /var/lib/apt/lists/*
 
-RUN ansible-galaxy collection install community.docker
-RUN ansible-galaxy collection install community.general
+RUN ansible-galaxy collection install community.docker:3.0.2
+RUN ansible-galaxy collection install community.general:4.8.6
 
 # create ubuntu user
 RUN useradd -ms /bin/bash ubuntu
