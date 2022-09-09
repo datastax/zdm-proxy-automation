@@ -8,14 +8,14 @@
 
 #forward_system_queries_to_target:
 
-proxy_query_port: 9042
+zdm_proxy_query_port: 9042
 
 #cluster_connection_timeout_ms:
 #request_timeout_ms:
 
 #enable_metrics:
-#proxy_metrics_address: <defaults to the proxy instance's private IP>
-proxy_metrics_port: 14001
+#zdm_proxy_metrics_address: <defaults to the proxy instance's private IP>
+zdm_proxy_metrics_port: 14001
 
 #max_clients_threshold:
 

@@ -36,12 +36,12 @@ scrape_configs:
     static_configs:
     - targets:
       - {{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}:9090
-  - job_name: cloudgate_proxy
+  - job_name: zdm_proxy
     metrics_path: /metrics
     static_configs:
       - targets:
 {% for host in groups['proxies'] %}
-        - {{ host }}:{{ prometheus_cloudgate_metrics_port }}
+        - {{ host }}:{{ prometheus_zdm_metrics_port }}
 {% endfor %}
   - job_name: node
     metrics_path: /metrics

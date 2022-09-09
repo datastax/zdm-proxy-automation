@@ -14,13 +14,13 @@ terraform {
 ####################################
 ## VPC
 ####################################
-resource "aws_vpc" "cloudgate_vpc" {
-  cidr_block = "${var.aws_cloudgate_vpc_cidr_prefix}.0.0/16"
+resource "aws_vpc" "zdm_vpc" {
+  cidr_block = "${var.zdm_vpc_cidr_prefix}.0.0/16"
   enable_dns_hostnames = true
   enable_dns_support = true
 
   tags = {
-    Name = "cloudgate_vpc"
+    Name = "zdm_vpc${var.custom_name_suffix}"
   }
 }
 
@@ -33,12 +33,12 @@ data "aws_availability_zones" "available" {
 ####################################
 resource "aws_subnet" "private_subnets" {
   count = length(data.aws_availability_zones.available.names)
-  vpc_id = aws_vpc.cloudgate_vpc.id
-  cidr_block = cidrsubnet(aws_vpc.cloudgate_vpc.cidr_block, 8, 10+count.index )
+  vpc_id = aws_vpc.zdm_vpc.id
+  cidr_block = cidrsubnet(aws_vpc.zdm_vpc.cidr_block, 8, 10+count.index )
   availability_zone= data.aws_availability_zones.available.names[count.index]
   map_public_ip_on_launch = false
   tags = {
-    Name = "private_subnet_${data.aws_availability_zones.available.names[count.index]}"
+    Name = "private_subnet_${data.aws_availability_zones.available.names[count.index]}${var.custom_name_suffix}"
   }
 }
 
@@ -48,9 +48,9 @@ resource "aws_subnet" "private_subnets" {
 ## This is important for the VPC peering later on
 ##################################################
 resource "aws_route_table" "private_subnet_rt" {
-  vpc_id = aws_vpc.cloudgate_vpc.id
+  vpc_id = aws_vpc.zdm_vpc.id
   tags = {
-    Name = "private_subnet_rt"
+    Name = "private_subnet_rt${var.custom_name_suffix}"
   }
 }
 
@@ -72,7 +72,7 @@ resource "aws_route" "proxy_to_nat" {
 ######################################################################################
 resource "aws_security_group" "private_instance_sg" {
   name = "private_instance_sg"
-  vpc_id = aws_vpc.cloudgate_vpc.id
+  vpc_id = aws_vpc.zdm_vpc.id
 
   # Allow ssh connection from the public subnet (i.e. monitoring instance only)
   ingress {
@@ -106,7 +106,7 @@ resource "aws_security_group" "private_instance_sg" {
   }
 
   tags = {
-    Name = "private_instance_sg"
+    Name = "private_instance_sg${var.custom_name_suffix}"
   }
 }
 
@@ -115,11 +115,10 @@ resource "aws_security_group" "private_instance_sg" {
 ########################################################
 resource "aws_subnet" "public_subnet" {
   availability_zone = data.aws_availability_zones.available.names[0]
-#  cidr_block = "${var.aws_cloudgate_vpc_cidr_prefix}.100.0/24"
-  cidr_block = cidrsubnet(aws_vpc.cloudgate_vpc.cidr_block, 8, 100 )
-  vpc_id = aws_vpc.cloudgate_vpc.id
+  cidr_block = cidrsubnet(aws_vpc.zdm_vpc.cidr_block, 8, 100 )
+  vpc_id = aws_vpc.zdm_vpc.id
   tags = {
-    Name = "public_subnet_${data.aws_availability_zones.available.names[0]}"
+    Name = "public_subnet_${data.aws_availability_zones.available.names[0]}${var.custom_name_suffix}"
   }
 }
 
@@ -131,7 +130,7 @@ resource "aws_nat_gateway" "nat_gateway" {
   allocation_id = aws_eip.nat_gateway_eip.id
   subnet_id = aws_subnet.public_subnet.id
   tags = {
-    Name = "cloudgate_nat_gateway"
+    Name = "zdm_nat_gateway${var.custom_name_suffix}"
   }
 }
 
@@ -143,7 +142,7 @@ resource "aws_eip" "nat_gateway_eip" {
 ## Main route table must contain a route to send outbound traffic to NAT gateway
 ##################################################################################
 resource "aws_default_route_table" "default_route_table_for_vpc" {
-  default_route_table_id = aws_vpc.cloudgate_vpc.default_route_table_id
+  default_route_table_id = aws_vpc.zdm_vpc.default_route_table_id
 
   route {
     cidr_block = "0.0.0.0/0"
@@ -159,9 +158,9 @@ resource "aws_default_route_table" "default_route_table_for_vpc" {
 ## Internet gateway
 ####################################
 resource "aws_internet_gateway" "internet_gateway" {
-  vpc_id = aws_vpc.cloudgate_vpc.id
+  vpc_id = aws_vpc.zdm_vpc.id
   tags = {
-    Name = "cloudgate_internet_gateway"
+    Name = "zdm_internet_gateway${var.custom_name_suffix}"
   }
 }
 
@@ -169,9 +168,9 @@ resource "aws_internet_gateway" "internet_gateway" {
 ## Route table for internet gateway + association to it
 #########################################################
 resource "aws_route_table" "internet_gateway_rt" {
-  vpc_id = aws_vpc.cloudgate_vpc.id
+  vpc_id = aws_vpc.zdm_vpc.id
   tags = {
-    Name = "cloudgate_internet_gateway_rt"
+    Name = "zdm_internet_gateway_rt${var.custom_name_suffix}"
   }
 }
 
@@ -193,7 +192,7 @@ resource "aws_route_table_association" "internet_gateway_rta" {
 ######################################################################################
 resource "aws_security_group" "public_instance_sg" {
   name = "public_instance_sg"
-  vpc_id = aws_vpc.cloudgate_vpc.id
+  vpc_id = aws_vpc.zdm_vpc.id
 
   // Inbound SSH from trusted VPNs
   ingress {
@@ -220,7 +219,7 @@ resource "aws_security_group" "public_instance_sg" {
 
   // Allow any incoming traffic from within the VPC
   ingress {
-    cidr_blocks = [aws_vpc.cloudgate_vpc.cidr_block]
+    cidr_blocks = [aws_vpc.zdm_vpc.cidr_block]
     from_port = 0
     to_port = 0
     protocol = "tcp"
@@ -234,6 +233,6 @@ resource "aws_security_group" "public_instance_sg" {
   }
 
   tags = {
-      Name = "public_instance_sg"
+      Name = "public_instance_sg${var.custom_name_suffix}"
   }
 }

@@ -14,7 +14,7 @@
 - name: Download the Secure Connect Bundle for the cluster using the URL from the response
   get_url:
     url: "{{ scb_response.json.downloadURL }}"
-    dest: "{{ shared_assets_dir }}/{{ scb_filename }}.zip"
+    dest: "{{ zdm_proxy_shared_assets_dir }}/{{ scb_filename }}.zip"
     timeout: 30
   when:
     - scb_response is defined

@@ -1,20 +1,20 @@
-## Requester = Cloudgate
+## Requester = ZDM
 ## Accepter = User
 
 provider "aws" {
-  alias = "cloudgate"
-  profile = var.cloudgate_aws_profile
-  region = var.aws_region
+  alias = "zdm"
+  profile = var.zdm_aws_profile
+  region = var.zdm_aws_region
 }
 
 provider "aws" {
   alias = "user"
   profile = var.user_aws_profile
-  region = var.aws_region
+  region = var.zdm_aws_region
 }
 
-data "aws_vpc" "cloudgate_vpc" {
-  id = var.cloudgate_vpc_id
+data "aws_vpc" "zdm_vpc" {
+  id = var.zdm_vpc_id
 }
 
 data "aws_vpc" "user_vpc" {
@@ -26,17 +26,17 @@ data "aws_caller_identity" "user_identity" {
   provider = aws.user
 }
 
-# Cloudgate requests a peering connection
+# ZDM requests a peering connection
 resource "aws_vpc_peering_connection" "peering_request" {
-  provider = aws.cloudgate
+  provider = aws.zdm
 
-  vpc_id        = data.aws_vpc.cloudgate_vpc.id
+  vpc_id        = data.aws_vpc.zdm_vpc.id
   peer_vpc_id   = data.aws_vpc.user_vpc.id
   peer_owner_id = data.aws_caller_identity.user_identity.account_id
   auto_accept   = false
 
   tags = {
-    Side = "Cloudgate (Requester)"
+    Side = "ZDM (Requester)"
   }
 }
 
@@ -52,9 +52,9 @@ resource "aws_vpc_peering_connection_accepter" "peering_acceptance" {
   }
 }
 
-# On the Cloudgate side, set the peering connection id taken from the acceptance of the request
+# On the ZDM side, set the peering connection id taken from the acceptance of the request
 resource "aws_vpc_peering_connection_options" "requester_options" {
-  provider = aws.cloudgate
+  provider = aws.zdm
 
   # As options can't be set until the connection has been accepted
   # create an explicit dependency on the accepter.
@@ -79,41 +79,41 @@ resource "aws_vpc_peering_connection_options" "accepter_options" {
 # Add routes to the route table to enable two-way communication over the VPC peering
 
 /**
- * Creates a new route rule on the Cloudgate route table associated to the private subnets. All requests
+ * Creates a new route rule on the ZDM route table associated to the private subnets. All requests
  * to the User VPC's IP range will be directed to the VPC peering
  * connection.
  */
-resource "aws_route" "cloudgate_to_user" {
-  provider = aws.cloudgate
+resource "aws_route" "zdm_to_user" {
+  provider = aws.zdm
 
-  count = length(var.cloudgate_route_table_ids)
-  route_table_id = var.cloudgate_route_table_ids[count.index]
+  count = length(var.zdm_route_table_ids)
+  route_table_id = var.zdm_route_table_ids[count.index]
   destination_cidr_block    = data.aws_vpc.user_vpc.cidr_block
   vpc_peering_connection_id = aws_vpc_peering_connection_accepter.peering_acceptance.id
 }
 
 /**
  * Creates a new route rule on the User VPC main route table. All requests
- * to the Cloudgate VPC's IP range will be directed to the VPC peering
+ * to the ZDM VPC's IP range will be directed to the VPC peering
  * connection.
  */
-resource "aws_route" "user_to_cloudgate" {
+resource "aws_route" "user_to_zdm" {
   provider = aws.user
 
   count = length(var.user_route_table_ids)
   route_table_id = var.user_route_table_ids[count.index]
-  destination_cidr_block    = data.aws_vpc.cloudgate_vpc.cidr_block
+  destination_cidr_block    = data.aws_vpc.zdm_vpc.cidr_block
   vpc_peering_connection_id = aws_vpc_peering_connection_accepter.peering_acceptance.id
 }
 
 # Add security group on each side of the peering to allow inbound TCP communication on port 9042 from the other side of the peering
 
-resource "aws_security_group" "cloudgate_allow_traffic_from_peering_sg" {
-  provider = aws.cloudgate
+resource "aws_security_group" "zdm_allow_traffic_from_peering_sg" {
+  provider = aws.zdm
 
 
-  name = "cloudgate_allow_traffic_from_peering_sg"
-  vpc_id = data.aws_vpc.cloudgate_vpc.id
+  name = "zdm_allow_traffic_from_peering_sg${var.custom_name_suffix}"
+  vpc_id = data.aws_vpc.zdm_vpc.id
   ingress {
     description      = "Inbound Native Cassandra Protocol from user VPC"
     from_port        = 9042
@@ -134,15 +134,15 @@ resource "aws_security_group" "cloudgate_allow_traffic_from_peering_sg" {
 resource "aws_security_group" "user_allow_traffic_from_peering_sg" {
   provider = aws.user
 
-  name = "user_allow_traffic_from_peering_sg"
+  name = "user_allow_traffic_from_peering_sg${var.custom_name_suffix}"
   vpc_id = data.aws_vpc.user_vpc.id
 
   ingress {
-    description      = "Inbound Native Cassandra Protocol from Cloudgate VPC"
+    description      = "Inbound Native Cassandra Protocol from ZDM VPC"
     from_port        = 9042
     to_port          = 9042
     protocol         = "tcp"
-    cidr_blocks      = [data.aws_vpc.cloudgate_vpc.cidr_block]
+    cidr_blocks      = [data.aws_vpc.zdm_vpc.cidr_block]
   }
 
   // Not adding the default egress rule here to avoid interfering with other restrictive egress rules that the user may have set

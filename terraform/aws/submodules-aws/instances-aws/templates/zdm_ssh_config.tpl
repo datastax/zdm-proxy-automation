@@ -2,8 +2,8 @@ Host ${jumphost_private_ip} jumphost
   Hostname ${jumphost_public_ip}
   Port 22
 
-%{ for index, ip in cloudgate_proxy_private_ips ~}
-Host ${ip} cloudgate-proxy-${index}
+%{ for index, ip in zdm_proxy_private_ips ~}
+Host ${ip} zdm-proxy-${index}
   Hostname ${ip}
   ProxyJump jumphost
 

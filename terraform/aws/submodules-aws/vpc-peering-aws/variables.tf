@@ -3,16 +3,18 @@ variable "user_route_table_ids" {
   type = list(string)
 }
 
-variable "cloudgate_vpc_id" {}
-variable "cloudgate_route_table_ids" {
+variable "zdm_vpc_id" {}
+variable "zdm_route_table_ids" {
   type = list(string)
 }
 
-variable "cloudgate_aws_profile" {}
+variable "zdm_aws_profile" {}
 variable "user_aws_profile" {
-  // if not specified, this will default to the profile used for the Cloudgate infrastructure
+  // if not specified, this will default to the profile used for the ZDM infrastructure
   default = ""
 }
 
-variable "aws_region" {}
+variable "zdm_aws_region" {}
+
+variable "custom_name_suffix" {}
 

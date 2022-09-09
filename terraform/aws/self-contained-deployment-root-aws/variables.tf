@@ -1,15 +1,15 @@
-variable "aws_region" {}
+variable "zdm_aws_region" {}
 
-variable "proxy_instance_count" {}
+variable "zdm_proxy_instance_count" {}
 
-variable "cloudgate_aws_profile" {}
+variable "zdm_aws_profile" {}
 
 /*
- Specify user_aws_profile only if the AWS profile to be used to access the existing user's VPC is different to the one being used to create the Cloudgate infrastructure.
- If this variable is not specified on the command line, the profile will default to the one used to create the Cloudgate infrastructure.
+ Specify user_aws_profile only if the AWS profile to be used to access the existing user's VPC is different to the one being used to create the ZDM infrastructure.
+ If this variable is not specified on the command line, the profile will default to the one used to create the ZDM infrastructure.
 */
 variable "user_aws_profile" {
-  // if not specified, this will default to the profile used for the Cloudgate infrastructure
+  // if not specified, this will default to the profile used for the ZDM infrastructure
   default = ""
 }
 
@@ -26,7 +26,6 @@ variable "whitelisted_outbound_ip_ranges" {
 }
 
 variable "user_vpc_id" {
-  // TODO make this a list of strings so the user can specify multiple VPCs if necessary
   type = string
 }
 
@@ -34,22 +33,27 @@ variable "user_route_table_ids" {
   type = list(string)
 }
 
-variable "aws_cloudgate_vpc_cidr_prefix" {
+variable "zdm_vpc_cidr_prefix" {
   default = "172.18"
 }
 
-variable "proxy_instance_type" {
+variable "zdm_proxy_instance_type" {
   default = "c5.xlarge"
 }
 
-variable "monitoring_instance_type" {
+variable "zdm_monitoring_instance_type" {
   default = "c5.2xlarge"
 }
 
-variable "cloudgate_public_key_localpath" {
-  # path where the key pair is stored, without trailing slash
+variable "zdm_public_key_local_path" {
+  description = "Path where the key pair is stored, without trailing slash"
   default = "~/.ssh"
 }
 
-variable "cloudgate_keypair_name" {}
+variable "zdm_keypair_name" {}
+
+variable "custom_name_suffix" {
+  description = "Suffix to append to the name of all the resources that are being provisioned"
+  default = ""
+}
 

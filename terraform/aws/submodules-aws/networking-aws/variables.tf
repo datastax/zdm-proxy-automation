@@ -1,8 +1,8 @@
-variable "aws_profile" {}
+variable "zdm_aws_profile" {}
 
-variable "aws_region" {}
+variable "zdm_aws_region" {}
 
-variable "aws_cloudgate_vpc_cidr_prefix" {}
+variable "zdm_vpc_cidr_prefix" {}
 
 variable "whitelisted_inbound_ip_ranges" {
   type = list
@@ -15,3 +15,5 @@ variable "whitelisted_outbound_ip_ranges" {
   # defaults to everything (unrestricted)
   default = ["0.0.0.0/0"]
 }
+
+variable "custom_name_suffix" {}

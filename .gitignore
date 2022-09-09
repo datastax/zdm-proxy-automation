@@ -33,11 +33,11 @@ override.tf.json
 /terraform/aws/self-contained-deployment-root-aws/.terraform.lock.hcl
 /terraform/aws/self-contained-deployment-root-aws/tf_latest_vars.txt
 /terraform/aws/self-contained-deployment-root-aws/myplan
-/terraform/aws/self-contained-deployment-root-aws/cloudgate_inventory
-/terraform/aws/self-contained-deployment-root-aws/cloudgate_plan
+/terraform/aws/self-contained-deployment-root-aws/zdm_inventory
+/terraform/aws/self-contained-deployment-root-aws/zdm_plan
 /orchestration-scripts/setup_ansible_control_host.sh
-/ansible/cloudgate_inventory
+/ansible/zdm_ansible_inventory
 /orchestration-scripts/my_ssh_test/
-/ansible/cloudgate_ssh_config
-/terraform/aws/self-contained-deployment-root-aws/cloudgate_output.txt
-/terraform/aws/self-contained-deployment-root-aws/cloudgate_ssh_config
+/ansible/zdm_ssh_config
+/terraform/aws/self-contained-deployment-root-aws/zdm_output.txt
+/terraform/aws/self-contained-deployment-root-aws/zdm_ssh_config

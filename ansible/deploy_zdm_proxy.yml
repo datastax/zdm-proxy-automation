@@ -34,47 +34,47 @@
       pip:
         name: docker
 
-- name: Clean up any previous installations on proxy hosts
+- name: Clean up any previous installations on ZDM proxy hosts
   hosts: proxies
   become: yes
   vars_files:
-    - vars/proxy_container.yml
-    - vars/playbook_internal_config.yml
+    - vars/zdm_proxy_container.yml
+    - vars/zdm_playbook_internal_config.yml
 
   tasks:
     - name: Remove shared asset directory if it already exists
       file:
-        path: "{{ proxy_home_dir }}/{{ shared_assets_dir_name }}"
+        path: "{{ zdm_proxy_home_dir }}/{{ zdm_proxy_shared_assets_dir_name }}"
         state: absent
     - name: Remove configuration fragment directory if it already exists
       file:
-        path: "{{ proxy_home_dir }}/{{ proxy_config_fragments_dir_name }}"
+        path: "{{ zdm_proxy_home_dir }}/{{ zdm_proxy_config_fragments_dir_name }}"
         state: absent
     - name: Remove environment configuration file if it already exists
       file:
-        path: "{{ proxy_home_dir }}/{{ proxy_environment_config_file_name }}"
+        path: "{{ zdm_proxy_home_dir }}/{{ zdm_proxy_environment_config_file_name }}"
         state: absent
     - name: Remove any existing proxy container
       docker_container:
-        name: "{{ cloudgate_proxy_container_name }}"
+        name: "{{ zdm_proxy_container_name }}"
         state: absent
 
 - name: Create directory to share assets between host and container
   hosts: proxies
   vars_files:
-    - vars/playbook_internal_config.yml
+    - vars/zdm_playbook_internal_config.yml
 
   tasks:
     - name: Create directory
       file:
-        path: "{{ proxy_home_dir }}/{{ shared_assets_dir_name }}"
+        path: "{{ zdm_proxy_home_dir }}/{{ zdm_proxy_shared_assets_dir_name }}"
         state: directory
 
-- name: If Origin is Astra and a Secure Connect Bundle was provided, make it available to all proxies
+- name: If Origin is Astra and a Secure Connect Bundle was provided, make it available to all ZDM proxies
   hosts: proxies
   vars_files:
-    - vars/proxy_core_config_input.yml
-    - vars/playbook_internal_config.yml
+    - vars/zdm_proxy_core_config.yml
+    - vars/zdm_playbook_internal_config.yml
 
   tasks:
     - name: Copy SCB for Origin to shared asset directory
@@ -83,16 +83,16 @@
         - secure_connect_bundle_path_name: "{{ origin_secure_connect_bundle_path_name }}"
         - astra_db_id: "{{ origin_astra_db_id }}"
         - scb_filename: "{{ origin_scb_file_name }}"
-        - shared_assets_dir: "{{ proxy_home_dir }}/{{ shared_assets_dir_name }}"
+        - zdm_proxy_shared_assets_dir: "{{ zdm_proxy_home_dir }}/{{ zdm_proxy_shared_assets_dir_name }}"
       when:
         - origin_secure_connect_bundle_path_name is defined
         - origin_secure_connect_bundle_path_name | length > 0
 
-- name: If Origin is Astra and a Secure Connect Bundle was not provided, download it for all proxies
+- name: If Origin is Astra and a Secure Connect Bundle was not provided, download it for all ZDM proxies
   hosts: proxies
   vars_files:
-    - vars/proxy_core_config_input.yml
-    - vars/playbook_internal_config.yml
+    - vars/zdm_proxy_core_config.yml
+    - vars/zdm_playbook_internal_config.yml
 
   tasks:
     - name: Download SCB for Origin
@@ -102,7 +102,7 @@
         - astra_db_id: "{{ origin_astra_db_id }}"
         - astra_token: "{{ origin_astra_token }}"
         - scb_filename: "{{ origin_scb_file_name }}"
-        - shared_assets_dir: "{{ proxy_home_dir }}/{{ shared_assets_dir_name }}"
+        - zdm_proxy_shared_assets_dir: "{{ zdm_proxy_home_dir }}/{{ zdm_proxy_shared_assets_dir_name }}"
       when:
         - origin_astra_token is defined
         - origin_astra_token | length > 0
@@ -111,11 +111,11 @@
         - origin_scb_provided is not defined
 
 
-- name: If Target is Astra and a Secure Connect Bundle was provided, make it available to all proxies
+- name: If Target is Astra and a Secure Connect Bundle was provided, make it available to all ZDM proxies
   hosts: proxies
   vars_files:
-    - vars/proxy_core_config_input.yml
-    - vars/playbook_internal_config.yml
+    - vars/zdm_proxy_core_config.yml
+    - vars/zdm_playbook_internal_config.yml
 
   tasks:
     - name: Copy SCB for Target to shared asset directory
@@ -124,16 +124,16 @@
         - secure_connect_bundle_path_name: "{{ target_secure_connect_bundle_path_name }}"
         - astra_db_id: "{{ target_astra_db_id }}"
         - scb_filename: "{{ target_scb_file_name }}"
-        - shared_assets_dir: "{{ proxy_home_dir }}/{{ shared_assets_dir_name }}"
+        - zdm_proxy_shared_assets_dir: "{{ zdm_proxy_home_dir }}/{{ zdm_proxy_shared_assets_dir_name }}"
       when:
         - target_secure_connect_bundle_path_name is defined
         - target_secure_connect_bundle_path_name | length > 0
 
-- name: If Target is Astra and a Secure Connect Bundle was not provided, download it for all proxies
+- name: If Target is Astra and a Secure Connect Bundle was not provided, download it for all ZDM proxies
   hosts: proxies
   vars_files:
-    - vars/proxy_core_config_input.yml
-    - vars/playbook_internal_config.yml
+    - vars/zdm_proxy_core_config.yml
+    - vars/zdm_playbook_internal_config.yml
 
   tasks:
     - name: Download SCB for Target
@@ -143,7 +143,7 @@
         - astra_db_id: "{{ target_astra_db_id }}"
         - astra_token: "{{ target_astra_token }}"
         - scb_filename: "{{ target_scb_file_name }}"
-        - shared_assets_dir: "{{ proxy_home_dir }}/{{ shared_assets_dir_name }}"
+        - zdm_proxy_shared_assets_dir: "{{ zdm_proxy_home_dir }}/{{ zdm_proxy_shared_assets_dir_name }}"
       when:
         - target_astra_token is defined
         - target_astra_token | length > 0
@@ -151,18 +151,18 @@
         - target_astra_db_id | length > 0
         - target_scb_provided is not defined
 
-- name: Make TLS-related files available to proxy
+- name: Make TLS-related files available to ZDM proxy
   hosts: proxies
   vars_files:
-    - vars/proxy_custom_tls_config_input.yml
-    - vars/playbook_internal_config.yml
+    - vars/zdm_proxy_custom_tls_config.yml
+    - vars/zdm_playbook_internal_config.yml
 
   tasks:
     - name: Copy Origin TLS-related files to shared asset directory for proxy-to-Origin TLS encryption
       include_tasks: tasks/transfer_tls_files.yml
       vars:
         - src_tls_dir_path: "{{ origin_tls_user_dir_path_name }}"
-        - dest_tls_dir_path: "{{ proxy_home_dir }}/{{ shared_assets_dir_name }}/{{ origin_tls_dest_dir_name }}"
+        - dest_tls_dir_path: "{{ zdm_proxy_home_dir }}/{{ zdm_proxy_shared_assets_dir_name }}/{{ origin_tls_dest_dir_name }}"
         - ca_filename: "{{ origin_tls_server_ca_filename | default('') }}"
         - cert_filename: "{{ origin_tls_client_cert_filename | default('') }}"
         - key_filename: "{{ origin_tls_client_key_filename | default('') }}"
@@ -173,7 +173,7 @@
       include_tasks: tasks/transfer_tls_files.yml
       vars:
         - src_tls_dir_path: "{{ target_tls_user_dir_path_name }}"
-        - dest_tls_dir_path: "{{ proxy_home_dir }}/{{ shared_assets_dir_name }}/{{ target_tls_dest_dir_name }}"
+        - dest_tls_dir_path: "{{ zdm_proxy_home_dir }}/{{ zdm_proxy_shared_assets_dir_name }}/{{ target_tls_dest_dir_name }}"
         - ca_filename: "{{ target_tls_server_ca_filename | default('') }}"
         - cert_filename: "{{ target_tls_client_cert_filename | default('') }}"
         - key_filename: "{{ target_tls_client_key_filename | default('') }}"
@@ -183,63 +183,63 @@
     - name: Copy Proxy TLS-related files to shared asset directory for application-to-proxy TLS encryption
       include_tasks: tasks/transfer_tls_files.yml
       vars:
-        - src_tls_dir_path: "{{ proxy_tls_user_dir_path_name }}"
-        - dest_tls_dir_path: "{{ proxy_home_dir }}/{{ shared_assets_dir_name }}/{{ proxy_tls_dest_dir_name }}"
-        - ca_filename: "{{ proxy_tls_server_ca_filename | default('') }}"
-        - cert_filename: "{{ proxy_tls_server_cert_filename | default('') }}"
-        - key_filename: "{{ proxy_tls_server_key_filename | default('') }}"
+        - src_tls_dir_path: "{{ zdm_proxy_tls_user_dir_path_name }}"
+        - dest_tls_dir_path: "{{ zdm_proxy_home_dir }}/{{ zdm_proxy_shared_assets_dir_name }}/{{ zdm_proxy_tls_dest_dir_name }}"
+        - ca_filename: "{{ zdm_proxy_tls_server_ca_filename | default('') }}"
+        - cert_filename: "{{ zdm_proxy_tls_server_cert_filename | default('') }}"
+        - key_filename: "{{ zdm_proxy_tls_server_key_filename | default('') }}"
       when:
-        - proxy_tls_user_dir_path_name is defined
-        - proxy_tls_user_dir_path_name | length > 0
+        - zdm_proxy_tls_user_dir_path_name is defined
+        - zdm_proxy_tls_user_dir_path_name | length > 0
 
-- name: Create proxy configuration env file
+- name: Create ZDM proxy configuration env file
   hosts: proxies
   vars_files:
-    - vars/proxy_core_config_input.yml
-    - vars/proxy_advanced_config_input.yml
-    - vars/proxy_custom_tls_config_input.yml
-    - vars/playbook_internal_config.yml
+    - vars/zdm_proxy_core_config.yml
+    - vars/zdm_proxy_advanced_config.yml
+    - vars/zdm_proxy_custom_tls_config.yml
+    - vars/zdm_playbook_internal_config.yml
 
   tasks:
     - name: Create configuration fragment directory
       file:
-        path: "{{ proxy_home_dir }}/{{ proxy_config_fragments_dir_name }}"
+        path: "{{ zdm_proxy_home_dir }}/{{ zdm_proxy_config_fragments_dir_name }}"
         state: directory
     - name: Generate env var file from template for immutable configuration
       template:
-        src: "proxy_immutable_config.j2"
-        dest: "{{ proxy_home_dir }}/{{ proxy_config_fragments_dir_name }}/{{ proxy_immutable_config_fragment_file_name }}"
+        src: "zdm_proxy_immutable_config.j2"
+        dest: "{{ zdm_proxy_home_dir }}/{{ zdm_proxy_config_fragments_dir_name }}/{{ zdm_proxy_immutable_config_fragment_file_name }}"
     - name: Generate env var file from template for mutable configuration
       template:
-        src: "proxy_mutable_config.j2"
-        dest: "{{ proxy_home_dir }}/{{ proxy_config_fragments_dir_name }}/{{ proxy_mutable_config_fragment_file_name }}"
+        src: "zdm_proxy_mutable_config.j2"
+        dest: "{{ zdm_proxy_home_dir }}/{{ zdm_proxy_config_fragments_dir_name }}/{{ zdm_proxy_mutable_config_fragment_file_name }}"
     - name: Merge the immutable and mutable configuration files into a single one
       assemble:
-        src: "{{ proxy_home_dir }}/{{ proxy_config_fragments_dir_name }}"
-        dest: "{{ proxy_home_dir }}/{{ proxy_environment_config_file_name }}"
+        src: "{{ zdm_proxy_home_dir }}/{{ zdm_proxy_config_fragments_dir_name }}"
+        dest: "{{ zdm_proxy_home_dir }}/{{ zdm_proxy_environment_config_file_name }}"
 
-- name: Install Proxy
+- name: Install ZDM Proxy
   hosts: proxies
   become: yes
   vars_files:
-    - vars/proxy_container.yml
-    - vars/proxy_advanced_config_input.yml
-    - vars/playbook_internal_config.yml
+    - vars/zdm_proxy_container.yml
+    - vars/zdm_proxy_advanced_config.yml
+    - vars/zdm_playbook_internal_config.yml
 
   tasks:
-    - name: Pull Cloudgate Proxy Docker image from DockerHub
+    - name: Pull ZDM Proxy Docker image from DockerHub
       docker_image:
-        name: "{{ cloudgate_proxy_image }}"
+        name: "{{ zdm_proxy_image }}"
         source: pull
 
-    - name: Create proxy container
+    - name: Create ZDM proxy container
       docker_container:
-        name: "{{ cloudgate_proxy_container_name }}"
-        image: "{{ cloudgate_proxy_image }}"
-        env_file: "{{ proxy_home_dir }}/{{ proxy_environment_config_file_name }}"
+        name: "{{ zdm_proxy_container_name }}"
+        image: "{{ zdm_proxy_image }}"
+        env_file: "{{ zdm_proxy_home_dir }}/{{ zdm_proxy_environment_config_file_name }}"
         mounts:
-          - source: "{{ proxy_home_dir }}/{{ shared_assets_dir_name }}"
-            target: "{{ proxy_home_dir }}/{{ shared_assets_dir_name }}"
+          - source: "{{ zdm_proxy_home_dir }}/{{ zdm_proxy_shared_assets_dir_name }}"
+            target: "{{ zdm_proxy_home_dir }}/{{ zdm_proxy_shared_assets_dir_name }}"
             type: bind
         network_mode: host
         restart_policy: unless-stopped

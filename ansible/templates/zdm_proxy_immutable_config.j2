@@ -1,0 +1,75 @@
+#jinja2: lstrip_blocks: "True", trim_blocks: "True"
+
+{% set zdm_proxy_address_list = [] %}
+{% for host in groups['proxies'] %}
+    {{ zdm_proxy_address_list.append(host) }}
+{% endfor %}
+PROXY_INDEX={{ groups['proxies'].index(hostvars[inventory_hostname]['ansible_default_ipv4']['address']) }}
+PROXY_ADDRESSES={{ zdm_proxy_address_list|join(',') }}
+
+{% if ( origin_cassandra_contact_points is defined ) %}
+ORIGIN_CASSANDRA_CONTACT_POINTS={{ origin_cassandra_contact_points }}
+ORIGIN_CASSANDRA_PORT={{ origin_cassandra_port }}
+{% elif ( ( origin_scb_downloaded is defined and origin_scb_downloaded == 'success' ) or ( origin_scb_provided is defined and origin_scb_provided == 'success' ) )%}
+ORIGIN_CASSANDRA_SECURE_CONNECT_BUNDLE_PATH={{ zdm_proxy_home_dir }}/{{ zdm_proxy_shared_assets_dir_name }}/origin_scb.zip
+{% endif %}
+{% if ( origin_datacenter is defined ) %}
+ORIGIN_DATACENTER={{ origin_datacenter }}
+{% endif %}
+
+{% if ( target_cassandra_contact_points is defined and target_cassandra_port is defined ) %}
+TARGET_CASSANDRA_CONTACT_POINTS={{ target_cassandra_contact_points }}
+TARGET_CASSANDRA_PORT={{ target_cassandra_port }}
+{% elif ( target_scb_downloaded is defined and target_scb_downloaded == 'success' ) or ( target_scb_provided is defined and target_scb_provided == 'success' ) %}
+TARGET_CASSANDRA_SECURE_CONNECT_BUNDLE_PATH={{ zdm_proxy_home_dir }}/{{ zdm_proxy_shared_assets_dir_name }}/target_scb.zip
+{% endif %}
+{% if ( target_datacenter is defined ) %}
+TARGET_DATACENTER={{ target_datacenter }}
+{% endif %}
+
+{% if ( forward_system_queries_to_target is defined ) %}
+FORWARD_SYSTEM_QUERIES_TO_TARGET={{ forward_system_queries_to_target }}
+{% endif %}
+
+PROXY_QUERY_ADDRESS={{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}
+PROXY_QUERY_PORT={{ zdm_proxy_query_port }}
+
+{% if ( zdm_proxy_metrics_address is defined ) %}
+PROXY_METRICS_ADDRESS={{ zdm_proxy_metrics_address}}
+{% else %}
+PROXY_METRICS_ADDRESS={{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}
+{% endif %}
+PROXY_METRICS_PORT={{ zdm_proxy_metrics_port }}
+
+{% if ( origin_tls_user_dir_path_name is defined and origin_tls_server_ca_filename is defined ) %}
+ORIGIN_TLS_SERVER_CA_PATH={{ zdm_proxy_home_dir }}/{{ zdm_proxy_shared_assets_dir_name }}/{{ origin_tls_dest_dir_name }}/{{ origin_tls_server_ca_filename }}
+{% endif %}
+{% if ( origin_tls_user_dir_path_name is defined and origin_tls_client_cert_filename is defined ) %}
+ORIGIN_TLS_CLIENT_CERT_PATH={{ zdm_proxy_home_dir }}/{{ zdm_proxy_shared_assets_dir_name }}/{{ origin_tls_dest_dir_name }}/{{ origin_tls_client_cert_filename }}
+{% endif %}
+{% if ( origin_tls_user_dir_path_name is defined and origin_tls_client_key_filename is defined ) %}
+ORIGIN_TLS_CLIENT_KEY_PATH={{ zdm_proxy_home_dir }}/{{ zdm_proxy_shared_assets_dir_name }}/{{ origin_tls_dest_dir_name }}/{{ origin_tls_client_key_filename }}
+{% endif %}
+
+{% if ( target_tls_user_dir_path_name is defined and target_tls_server_ca_filename is defined ) %}
+TARGET_TLS_SERVER_CA_PATH={{ zdm_proxy_home_dir }}/{{ zdm_proxy_shared_assets_dir_name }}/{{ target_tls_dest_dir_name }}/{{ target_tls_server_ca_filename }}
+{% endif %}
+{% if ( target_tls_user_dir_path_name is defined and target_tls_client_cert_filename is defined ) %}
+TARGET_TLS_CLIENT_CERT_PATH={{ zdm_proxy_home_dir }}/{{ zdm_proxy_shared_assets_dir_name }}/{{ target_tls_dest_dir_name }}/{{ target_tls_client_cert_filename }}
+{% endif %}
+{% if ( target_tls_user_dir_path_name is defined and target_tls_client_key_filename is defined ) %}
+TARGET_TLS_CLIENT_KEY_PATH={{ zdm_proxy_home_dir }}/{{ zdm_proxy_shared_assets_dir_name }}/{{ target_tls_dest_dir_name }}/{{ target_tls_client_key_filename }}
+{% endif %}
+
+{% if ( zdm_proxy_tls_user_dir_path_name is defined and zdm_proxy_tls_server_ca_filename is defined ) %}
+PROXY_TLS_CA_PATH={{ zdm_proxy_home_dir }}/{{ zdm_proxy_shared_assets_dir_name }}/{{ zdm_proxy_tls_dest_dir_name }}/{{ zdm_proxy_tls_server_ca_filename }}
+{% endif %}
+{% if ( zdm_proxy_tls_user_dir_path_name is defined and zdm_proxy_tls_server_cert_filename is defined ) %}
+PROXY_TLS_CERT_PATH={{ zdm_proxy_home_dir }}/{{ zdm_proxy_shared_assets_dir_name }}/{{ zdm_proxy_tls_dest_dir_name }}/{{ zdm_proxy_tls_server_cert_filename }}
+{% endif %}
+{% if ( zdm_proxy_tls_user_dir_path_name is defined and zdm_proxy_tls_server_key_filename is defined ) %}
+PROXY_TLS_KEY_PATH={{ zdm_proxy_home_dir }}/{{ zdm_proxy_shared_assets_dir_name }}/{{ zdm_proxy_tls_dest_dir_name }}/{{ zdm_proxy_tls_server_key_filename }}
+{% endif %}
+{% if ( zdm_proxy_tls_require_client_auth is defined ) %}
+PROXY_TLS_REQUIRE_CLIENT_AUTH={{ zdm_proxy_tls_require_client_auth }}
+{% endif %}
