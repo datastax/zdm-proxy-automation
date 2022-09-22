@@ -77,10 +77,12 @@ func (o *InteractionOrchestrator) CreateContainerConfiguration(customConfigFileP
 }
 
 func printUtilityGeneralPreamble() {
-	fmt.Println("******************************************************************************* ")
-	fmt.Println("*** This utility creates and initializes the Ansible Control Host container *** ")
-	fmt.Println("******************************************************************************* ")
-	fmt.Println()
+	generalPreamble :=
+`*******************************************************************************
+*** This utility creates and initializes the Ansible Control Host container *** 
+******************************************************************************* `
+
+	fmt.Println(generalPreamble)
 }
 
 func (o *InteractionOrchestrator) loadConfigurationFromExistingFile(customConfigFilePath string) (*config.ContainerInitConfig, error) {
@@ -90,7 +92,7 @@ func (o *InteractionOrchestrator) loadConfigurationFromExistingFile(customConfig
 
 	if existingConfigFilePath == "" {
 		// look if a conf file already exists in the current directory
-		if config.ValidateFilePathSilently(DefaultConfigurationFilePath) {
+		if config.ValidatePathOfWritableFileSilently(DefaultConfigurationFilePath) {
 			ynUseDefaultFile, err := YesNoPrompt(fmt.Sprintf("Found existing configuration file %v. Do you wish to use this file?", DefaultConfigurationFilePath),
 				true, true, o.userInputReader, DefaultMaxAttempts)
 			if err != nil {
@@ -194,7 +196,7 @@ func (o *InteractionOrchestrator) promptForAnsibleInventory() error {
 			}
 		}
 		if ansibleInventoryPathOnHost == "" {
-			fmt.Println()
+			fmt.Printf("This utility will create a new inventory file and populate it interactively, prompting you for the necessary values.\n")
 			proxyIpsAddresses, monitoringIpAddress, err := o.promptForInventoryFileValues()
 
 			if err != nil {
@@ -223,9 +225,6 @@ func (o *InteractionOrchestrator) promptForAnsibleInventory() error {
 //  - the IP addresses of their proxy instances (requesting the appropriate minimum based on the type of deployment)
 //  - the IP address of their monitoring instance (optional)
 func (o *InteractionOrchestrator) promptForInventoryFileValues() ([]string, string, error) {
-	fmt.Printf("This utility will create a new inventory file and populate it interactively.\n")
-	fmt.Printf("The file will be called %v and will be located in the current directory \n", DefaultAnsibleInventoryFileName)
-
 	ynDemoEnv, err := YesNoPrompt("Is this proxy deployment for local testing and evaluation?", true, false, o.userInputReader, DefaultMaxAttempts)
 	if err != nil {
 		fmt.Printf("\nNo valid answer was given, considering this a production deployment.\n")
@@ -260,6 +259,7 @@ func (o *InteractionOrchestrator) promptForInventoryFileValues() ([]string, stri
 
 // populateInventoryFile creates a new Ansible inventory file populating it with the provided addresses
 func populateInventoryFile(filePath string, proxyIpAddresses []string, monitoringIpAddress string) error {
+	fmt.Println("All inventory values obtained, now creating the Ansible inventory file")
 	ansibleInventoryFile, err := os.Create(filePath)
 	if err != nil {
 		return err
@@ -342,7 +342,7 @@ func (o *InteractionOrchestrator) DisplayConfigurationAndPromptForConfirmation()
 	return ynProceed, nil
 }
 
-// TODO unify with closeFile used in the docker utils
+// closeFile allows us to handle any error closing the file. if we were calling f.Close() in a deferred block, errors could not be handled
 func closeFile(f *os.File) {
 	if f != nil {
 		err := f.Close()

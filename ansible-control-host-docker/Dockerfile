@@ -8,12 +8,15 @@ RUN apt-get update && apt-get install -y software-properties-common \
     nano \
     git \
     sudo \
-    pcregrep
+    pcregrep \
+    gnupg
 
-RUN add-apt-repository ppa:ansible/ansible && apt-get update && apt-get install -y \
-    ansible \
-    python-jmespath \
- && rm -rf /var/lib/apt/lists/*
+RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 93C4A3FD7BB9C367 && \
+    apt-add-repository "deb http://ppa.launchpad.net/ansible/ansible/ubuntu bionic main" && \
+    apt-get update && apt-get upgrade --yes &&  \
+    apt-get install --yes ansible && \
+    apt-get install python-jmespath && \
+    apt-get autoremove && apt-get autoclean
 
 RUN ansible-galaxy collection install community.docker:3.0.2
 RUN ansible-galaxy collection install community.general:4.8.6
@@ -29,6 +32,7 @@ RUN mkdir zdm-proxy-ssh-key-dir/
 USER root
 RUN echo 'ubuntu ALL=NOPASSWD: ALL' >> /etc/sudoers
 
+#TODO this will not be necessary once the automation repository is public
 COPY zdm-proxy-automation-deploy-key .ssh/
 RUN ls -l .ssh/
 RUN chmod 400 .ssh/zdm-proxy-automation-deploy-key

@@ -3,6 +3,7 @@ package config
 import (
 	"bufio"
 	"fmt"
+	"github.com/phayes/permbits"
 	"net"
 	"os"
 	"path/filepath"
@@ -137,14 +138,24 @@ func separatorIndex(s string) int {
 }
 
 func ValidateFilePath(path string) bool {
-	return checkFilePathIsValid(path, true)
+	return checkFilePathIsValid(path, true, false)
 }
 
+// ValidateFilePathSilently is currently unused but leaving it in for completeness and next step of ZDM util implementation
 func ValidateFilePathSilently(path string) bool {
-	return checkFilePathIsValid(path, false)
+	return checkFilePathIsValid(path, false, false)
 }
 
-func checkFilePathIsValid(path string, displayOutput bool) bool {
+// ValidatePathOfWritableFile is currently unused but leaving it in for completeness and next step of ZDM util implementation
+func ValidatePathOfWritableFile(path string) bool {
+	return checkFilePathIsValid(path, true, true)
+}
+
+func ValidatePathOfWritableFileSilently(path string) bool {
+	return checkFilePathIsValid(path, false, true)
+}
+
+func checkFilePathIsValid(path string, displayOutput bool, needsWritePermission bool) bool {
 
 	absPath, ok := ConvertToAbsolutePath(path)
 	if !ok {
@@ -163,6 +174,40 @@ func checkFilePathIsValid(path string, displayOutput bool) bool {
 		}
 		return false
 	}
+
+	if !fileInfo.Mode().IsRegular() {
+		if displayOutput {
+			fmt.Printf("File %v is not a regular file \n", path)
+		}
+		return false
+	}
+
+	permissions, err := permbits.Stat(absPath)
+	if err != nil {
+		if displayOutput {
+			fmt.Printf("Permissions for file %v could not be checked. Error: %v \n", path, err)
+		}
+		// TODO should we return false or just show a warning message but still proceed?
+		return false
+	}
+
+	// TODO at the moment we are checking the user permissions - should this be different?
+	// TODO should we also validate that the user running the utility is indeed the user owning the file?
+	// at least read permission is always needed
+	if !permissions.UserRead() {
+		if displayOutput {
+			fmt.Printf("Read permission needed for file %v, but this file is not readable by the user. Permissions: %v \n", path, permissions)
+		}
+		return false
+	}
+
+	if needsWritePermission && ! permissions.UserWrite() {
+		if displayOutput {
+			fmt.Printf("Write permission needed for file %v, but this file is not writable by the user. Permissions: %v \n", path, permissions)
+		}
+		return false
+	}
+
 	return true
 }
 

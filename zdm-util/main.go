@@ -10,8 +10,7 @@ import (
 )
 
 const (
-	UtilityExitingMessage  = "This utility will now exit. "
-	RectifyAndRerunMessage = "Please rectify the problem and re-run. "
+	UtilityExitingMessage  = "This utility will now exit. Please rectify the problem and re-run. "
 )
 
 func main() {
@@ -30,26 +29,26 @@ func launchUtil(customConfigFilePath string, userInputFile *os.File) {
 
 	err := docker.ValidateDockerPrerequisites()
 	if err != nil {
-		fmt.Printf("ERROR: %v. %v \n", err, UtilityExitingMessage+RectifyAndRerunMessage)
+		fmt.Printf("ERROR: %v. %v \n", err, UtilityExitingMessage)
 		return
 	}
 
 	containerConfig, err := interactionOrchestrator.CreateContainerConfiguration(customConfigFilePath)
 	if err != nil {
-		fmt.Printf("ERROR: %v. %v \n", err, UtilityExitingMessage+RectifyAndRerunMessage)
+		fmt.Printf("ERROR: %v. %v \n", err, UtilityExitingMessage)
 		return
 	}
 
 	ynAcceptAndProceed, err := interactionOrchestrator.DisplayConfigurationAndPromptForConfirmation()
 	if err != nil {
-		fmt.Printf("ERROR: %v. %v \n", err, UtilityExitingMessage+RectifyAndRerunMessage)
+		fmt.Printf("ERROR: %v. %v \n", err, UtilityExitingMessage)
 		return
 	}
 
 	if ynAcceptAndProceed {
 		err = docker.CreateAndInitializeContainer(containerConfig, reader)
 		if err != nil {
-			fmt.Printf("ERROR: %v. %v \n", err, UtilityExitingMessage+RectifyAndRerunMessage)
+			fmt.Printf("ERROR: %v. %v \n", err, UtilityExitingMessage)
 		}
 	}
 

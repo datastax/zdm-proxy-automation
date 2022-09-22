@@ -11,18 +11,21 @@ import (
 	"github.com/docker/docker/pkg/archive"
 	"github.com/pkg/errors"
 	"io"
+	"log"
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 	"zdm-proxy-automation/zdm-util/pkg/config"
 	"zdm-proxy-automation/zdm-util/pkg/userinteraction"
 )
 
 const (
-	dockerImageName                 = "caycep/ach-test:test1" // TODO change
-	dockerContainerName             = "ach-test-container"    // TODO change
+	dockerImageName                 = "datastax/zdm-ansible:1.0" // TODO check / amend
+	dockerContainerName             = "ansible-control-host-container"
 	sshKeyPathOnContainer           = "/home/ubuntu/zdm-proxy-ssh-key-dir"
 	ansibleInventoryPathOnContainer = "/home/ubuntu"
+
 )
 
 func ValidateDockerPrerequisites() error {
@@ -52,7 +55,6 @@ func CreateAndInitializeContainer(containerConfig *config.ContainerInitConfig, u
 	if err != nil {
 		return fmt.Errorf("unable to check or pull the docker image: %v", err)
 	}
-	fmt.Println("Docker image is present and ready to use")
 
 	containerId, isContainerRunning, err := orchestrator.retrieveExistingContainer(dockerContainerName)
 	if err != nil {
@@ -130,29 +132,61 @@ func CreateAndInitializeContainer(containerConfig *config.ContainerInitConfig, u
 	return nil
 }
 
-type Orchestrator struct {
+// DockerOrchestrator naming:
+// IntelliJ points out that a struct's name should not start with its package name, but we feel that it should be called DockerOrchestrator for clarity
+type DockerOrchestrator struct {
 	cli *client.Client
 	ctx context.Context
 }
 
-func createDockerOrchestrator() (*Orchestrator, error) {
+func createDockerOrchestrator() (*DockerOrchestrator, error) {
 	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 	if err != nil {
 		return nil, err
 	}
 
-	return &Orchestrator{
+	return &DockerOrchestrator{
 		cli: cli,
 		ctx: context.Background(),
 	}, nil
 }
 
-func (o *Orchestrator) pingServer() error {
-	_, err := o.cli.Ping(o.ctx)
-	return err
+func (o *DockerOrchestrator) pingServer() error {
+	maxRetries := 5
+	delayBetweenRetries := 1 * time.Second
+
+	pingFunction := func(ctx context.Context) error {
+		_, err := o.cli.Ping(ctx)
+		return err
+	}
+
+	retryingPingFunction := Retry(pingFunction, maxRetries, delayBetweenRetries, "The Docker server could not be contacted")
+	return retryingPingFunction(o.ctx)
 }
 
-func (o *Orchestrator) pullImageIfNotAlreadyPresent(imageName string) error {
+type FunctionToBeRetried func(context.Context) error
+
+func Retry(functionToBeRetried FunctionToBeRetried, retries int, delay time.Duration, outputMessage string) FunctionToBeRetried {
+	return func(ctx context.Context) error {
+		for r := 0; ; r++ {
+			err := functionToBeRetried(ctx)
+			if err == nil || r >= retries {
+				// Return when there is no error or the maximum amount of retries is reached.
+				return err
+			}
+
+			log.Printf("%s, retrying in %v", outputMessage, delay)
+
+			select {
+			case <-time.After(delay):
+			case <-ctx.Done():
+				return ctx.Err()
+			}
+		}
+	}
+}
+
+func (o *DockerOrchestrator) pullImageIfNotAlreadyPresent(imageName string) error {
 	imageFilters := filters.NewArgs()
 	imageFilters.Add("reference", imageName)
 	imageSummaries, err := o.cli.ImageList(o.ctx, types.ImageListOptions{Filters: imageFilters})
@@ -166,6 +200,7 @@ func (o *Orchestrator) pullImageIfNotAlreadyPresent(imageName string) error {
 		for _, imageSummary := range imageSummaries {
 			fmt.Printf("Found image with name %v and id %v \n", imageSummary.RepoTags, imageSummary.ID)
 		}
+		fmt.Println("Docker image is already present and ready to use, so it will not be pulled")
 		return nil
 	}
 
@@ -182,7 +217,7 @@ func (o *Orchestrator) pullImageIfNotAlreadyPresent(imageName string) error {
 	return nil
 }
 
-func (o *Orchestrator) retrieveExistingContainer(containerName string) (string, bool, error) {
+func (o *DockerOrchestrator) retrieveExistingContainer(containerName string) (string, bool, error) {
 	containerFilters := filters.NewArgs()
 	containerFilters.Add("name", containerName)
 	containerListOptions := types.ContainerListOptions{
@@ -209,14 +244,14 @@ func (o *Orchestrator) retrieveExistingContainer(containerName string) (string, 
 	}
 }
 
-func (o *Orchestrator) removeExistingContainer(containerId string) error {
+func (o *DockerOrchestrator) removeExistingContainer(containerId string) error {
 	containerRemoveOptions := types.ContainerRemoveOptions{
 		Force: true,
 	}
 	return o.cli.ContainerRemove(o.ctx, containerId, containerRemoveOptions)
 }
 
-func (o *Orchestrator) createContainer(imageName, containerName string) (string, error) {
+func (o *DockerOrchestrator) createContainer(imageName, containerName string) (string, error) {
 	containerCreationResponse, err := o.cli.ContainerCreate(o.ctx, &container.Config{
 		Image: imageName,
 		Tty:   true,
@@ -227,13 +262,13 @@ func (o *Orchestrator) createContainer(imageName, containerName string) (string,
 	return containerCreationResponse.ID, nil
 }
 
-func (o *Orchestrator) startContainer(containerId string) error {
+func (o *DockerOrchestrator) startContainer(containerId string) error {
 	return o.cli.ContainerStart(o.ctx, containerId, types.ContainerStartOptions{})
 }
 
 // copyFileToContainer copies the specified file to the container. Equivalent of docker cp.
 // Code based on the copyToContainer() function in https://github.com/docker/cli
-func (o *Orchestrator) copyFileToContainer(containerId, srcPath, dstPath string) error {
+func (o *DockerOrchestrator) copyFileToContainer(containerId, srcPath, dstPath string) error {
 
 	srcPath, err := resolveLocalPath(srcPath)
 	if err != nil {
@@ -312,7 +347,7 @@ func (o *Orchestrator) copyFileToContainer(containerId, srcPath, dstPath string)
 	return o.cli.CopyToContainer(o.ctx, containerId, resolvedDstPath, content, options)
 }
 
-func (o *Orchestrator) initializeContainer(containerId string, containerConfig *config.ContainerInitConfig) error {
+func (o *DockerOrchestrator) initializeContainer(containerId string, containerConfig *config.ContainerInitConfig) error {
 
 	ipPrefixArg := fmt.Sprintf("-p %s", containerConfig.Properties[config.ProxyIpAddressPrefixPropertyName])
 	inventoryArg := fmt.Sprintf("-i %s", filepath.Base(containerConfig.Properties[config.AnsibleInventoryPathOnHostPropertyName]))
@@ -358,7 +393,7 @@ func (o *Orchestrator) initializeContainer(containerId string, containerConfig *
 	return nil
 }
 
-func (o *Orchestrator) CloseDockerClient() {
+func (o *DockerOrchestrator) CloseDockerClient() {
 	if o.cli != nil {
 		err := o.cli.Close()
 		if err != nil {

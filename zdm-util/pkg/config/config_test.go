@@ -255,6 +255,8 @@ func TestValidateFilePath(t *testing.T) {
 
 }
 
+// TODO add test for file validation with permission checks
+
 func TestResolveTildeInPath(t *testing.T) {
 	homeDir, _ := os.UserHomeDir()
 
