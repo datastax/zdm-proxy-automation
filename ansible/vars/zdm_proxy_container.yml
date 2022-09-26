@@ -1,6 +1,5 @@
 ---
-
-#TODO Change the default to 2.x prior to release!
+#TODO change as appropriate when new tags are available
 zdm_proxy_image: datastax/zdm-proxy:main
 
 create_containers: 1

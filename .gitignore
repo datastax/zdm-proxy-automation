@@ -41,3 +41,5 @@ override.tf.json
 /ansible/zdm_ssh_config
 /terraform/aws/self-contained-deployment-root-aws/zdm_output.txt
 /terraform/aws/self-contained-deployment-root-aws/zdm_ssh_config
+/ansible_container_init_config
+/zdm_ansible_inventory
