@@ -1,6 +1,6 @@
 ---
-
-zdm_proxy_image: datastax/zdm-proxy:2.x
+#TODO change as appropriate when new tags are available
+zdm_proxy_image: datastax/zdm-proxy:main
 
 create_containers: 1
 zdm_proxy_container_name: zdm-proxy-container
