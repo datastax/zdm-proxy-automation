@@ -1,7 +1,7 @@
 ---
 
 #TODO Change the default to 2.x prior to release!
-zdm_proxy_image: datastax/zdm-proxy:1.x
+zdm_proxy_image: datastax/zdm-proxy:main
 
 create_containers: 1
 zdm_proxy_container_name: zdm-proxy-container
