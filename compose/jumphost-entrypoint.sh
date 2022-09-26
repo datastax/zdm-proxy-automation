@@ -95,16 +95,16 @@ printf "[ssh_connection]\nssh_args = -o StrictHostKeyChecking=no\n" > ansible/an
 
 cd ansible || return
 
-gosu ubuntu ansible-playbook install_zdm_proxy.yml -i zdm_ansible_inventory \
+gosu ubuntu ansible-playbook deploy_zdm_proxy.yml -i zdm_ansible_inventory \
 	-e "origin_cassandra_username=foo" \
 	-e "origin_cassandra_password=foo" \
 	-e "target_cassandra_username=foo" \
 	-e "target_cassandra_password=foo" \
-	-e "origin_cassandra_contact_points=zdm-automation_origin_1" \
+	-e "origin_cassandra_contact_points=zdm-proxy-automation_origin_1" \
 	-e "origin_cassandra_port=9042" \
-	-e "target_cassandra_contact_points=zdm-automation_target_1" \
+	-e "target_cassandra_contact_points=zdm-proxy-automation_target_1" \
 	-e "target_cassandra_port=9042" \
-	-e "zdm_proxy_query_address=0.0.0.0"
+	-e "proxy_query_address=0.0.0.0"
 
 echo "Ready"
 tail -F /dev/null # keeps container running
