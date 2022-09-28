@@ -1,23 +1,70 @@
 ---
-#log_level:
+##########################
+### Client connections ###
+##########################
 
+## Maximum number of client connections that each ZDM proxy instance can accept. Defaults to 1000.
+## Ths limit can be increased, but it might impact performance especially at high throughput.
+#zdm_proxy_max_clients_connections:
+
+##########################
+### ZDM Proxy listener ###
+##########################
+
+## Port on which the ZDM proxy listens for client connections.
+## Typically the same as the port on which the Origin cluster nodes listen for client connections.
+zdm_proxy_listen_port: 9042
+
+################################
+### CQL function replacement ###
+################################
+
+## Enables the replacement of CQL functions at proxy level. At the moment only now() replacement is supported.
+## Boolean value. Defaults to false (replacement disabled). Enabling this will have a noticeable performance impact.
+#replace_cql_functions:
+
+################
+### Timeouts ###
+################
+
+#zdm_proxy_request_timeout_ms:
+#origin_connection_timeout_ms:
+#target_connection_timeout_ms:
+#async_handshake_timeout_ms:
+
+#########################
+### Multi-DC settings ###
+#########################
+
+## Name of the Origin and Target datacenters that the ZDM proxy must connect to
+## Very important when connecting to multi-DC clusters
+#origin_local_datacenter:
+#target_local_datacenter:
+
+###############
+### Metrics ###
+###############
+
+## Metrics collection on the ZDM proxy is enabled by default. Metrics are scraped by Prometheus using the specified port.
+#metrics_enable:
+metrics_port: 14001
+
+##############################
+### System queries routing ###
+##############################
+
+## Where to route the system queries. Valid values: PRIMARY, ORIGIN, TARGET. Defaults to PRIMARY.
+#system_queries_mode:
+
+#############################
+##### Deprecated settings ###
+#############################
+
+## These settings should not be used and may be removed in a future release ####
+
+## Where to route the system queries. Valid values: ORIGIN, TARGET. Defaults to ORIGIN.
+#system_queries_mode:
+
+## Whether to use the credentials passed by the client application as Origin credentials.
+## Defaults to false (client credentials are used for Target)
 #forward_client_credentials_to_origin:
-
-#origin_datacenter:
-#target_datacenter:
-
-#forward_system_queries_to_target:
-
-zdm_proxy_query_port: 9042
-
-#cluster_connection_timeout_ms:
-#request_timeout_ms:
-
-#enable_metrics:
-#zdm_proxy_metrics_address: <defaults to the proxy instance's private IP>
-zdm_proxy_metrics_port: 14001
-
-#max_clients_threshold:
-
-#dual_reads_enabled:
-#async_reads_on_secondary:
