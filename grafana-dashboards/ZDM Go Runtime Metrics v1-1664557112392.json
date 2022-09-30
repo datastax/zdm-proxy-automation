@@ -1,24 +1,4 @@
 {
-  "__requires": [
-    {
-      "type": "grafana",
-      "id": "grafana",
-      "name": "Grafana",
-      "version": "7.4.5"
-    },
-    {
-      "type": "panel",
-      "id": "graph",
-      "name": "Graph",
-      "version": ""
-    },
-    {
-      "type": "datasource",
-      "id": "prometheus",
-      "name": "Prometheus",
-      "version": "1.0.0"
-    }
-  ],
   "annotations": {
     "list": [
       {
@@ -36,8 +16,8 @@
   "editable": true,
   "gnetId": 6671,
   "graphTooltip": 0,
-  "id": null,
-  "iteration": 1630075077560,
+  "id": 6,
+  "iteration": 1664557105171,
   "links": [],
   "panels": [
     {
@@ -50,7 +30,6 @@
       "error": false,
       "fieldConfig": {
         "defaults": {
-          "custom": {},
           "links": []
         },
         "overrides": []
@@ -87,7 +66,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.4.5",
+      "pluginVersion": "7.5.15",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -183,7 +162,6 @@
       "error": false,
       "fieldConfig": {
         "defaults": {
-          "custom": {},
           "links": []
         },
         "overrides": []
@@ -218,7 +196,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.4.5",
+      "pluginVersion": "7.5.15",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -305,7 +283,6 @@
       "error": false,
       "fieldConfig": {
         "defaults": {
-          "custom": {},
           "links": []
         },
         "overrides": []
@@ -340,7 +317,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.4.5",
+      "pluginVersion": "7.5.15",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -448,7 +425,6 @@
       "error": false,
       "fieldConfig": {
         "defaults": {
-          "custom": {},
           "links": []
         },
         "overrides": []
@@ -483,7 +459,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.4.5",
+      "pluginVersion": "7.5.15",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -591,7 +567,6 @@
       "error": false,
       "fieldConfig": {
         "defaults": {
-          "custom": {},
           "links": []
         },
         "overrides": []
@@ -626,7 +601,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.4.5",
+      "pluginVersion": "7.5.15",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -698,7 +673,6 @@
       "error": false,
       "fieldConfig": {
         "defaults": {
-          "custom": {},
           "links": []
         },
         "overrides": []
@@ -733,7 +707,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.4.5",
+      "pluginVersion": "7.5.15",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -805,7 +779,6 @@
       "error": false,
       "fieldConfig": {
         "defaults": {
-          "custom": {},
           "links": []
         },
         "overrides": []
@@ -840,7 +813,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.4.5",
+      "pluginVersion": "7.5.15",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -912,7 +885,6 @@
       "error": false,
       "fieldConfig": {
         "defaults": {
-          "custom": {},
           "links": []
         },
         "overrides": []
@@ -947,7 +919,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.4.5",
+      "pluginVersion": "7.5.15",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -1018,9 +990,17 @@
     "list": [
       {
         "allValue": ".*",
-        "current": {},
+        "current": {
+          "selected": true,
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
+        },
         "datasource": "Prometheus",
-        "definition": "{job=~\"cloudgate_proxy\"}",
+        "definition": "{job=~\"zdm_proxy\"}",
         "description": null,
         "error": null,
         "hide": 0,
@@ -1030,7 +1010,7 @@
         "name": "proxy",
         "options": [],
         "query": {
-          "query": "{job=~\"cloudgate_proxy\"}",
+          "query": "{job=~\"zdm_proxy\"}",
           "refId": "StandardVariableQuery"
         },
         "refresh": 2,
@@ -1094,7 +1074,15 @@
       },
       {
         "allValue": ".*",
-        "current": {},
+        "current": {
+          "selected": true,
+          "text": [
+            "zdm_proxy"
+          ],
+          "value": [
+            "zdm_proxy"
+          ]
+        },
         "datasource": "Prometheus",
         "definition": "process_resident_memory_bytes",
         "description": null,
@@ -1121,7 +1109,15 @@
       },
       {
         "allValue": ".*",
-        "current": {},
+        "current": {
+          "selected": true,
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
+        },
         "datasource": "Prometheus",
         "definition": "label_values(go_memstats_alloc_bytes, namespace)",
         "description": null,
@@ -1149,7 +1145,7 @@
     ]
   },
   "time": {
-    "from": "now-15m",
+    "from": "now-30m",
     "to": "now"
   },
   "timepicker": {
@@ -1178,7 +1174,7 @@
     ]
   },
   "timezone": "browser",
-  "title": "Golang metrics v3",
-  "uid": "ypFZFgvmz",
-  "version": 6
+  "title": "ZDM Go Runtime Metrics v1",
+  "uid": "MSD-tO44k",
+  "version": 2
 }
