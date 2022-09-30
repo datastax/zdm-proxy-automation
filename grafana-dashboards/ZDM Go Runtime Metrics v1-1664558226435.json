@@ -1,4 +1,34 @@
 {
+  "__inputs": [
+    {
+      "name": "DS_PROMETHEUS",
+      "label": "Prometheus",
+      "description": "",
+      "type": "datasource",
+      "pluginId": "prometheus",
+      "pluginName": "Prometheus"
+    }
+  ],
+  "__requires": [
+    {
+      "type": "grafana",
+      "id": "grafana",
+      "name": "Grafana",
+      "version": "7.5.15"
+    },
+    {
+      "type": "panel",
+      "id": "graph",
+      "name": "Graph",
+      "version": ""
+    },
+    {
+      "type": "datasource",
+      "id": "prometheus",
+      "name": "Prometheus",
+      "version": "1.0.0"
+    }
+  ],
   "annotations": {
     "list": [
       {
@@ -16,8 +46,8 @@
   "editable": true,
   "gnetId": 6671,
   "graphTooltip": 0,
-  "id": 6,
-  "iteration": 1664557105171,
+  "id": null,
+  "iteration": 1664558042773,
   "links": [],
   "panels": [
     {
@@ -25,7 +55,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "Prometheus",
+      "datasource": "${DS_PROMETHEUS}",
       "editable": true,
       "error": false,
       "fieldConfig": {
@@ -61,7 +91,7 @@
       "lines": true,
       "linewidth": 2,
       "links": [],
-      "nullPointMode": "connected",
+      "nullPointMode": "null",
       "options": {
         "alertThreshold": true
       },
@@ -157,7 +187,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "Prometheus",
+      "datasource": "${DS_PROMETHEUS}",
       "editable": true,
       "error": false,
       "fieldConfig": {
@@ -191,7 +221,7 @@
       "lines": true,
       "linewidth": 2,
       "links": [],
-      "nullPointMode": "connected",
+      "nullPointMode": "null",
       "options": {
         "alertThreshold": true
       },
@@ -202,6 +232,7 @@
       "renderer": "flot",
       "seriesOverrides": [
         {
+          "$$hashKey": "object:939",
           "alias": "resident",
           "yaxis": 1
         }
@@ -252,6 +283,7 @@
       },
       "yaxes": [
         {
+          "$$hashKey": "object:946",
           "format": "bytes",
           "label": null,
           "logBase": 1,
@@ -260,6 +292,7 @@
           "show": true
         },
         {
+          "$$hashKey": "object:947",
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -278,7 +311,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "Prometheus",
+      "datasource": "${DS_PROMETHEUS}",
       "editable": true,
       "error": false,
       "fieldConfig": {
@@ -312,7 +345,7 @@
       "lines": true,
       "linewidth": 2,
       "links": [],
-      "nullPointMode": "connected",
+      "nullPointMode": "null",
       "options": {
         "alertThreshold": true
       },
@@ -323,6 +356,7 @@
       "renderer": "flot",
       "seriesOverrides": [
         {
+          "$$hashKey": "object:332",
           "alias": "alloc rate",
           "yaxis": 2
         }
@@ -394,6 +428,7 @@
       },
       "yaxes": [
         {
+          "$$hashKey": "object:339",
           "format": "bytes",
           "label": null,
           "logBase": 1,
@@ -402,6 +437,7 @@
           "show": true
         },
         {
+          "$$hashKey": "object:340",
           "format": "Bps",
           "label": null,
           "logBase": 1,
@@ -420,7 +456,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "Prometheus",
+      "datasource": "${DS_PROMETHEUS}",
       "editable": true,
       "error": false,
       "fieldConfig": {
@@ -454,7 +490,7 @@
       "lines": true,
       "linewidth": 2,
       "links": [],
-      "nullPointMode": "connected",
+      "nullPointMode": "null",
       "options": {
         "alertThreshold": true
       },
@@ -465,6 +501,7 @@
       "renderer": "flot",
       "seriesOverrides": [
         {
+          "$$hashKey": "object:847",
           "alias": "alloc rate",
           "yaxis": 2
         }
@@ -536,6 +573,7 @@
       },
       "yaxes": [
         {
+          "$$hashKey": "object:854",
           "format": "bytes",
           "label": null,
           "logBase": 1,
@@ -544,6 +582,7 @@
           "show": true
         },
         {
+          "$$hashKey": "object:855",
           "format": "Bps",
           "label": null,
           "logBase": 1,
@@ -562,7 +601,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "Prometheus",
+      "datasource": "${DS_PROMETHEUS}",
       "editable": true,
       "error": false,
       "fieldConfig": {
@@ -596,7 +635,7 @@
       "lines": true,
       "linewidth": 2,
       "links": [],
-      "nullPointMode": "connected",
+      "nullPointMode": "null",
       "options": {
         "alertThreshold": true
       },
@@ -642,6 +681,7 @@
       },
       "yaxes": [
         {
+          "$$hashKey": "object:424",
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -650,6 +690,7 @@
           "show": true
         },
         {
+          "$$hashKey": "object:425",
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -668,7 +709,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "Prometheus",
+      "datasource": "${DS_PROMETHEUS}",
       "editable": true,
       "error": false,
       "fieldConfig": {
@@ -702,7 +743,7 @@
       "lines": true,
       "linewidth": 2,
       "links": [],
-      "nullPointMode": "connected",
+      "nullPointMode": "null",
       "options": {
         "alertThreshold": true
       },
@@ -748,6 +789,7 @@
       },
       "yaxes": [
         {
+          "$$hashKey": "object:509",
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -756,6 +798,7 @@
           "show": true
         },
         {
+          "$$hashKey": "object:510",
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -774,7 +817,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "Prometheus",
+      "datasource": "${DS_PROMETHEUS}",
       "editable": true,
       "error": false,
       "fieldConfig": {
@@ -808,7 +851,7 @@
       "lines": true,
       "linewidth": 2,
       "links": [],
-      "nullPointMode": "connected",
+      "nullPointMode": "null",
       "options": {
         "alertThreshold": true
       },
@@ -854,6 +897,7 @@
       },
       "yaxes": [
         {
+          "$$hashKey": "object:594",
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -862,6 +906,7 @@
           "show": true
         },
         {
+          "$$hashKey": "object:595",
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -880,7 +925,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "Prometheus",
+      "datasource": "${DS_PROMETHEUS}",
       "editable": true,
       "error": false,
       "fieldConfig": {
@@ -914,7 +959,7 @@
       "lines": true,
       "linewidth": 2,
       "links": [],
-      "nullPointMode": "connected",
+      "nullPointMode": "null",
       "options": {
         "alertThreshold": true
       },
@@ -960,6 +1005,7 @@
       },
       "yaxes": [
         {
+          "$$hashKey": "object:679",
           "format": "s",
           "label": null,
           "logBase": 1,
@@ -968,6 +1014,7 @@
           "show": true
         },
         {
+          "$$hashKey": "object:680",
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -990,16 +1037,8 @@
     "list": [
       {
         "allValue": ".*",
-        "current": {
-          "selected": true,
-          "text": [
-            "All"
-          ],
-          "value": [
-            "$__all"
-          ]
-        },
-        "datasource": "Prometheus",
+        "current": {},
+        "datasource": "${DS_PROMETHEUS}",
         "definition": "{job=~\"zdm_proxy\"}",
         "description": null,
         "error": null,
@@ -1074,16 +1113,8 @@
       },
       {
         "allValue": ".*",
-        "current": {
-          "selected": true,
-          "text": [
-            "zdm_proxy"
-          ],
-          "value": [
-            "zdm_proxy"
-          ]
-        },
-        "datasource": "Prometheus",
+        "current": {},
+        "datasource": "${DS_PROMETHEUS}",
         "definition": "process_resident_memory_bytes",
         "description": null,
         "error": null,
@@ -1109,16 +1140,8 @@
       },
       {
         "allValue": ".*",
-        "current": {
-          "selected": true,
-          "text": [
-            "All"
-          ],
-          "value": [
-            "$__all"
-          ]
-        },
-        "datasource": "Prometheus",
+        "current": {},
+        "datasource": "${DS_PROMETHEUS}",
         "definition": "label_values(go_memstats_alloc_bytes, namespace)",
         "description": null,
         "error": null,
@@ -1176,5 +1199,5 @@
   "timezone": "browser",
   "title": "ZDM Go Runtime Metrics v1",
   "uid": "MSD-tO44k",
-  "version": 2
+  "version": 3
 }
