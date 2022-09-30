@@ -52,7 +52,7 @@
   "gnetId": null,
   "graphTooltip": 0,
   "id": null,
-  "iteration": 1664557995817,
+  "iteration": 1664558692408,
   "links": [],
   "panels": [
     {
@@ -85,7 +85,7 @@
       "fillGradient": 0,
       "gridPos": {
         "h": 8,
-        "w": 8,
+        "w": 12,
         "x": 0,
         "y": 1
       },
@@ -118,9 +118,9 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "irate(zdm_proxy_request_duration_seconds_count{type=\"reads_origin\",instance=~\"^($proxyinstance)$\"}[$histogram_rate])",
+          "expr": "irate(zdm_proxy_request_duration_seconds_count{type=~\"reads_origin|reads_target\",instance=~\"^($proxyinstance)$\"}[$histogram_rate])",
           "interval": "",
-          "legendFormat": "",
+          "legendFormat": "{type=\"{{type}}\", instance=\"{{instance}}\"}",
           "refId": "A"
         }
       ],
@@ -128,7 +128,7 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "Origin Read Throughput (requests per second)",
+      "title": "Read Throughput by Instance (requests per second)",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -183,8 +183,8 @@
       "fillGradient": 0,
       "gridPos": {
         "h": 8,
-        "w": 8,
-        "x": 8,
+        "w": 12,
+        "x": 12,
         "y": 1
       },
       "hiddenSeries": false,
@@ -218,7 +218,7 @@
           "exemplar": true,
           "expr": "irate(zdm_proxy_request_duration_seconds_count{type=\"writes\",instance=~\"^($proxyinstance)$\"}[$histogram_rate])",
           "interval": "",
-          "legendFormat": "",
+          "legendFormat": "{type=\"{{type}}\", instance=\"{{instance}}\"}",
           "refId": "A"
         }
       ],
@@ -226,7 +226,7 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "Write Throughput (requests per second)",
+      "title": "Write Throughput by Instance (requests per second)",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -281,12 +281,12 @@
       "fillGradient": 0,
       "gridPos": {
         "h": 8,
-        "w": 8,
-        "x": 16,
-        "y": 1
+        "w": 12,
+        "x": 0,
+        "y": 9
       },
       "hiddenSeries": false,
-      "id": 24,
+      "id": 111,
       "legend": {
         "avg": false,
         "current": false,
@@ -314,9 +314,9 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "irate(zdm_proxy_request_duration_seconds_count{type=\"reads_target\",instance=~\"^($proxyinstance)$\"}[$histogram_rate])",
+          "expr": "sum(irate(zdm_proxy_request_duration_seconds_count{type=~\"reads_origin|reads_target\",instance=~\"^($proxyinstance)$\"}[$histogram_rate])) by (type)",
           "interval": "",
-          "legendFormat": "",
+          "legendFormat": "{{type}}",
           "refId": "A"
         }
       ],
@@ -324,7 +324,7 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "Target Read Throughput (requests per second)",
+      "title": "Read Throughput Aggregate (requests per second)",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -340,7 +340,7 @@
       },
       "yaxes": [
         {
-          "$$hashKey": "object:718",
+          "$$hashKey": "object:128",
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -349,7 +349,7 @@
           "show": true
         },
         {
-          "$$hashKey": "object:719",
+          "$$hashKey": "object:129",
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -379,9 +379,107 @@
       "fillGradient": 0,
       "gridPos": {
         "h": 8,
-        "w": 8,
-        "x": 0,
+        "w": 12,
+        "x": 12,
         "y": 9
+      },
+      "hiddenSeries": false,
+      "id": 110,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "7.5.15",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "exemplar": true,
+          "expr": "sum (irate(zdm_proxy_request_duration_seconds_count{type=\"writes\",instance=~\"^($proxyinstance)$\"}[$histogram_rate]))",
+          "interval": "",
+          "legendFormat": "writes",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Write Throughput Aggregate (requests per second)",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "$$hashKey": "object:556",
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "$$hashKey": "object:557",
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "${DS_PROMETHEUS}",
+      "fieldConfig": {
+        "defaults": {
+          "links": []
+        },
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 17
       },
       "hiddenSeries": false,
       "id": 39,
@@ -413,11 +511,11 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "histogram_quantile(0.50, rate(zdm_proxy_request_duration_seconds_bucket{type=\"reads_origin\",instance=~\"^($proxyinstance)$\"}[$histogram_rate]))",
+          "expr": "histogram_quantile(0.50, rate(zdm_proxy_request_duration_seconds_bucket{type=~\"reads_origin\",instance=~\"^($proxyinstance)$\"}[$histogram_rate]))",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
-          "legendFormat": "{{instance}} origin_seconds_p50",
+          "legendFormat": "{{instance}} {{type}} p50",
           "refId": "B"
         },
         {
@@ -426,7 +524,7 @@
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
-          "legendFormat": "{{instance}} origin_seconds_p99",
+          "legendFormat": "{{instance}} {{type}} p99",
           "refId": "A"
         },
         {
@@ -435,7 +533,7 @@
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
-          "legendFormat": "{{instance}} origin_seconds_p999",
+          "legendFormat": "{{instance}} {{type}} p999",
           "refId": "C"
         },
         {
@@ -445,7 +543,7 @@
           "instant": false,
           "interval": "",
           "intervalFactor": 1,
-          "legendFormat": "{{instance}} origin_seconds_p90",
+          "legendFormat": "{{instance}} {{type}} p90",
           "refId": "D"
         },
         {
@@ -454,7 +552,7 @@
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
-          "legendFormat": "{{instance}} origin_seconds_p95",
+          "legendFormat": "{{instance}} {{type}} p95",
           "refId": "E"
         },
         {
@@ -463,15 +561,76 @@
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
-          "legendFormat": "{{instance}} origin_seconds_p75",
+          "legendFormat": "{{instance}} {{type}} p75",
           "refId": "F"
+        },
+        {
+          "exemplar": true,
+          "expr": "histogram_quantile(0.50, rate(zdm_proxy_request_duration_seconds_bucket{type=~\"reads_target\",instance=~\"^($proxyinstance)$\"}[$histogram_rate]))",
+          "format": "time_series",
+          "hide": false,
+          "interval": "",
+          "intervalFactor": 1,
+          "legendFormat": "{{instance}} {{type}} p50",
+          "refId": "G"
+        },
+        {
+          "exemplar": true,
+          "expr": "histogram_quantile(0.99, rate(zdm_proxy_request_duration_seconds_bucket{type=\"reads_target\",instance=~\"^($proxyinstance)$\"}[$histogram_rate]))",
+          "format": "time_series",
+          "hide": false,
+          "interval": "",
+          "intervalFactor": 1,
+          "legendFormat": "{{instance}} {{type}} p99",
+          "refId": "H"
+        },
+        {
+          "exemplar": true,
+          "expr": "histogram_quantile(0.999, rate(zdm_proxy_request_duration_seconds_bucket{type=\"reads_target\",instance=~\"^($proxyinstance)$\"}[$histogram_rate]))",
+          "format": "time_series",
+          "hide": false,
+          "interval": "",
+          "intervalFactor": 1,
+          "legendFormat": "{{instance}} {{type}} p999",
+          "refId": "I"
+        },
+        {
+          "exemplar": true,
+          "expr": "histogram_quantile(0.90, rate(zdm_proxy_request_duration_seconds_bucket{type=\"reads_target\",instance=~\"^($proxyinstance)$\"}[$histogram_rate]))",
+          "format": "time_series",
+          "hide": false,
+          "instant": false,
+          "interval": "",
+          "intervalFactor": 1,
+          "legendFormat": "{{instance}} {{type}} p90",
+          "refId": "J"
+        },
+        {
+          "exemplar": true,
+          "expr": "histogram_quantile(0.95, rate(zdm_proxy_request_duration_seconds_bucket{type=\"reads_target\",instance=~\"^($proxyinstance)$\"}[$histogram_rate]))",
+          "format": "time_series",
+          "hide": false,
+          "interval": "",
+          "intervalFactor": 1,
+          "legendFormat": "{{instance}} {{type}} p95",
+          "refId": "K"
+        },
+        {
+          "exemplar": true,
+          "expr": "histogram_quantile(0.75, rate(zdm_proxy_request_duration_seconds_bucket{type=\"reads_target\",instance=~\"^($proxyinstance)$\"}[$histogram_rate]))",
+          "format": "time_series",
+          "hide": false,
+          "interval": "",
+          "intervalFactor": 1,
+          "legendFormat": "{{instance}} {{type}} p75",
+          "refId": "L"
         }
       ],
       "thresholds": [],
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "Origin Read Latency",
+      "title": "Read Latency by Instance",
       "tooltip": {
         "shared": true,
         "sort": 2,
@@ -527,9 +686,9 @@
       "fillGradient": 0,
       "gridPos": {
         "h": 8,
-        "w": 8,
-        "x": 8,
-        "y": 9
+        "w": 12,
+        "x": 12,
+        "y": 17
       },
       "hiddenSeries": false,
       "id": 38,
@@ -565,7 +724,7 @@
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
-          "legendFormat": "{{instance}} both_seconds_p50",
+          "legendFormat": "{{instance}} writes p50",
           "refId": "B"
         },
         {
@@ -574,7 +733,7 @@
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
-          "legendFormat": "{{instance}} both_seconds_p99",
+          "legendFormat": "{{instance}} writes p99",
           "refId": "A"
         },
         {
@@ -583,7 +742,7 @@
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
-          "legendFormat": "{{instance}} both_seconds_p999",
+          "legendFormat": "{{instance}} writes p999",
           "refId": "C"
         },
         {
@@ -593,7 +752,7 @@
           "instant": false,
           "interval": "",
           "intervalFactor": 1,
-          "legendFormat": "{{instance}} both_seconds_p90",
+          "legendFormat": "{{instance}} writes p90",
           "refId": "D"
         },
         {
@@ -602,7 +761,7 @@
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
-          "legendFormat": "{{instance}} both_seconds_p95",
+          "legendFormat": "{{instance}} writes p95",
           "refId": "E"
         },
         {
@@ -611,7 +770,7 @@
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
-          "legendFormat": "{{instance}} both_seconds_p75",
+          "legendFormat": "{{instance}} writes p75",
           "refId": "F"
         }
       ],
@@ -619,7 +778,7 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "Write Latency",
+      "title": "Write Latency by Instance",
       "tooltip": {
         "shared": true,
         "sort": 2,
@@ -675,157 +834,9 @@
       "fillGradient": 0,
       "gridPos": {
         "h": 8,
-        "w": 8,
-        "x": 16,
-        "y": 9
-      },
-      "hiddenSeries": false,
-      "id": 40,
-      "legend": {
-        "avg": false,
-        "current": false,
-        "hideEmpty": true,
-        "max": false,
-        "min": false,
-        "show": true,
-        "total": false,
-        "values": false
-      },
-      "lines": true,
-      "linewidth": 1,
-      "nullPointMode": "null",
-      "options": {
-        "alertThreshold": true
-      },
-      "percentage": false,
-      "pluginVersion": "7.5.15",
-      "pointradius": 2,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
-      "targets": [
-        {
-          "exemplar": true,
-          "expr": "histogram_quantile(0.50, rate(zdm_proxy_request_duration_seconds_bucket{type=\"reads_target\",instance=~\"^($proxyinstance)$\"}[$histogram_rate]))",
-          "format": "time_series",
-          "interval": "",
-          "intervalFactor": 1,
-          "legendFormat": "{{instance}} target_seconds_p50",
-          "refId": "B"
-        },
-        {
-          "exemplar": true,
-          "expr": "histogram_quantile(0.99, rate(zdm_proxy_request_duration_seconds_bucket{type=\"reads_target\",instance=~\"^($proxyinstance)$\"}[$histogram_rate]))",
-          "format": "time_series",
-          "interval": "",
-          "intervalFactor": 1,
-          "legendFormat": "{{instance}} target_seconds_p99",
-          "refId": "A"
-        },
-        {
-          "exemplar": true,
-          "expr": "histogram_quantile(0.999, rate(zdm_proxy_request_duration_seconds_bucket{type=\"reads_target\",instance=~\"^($proxyinstance)$\"}[$histogram_rate]))",
-          "format": "time_series",
-          "interval": "",
-          "intervalFactor": 1,
-          "legendFormat": "{{instance}} target_seconds_p999",
-          "refId": "C"
-        },
-        {
-          "exemplar": true,
-          "expr": "histogram_quantile(0.90, rate(zdm_proxy_request_duration_seconds_bucket{type=\"reads_target\",instance=~\"^($proxyinstance)$\"}[$histogram_rate]))",
-          "format": "time_series",
-          "instant": false,
-          "interval": "",
-          "intervalFactor": 1,
-          "legendFormat": "{{instance}} target_seconds_p90",
-          "refId": "D"
-        },
-        {
-          "exemplar": true,
-          "expr": "histogram_quantile(0.95, rate(zdm_proxy_request_duration_seconds_bucket{type=\"reads_target\",instance=~\"^($proxyinstance)$\"}[$histogram_rate]))",
-          "format": "time_series",
-          "interval": "",
-          "intervalFactor": 1,
-          "legendFormat": "{{instance}} target_seconds_p95",
-          "refId": "E"
-        },
-        {
-          "exemplar": true,
-          "expr": "histogram_quantile(0.75, rate(zdm_proxy_request_duration_seconds_bucket{type=\"reads_target\",instance=~\"^($proxyinstance)$\"}[$histogram_rate]))",
-          "format": "time_series",
-          "interval": "",
-          "intervalFactor": 1,
-          "legendFormat": "{{instance}} target_seconds_p75",
-          "refId": "F"
-        }
-      ],
-      "thresholds": [],
-      "timeFrom": null,
-      "timeRegions": [],
-      "timeShift": null,
-      "title": "Target Read Latency",
-      "tooltip": {
-        "shared": true,
-        "sort": 2,
-        "value_type": "individual"
-      },
-      "type": "graph",
-      "xaxis": {
-        "buckets": null,
-        "mode": "time",
-        "name": null,
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "$$hashKey": "object:1562",
-          "decimals": 1,
-          "format": "s",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        },
-        {
-          "$$hashKey": "object:1563",
-          "format": "short",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": false
-        }
-      ],
-      "yaxis": {
-        "align": false,
-        "alignLevel": null
-      }
-    },
-    {
-      "aliasColors": {},
-      "bars": false,
-      "dashLength": 10,
-      "dashes": false,
-      "datasource": "${DS_PROMETHEUS}",
-      "fieldConfig": {
-        "defaults": {
-          "links": []
-        },
-        "overrides": []
-      },
-      "fill": 1,
-      "fillGradient": 0,
-      "gridPos": {
-        "h": 7,
-        "w": 8,
+        "w": 12,
         "x": 0,
-        "y": 17
+        "y": 25
       },
       "hiddenSeries": false,
       "id": 57,
@@ -861,7 +872,7 @@
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
-          "legendFormat": "p50",
+          "legendFormat": "reads_origin p50",
           "refId": "B"
         },
         {
@@ -870,7 +881,7 @@
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
-          "legendFormat": "p99",
+          "legendFormat": "reads_origin p99",
           "refId": "A"
         },
         {
@@ -879,7 +890,7 @@
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
-          "legendFormat": "p999",
+          "legendFormat": "reads_origin p999",
           "refId": "C"
         },
         {
@@ -888,7 +899,7 @@
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
-          "legendFormat": "p95",
+          "legendFormat": "reads_origin p95",
           "refId": "E"
         },
         {
@@ -897,7 +908,7 @@
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
-          "legendFormat": "p90",
+          "legendFormat": "reads_origin p90",
           "refId": "F"
         },
         {
@@ -906,15 +917,75 @@
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
-          "legendFormat": "p75",
+          "legendFormat": "reads_origin p75",
           "refId": "G"
+        },
+        {
+          "exemplar": true,
+          "expr": "histogram_quantile(0.50, sum(rate(zdm_proxy_request_duration_seconds_bucket{type=\"reads_target\",instance=~\"^($proxyinstance)$\"}[$histogram_rate])) by (le))",
+          "format": "time_series",
+          "hide": false,
+          "interval": "",
+          "intervalFactor": 1,
+          "legendFormat": "reads_target p50",
+          "refId": "D"
+        },
+        {
+          "exemplar": true,
+          "expr": "histogram_quantile(0.99, sum(rate(zdm_proxy_request_duration_seconds_bucket{type=\"reads_target\",instance=~\"^($proxyinstance)$\"}[$histogram_rate])) by (le))",
+          "format": "time_series",
+          "hide": false,
+          "interval": "",
+          "intervalFactor": 1,
+          "legendFormat": "reads_target p99",
+          "refId": "H"
+        },
+        {
+          "exemplar": true,
+          "expr": "histogram_quantile(0.999, sum(rate(zdm_proxy_request_duration_seconds_bucket{type=\"reads_target\",instance=~\"^($proxyinstance)$\"}[$histogram_rate])) by (le))",
+          "format": "time_series",
+          "hide": false,
+          "interval": "",
+          "intervalFactor": 1,
+          "legendFormat": "reads_target p999",
+          "refId": "I"
+        },
+        {
+          "exemplar": true,
+          "expr": "histogram_quantile(0.95, sum(rate(zdm_proxy_request_duration_seconds_bucket{type=\"reads_target\",instance=~\"^($proxyinstance)$\"}[$histogram_rate])) by (le))",
+          "format": "time_series",
+          "hide": false,
+          "interval": "",
+          "intervalFactor": 1,
+          "legendFormat": "reads_target p95",
+          "refId": "J"
+        },
+        {
+          "exemplar": true,
+          "expr": "histogram_quantile(0.90, sum(rate(zdm_proxy_request_duration_seconds_bucket{type=\"reads_target\",instance=~\"^($proxyinstance)$\"}[$histogram_rate])) by (le))",
+          "format": "time_series",
+          "hide": false,
+          "interval": "",
+          "intervalFactor": 1,
+          "legendFormat": "reads_target p90",
+          "refId": "K"
+        },
+        {
+          "exemplar": true,
+          "expr": "histogram_quantile(0.75, sum(rate(zdm_proxy_request_duration_seconds_bucket{type=\"reads_target\",instance=~\"^($proxyinstance)$\"}[$histogram_rate])) by (le))",
+          "format": "time_series",
+          "hide": false,
+          "interval": "",
+          "intervalFactor": 1,
+          "legendFormat": "reads_target p75",
+          "refId": "L"
         }
       ],
       "thresholds": [],
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "Origin Read Latency Aggregate",
+      "title": "Read Latency Aggregate",
       "tooltip": {
         "shared": true,
         "sort": 2,
@@ -969,10 +1040,10 @@
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
-        "h": 7,
-        "w": 8,
-        "x": 8,
-        "y": 17
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 25
       },
       "hiddenSeries": false,
       "id": 59,
@@ -1008,7 +1079,7 @@
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
-          "legendFormat": "p50",
+          "legendFormat": "writes p50",
           "refId": "B"
         },
         {
@@ -1017,7 +1088,7 @@
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
-          "legendFormat": "p99",
+          "legendFormat": "writes p99",
           "refId": "A"
         },
         {
@@ -1026,7 +1097,7 @@
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
-          "legendFormat": "p999",
+          "legendFormat": "writes p999",
           "refId": "C"
         },
         {
@@ -1035,7 +1106,7 @@
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
-          "legendFormat": "p95",
+          "legendFormat": "writes p95",
           "refId": "E"
         },
         {
@@ -1044,7 +1115,7 @@
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
-          "legendFormat": "p90",
+          "legendFormat": "writes p90",
           "refId": "F"
         },
         {
@@ -1053,7 +1124,7 @@
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
-          "legendFormat": "p75",
+          "legendFormat": "writes p75",
           "refId": "G"
         }
       ],
@@ -1116,17 +1187,16 @@
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
-        "h": 7,
-        "w": 8,
-        "x": 16,
-        "y": 17
+        "h": 8,
+        "w": 6,
+        "x": 0,
+        "y": 33
       },
       "hiddenSeries": false,
-      "id": 58,
+      "id": 21,
       "legend": {
         "avg": false,
         "current": false,
-        "hideEmpty": true,
         "max": false,
         "min": false,
         "show": true,
@@ -1151,56 +1221,9 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "histogram_quantile(0.50, sum(rate(zdm_proxy_request_duration_seconds_bucket{type=\"reads_target\",instance=~\"^($proxyinstance)$\"}[$histogram_rate])) by (le))",
-          "format": "time_series",
+          "expr": "sum by (instance) (zdm_proxy_inflight_requests_total{type=~\"reads_target|reads_origin\", instance=~\"^($proxyinstance)$\"})",
           "interval": "",
-          "intervalFactor": 1,
-          "legendFormat": "p50",
-          "refId": "B"
-        },
-        {
-          "exemplar": true,
-          "expr": "histogram_quantile(0.99, sum(rate(zdm_proxy_request_duration_seconds_bucket{type=\"reads_target\",instance=~\"^($proxyinstance)$\"}[$histogram_rate])) by (le))",
-          "format": "time_series",
-          "interval": "",
-          "intervalFactor": 1,
-          "legendFormat": "p99",
-          "refId": "A"
-        },
-        {
-          "exemplar": true,
-          "expr": "histogram_quantile(0.999, sum(rate(zdm_proxy_request_duration_seconds_bucket{type=\"reads_target\",instance=~\"^($proxyinstance)$\"}[$histogram_rate])) by (le))",
-          "format": "time_series",
-          "interval": "",
-          "intervalFactor": 1,
-          "legendFormat": "p999",
-          "refId": "C"
-        },
-        {
-          "exemplar": true,
-          "expr": "histogram_quantile(0.95, sum(rate(zdm_proxy_request_duration_seconds_bucket{type=\"reads_target\",instance=~\"^($proxyinstance)$\"}[$histogram_rate])) by (le))",
-          "format": "time_series",
-          "interval": "",
-          "intervalFactor": 1,
-          "legendFormat": "p95",
-          "refId": "E"
-        },
-        {
-          "exemplar": true,
-          "expr": "histogram_quantile(0.90, sum(rate(zdm_proxy_request_duration_seconds_bucket{type=\"reads_target\",instance=~\"^($proxyinstance)$\"}[$histogram_rate])) by (le))",
-          "format": "time_series",
-          "interval": "",
-          "intervalFactor": 1,
-          "legendFormat": "p90",
-          "refId": "F"
-        },
-        {
-          "exemplar": true,
-          "expr": "histogram_quantile(0.75, sum(rate(zdm_proxy_request_duration_seconds_bucket{type=\"reads_target\",instance=~\"^($proxyinstance)$\"}[$histogram_rate])) by (le))",
-          "format": "time_series",
-          "interval": "",
-          "intervalFactor": 1,
-          "legendFormat": "p75",
+          "legendFormat": "",
           "refId": "G"
         }
       ],
@@ -1208,10 +1231,10 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "Target Read Latency Aggregate",
+      "title": "In Flight Read Requests",
       "tooltip": {
         "shared": true,
-        "sort": 2,
+        "sort": 0,
         "value_type": "individual"
       },
       "type": "graph",
@@ -1224,9 +1247,8 @@
       },
       "yaxes": [
         {
-          "$$hashKey": "object:178",
-          "decimals": 1,
-          "format": "s",
+          "$$hashKey": "object:1634",
+          "format": "short",
           "label": null,
           "logBase": 1,
           "max": null,
@@ -1234,13 +1256,13 @@
           "show": true
         },
         {
-          "$$hashKey": "object:179",
+          "$$hashKey": "object:1635",
           "format": "short",
           "label": null,
           "logBase": 1,
           "max": null,
           "min": null,
-          "show": false
+          "show": true
         }
       ],
       "yaxis": {
@@ -1264,9 +1286,311 @@
       "fillGradient": 0,
       "gridPos": {
         "h": 8,
-        "w": 12,
+        "w": 6,
+        "x": 6,
+        "y": 33
+      },
+      "hiddenSeries": false,
+      "id": 107,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "7.5.15",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "exemplar": true,
+          "expr": "zdm_proxy_inflight_requests_total{type=\"writes\", instance=~\"^($proxyinstance)$\"}",
+          "interval": "",
+          "legendFormat": "{instance=\"{{instance}}\"}",
+          "refId": "G"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "In Flight Write Requests",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "$$hashKey": "object:1634",
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "$$hashKey": "object:1635",
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "${DS_PROMETHEUS}",
+      "fieldConfig": {
+        "defaults": {
+          "links": []
+        },
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 6,
+        "x": 12,
+        "y": 33
+      },
+      "hiddenSeries": false,
+      "id": 108,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "7.5.15",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "exemplar": true,
+          "expr": "sum (zdm_proxy_inflight_requests_total{type=\"writes\", instance=~\"^($proxyinstance)$\"})",
+          "interval": "",
+          "legendFormat": "writes",
+          "refId": "G"
+        },
+        {
+          "exemplar": true,
+          "expr": "sum (zdm_proxy_inflight_requests_total{type=~\"reads_origin|reads_target\", instance=~\"^($proxyinstance)$\"})",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "reads",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "In Flight Requests by Type",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "$$hashKey": "object:1634",
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "$$hashKey": "object:1635",
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "${DS_PROMETHEUS}",
+      "fieldConfig": {
+        "defaults": {
+          "links": []
+        },
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 6,
+        "x": 18,
+        "y": 33
+      },
+      "hiddenSeries": false,
+      "id": 109,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "7.5.15",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "exemplar": true,
+          "expr": "sum (zdm_proxy_inflight_requests_total{instance=~\"^($proxyinstance)$\"}) by (instance)",
+          "interval": "",
+          "legendFormat": "{{instance}}",
+          "refId": "G"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "In Flight Requests by Instance",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "$$hashKey": "object:1634",
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "$$hashKey": "object:1635",
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "${DS_PROMETHEUS}",
+      "fieldConfig": {
+        "defaults": {
+          "links": []
+        },
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 8,
         "x": 0,
-        "y": 24
+        "y": 41
       },
       "hiddenSeries": false,
       "id": 33,
@@ -1362,107 +1686,9 @@
       "fillGradient": 0,
       "gridPos": {
         "h": 8,
-        "w": 12,
-        "x": 12,
-        "y": 24
-      },
-      "hiddenSeries": false,
-      "id": 21,
-      "legend": {
-        "avg": false,
-        "current": false,
-        "max": false,
-        "min": false,
-        "show": true,
-        "total": false,
-        "values": false
-      },
-      "lines": true,
-      "linewidth": 1,
-      "nullPointMode": "null",
-      "options": {
-        "alertThreshold": true
-      },
-      "percentage": false,
-      "pluginVersion": "7.5.15",
-      "pointradius": 2,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
-      "targets": [
-        {
-          "exemplar": true,
-          "expr": "zdm_proxy_inflight_requests_total{instance=~\"^($proxyinstance)$\"}",
-          "interval": "",
-          "legendFormat": "inflight_requests {instance=\"{{instance}}\", type=\"{{type}}\"}",
-          "refId": "G"
-        }
-      ],
-      "thresholds": [],
-      "timeFrom": null,
-      "timeRegions": [],
-      "timeShift": null,
-      "title": "In flight requests",
-      "tooltip": {
-        "shared": true,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "type": "graph",
-      "xaxis": {
-        "buckets": null,
-        "mode": "time",
-        "name": null,
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "$$hashKey": "object:1634",
-          "format": "short",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        },
-        {
-          "$$hashKey": "object:1635",
-          "format": "short",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        }
-      ],
-      "yaxis": {
-        "align": false,
-        "alignLevel": null
-      }
-    },
-    {
-      "aliasColors": {},
-      "bars": false,
-      "dashLength": 10,
-      "dashes": false,
-      "datasource": "${DS_PROMETHEUS}",
-      "fieldConfig": {
-        "defaults": {
-          "links": []
-        },
-        "overrides": []
-      },
-      "fill": 1,
-      "fillGradient": 0,
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 0,
-        "y": 32
+        "w": 8,
+        "x": 8,
+        "y": 41
       },
       "hiddenSeries": false,
       "id": 36,
@@ -1558,9 +1784,9 @@
       "fillGradient": 0,
       "gridPos": {
         "h": 8,
-        "w": 12,
-        "x": 12,
-        "y": 32
+        "w": 8,
+        "x": 16,
+        "y": 41
       },
       "hiddenSeries": false,
       "id": 34,
@@ -1641,13 +1867,977 @@
       }
     },
     {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "${DS_PROMETHEUS}",
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 49
+      },
+      "hiddenSeries": false,
+      "id": 96,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "7.5.15",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "exemplar": true,
+          "expr": "rate(zdm_proxy_failed_reads_total{instance=~\"^($proxyinstance)$\"}[$error_rate])",
+          "interval": "",
+          "legendFormat": "{cluster=\"{{cluster}}\", instance=\"{{instance}}\"}",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Read Failure Rate",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "$$hashKey": "object:1138",
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "$$hashKey": "object:1139",
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "${DS_PROMETHEUS}",
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 49
+      },
+      "hiddenSeries": false,
+      "id": 98,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "7.5.15",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "exemplar": true,
+          "expr": "rate(zdm_proxy_failed_writes_total{instance=~\"^($proxyinstance)$\"}[$error_rate])",
+          "interval": "",
+          "legendFormat": "{failed_on=\"{{failed_on}}\", instance=\"{{instance}}\"}",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Write Failure Rate",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "$$hashKey": "object:1138",
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "$$hashKey": "object:1139",
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "${DS_PROMETHEUS}",
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 0,
+        "y": 57
+      },
+      "hiddenSeries": false,
+      "id": 99,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "7.5.15",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "exemplar": true,
+          "expr": "sum (rate(zdm_proxy_failed_reads_total{instance=~\"^($proxyinstance)$\"}[$error_rate])) by (instance)",
+          "interval": "",
+          "legendFormat": "{instance=\"{{instance}}\"}",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Read Failure Rate By Instance",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "$$hashKey": "object:1138",
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "$$hashKey": "object:1139",
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "${DS_PROMETHEUS}",
+      "description": "Shows failure rate sum by which cluster was reponsible for the failure.",
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 8,
+        "y": 57
+      },
+      "hiddenSeries": false,
+      "id": 100,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "7.5.15",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "exemplar": true,
+          "expr": "sum(rate(zdm_proxy_failed_writes_total{instance=~\"^($proxyinstance)$\"}[$error_rate])) by (failed_on)",
+          "interval": "",
+          "legendFormat": "{failed_on=\"{{failed_on}}\"}",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Write Failure Rate by Cluster",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "$$hashKey": "object:1138",
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "$$hashKey": "object:1139",
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "${DS_PROMETHEUS}",
+      "description": "",
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 16,
+        "y": 57
+      },
+      "hiddenSeries": false,
+      "id": 101,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "7.5.15",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "exemplar": true,
+          "expr": "sum(rate(zdm_proxy_failed_writes_total{instance=~\"^($proxyinstance)$\"}[$error_rate])) by (instance)",
+          "interval": "",
+          "legendFormat": "{instance=\"{{instance}}\"}",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Write Failure Rate by Instance",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "$$hashKey": "object:1138",
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "$$hashKey": "object:1139",
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "${DS_PROMETHEUS}",
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 65
+      },
+      "hiddenSeries": false,
+      "id": 102,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "7.5.15",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "exemplar": true,
+          "expr": "zdm_proxy_failed_reads_total{instance=~\"^($proxyinstance)$\"}",
+          "interval": "",
+          "legendFormat": "{cluster=\"{{cluster}}\", instance=\"{{instance}}\"}",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Read Failure Counters",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "$$hashKey": "object:1138",
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "$$hashKey": "object:1139",
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "${DS_PROMETHEUS}",
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 65
+      },
+      "hiddenSeries": false,
+      "id": 103,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "7.5.15",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "exemplar": true,
+          "expr": "zdm_proxy_failed_writes_total{instance=~\"^($proxyinstance)$\"}",
+          "interval": "",
+          "legendFormat": "{failed_on=\"{{failed_on}}\", instance=\"{{instance}}\"}",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Write Failure Counters",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "$$hashKey": "object:1138",
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "$$hashKey": "object:1139",
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "${DS_PROMETHEUS}",
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 0,
+        "y": 73
+      },
+      "hiddenSeries": false,
+      "id": 104,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "7.5.15",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "exemplar": true,
+          "expr": "sum (zdm_proxy_failed_reads_total{instance=~\"^($proxyinstance)$\"}) by (instance)",
+          "interval": "",
+          "legendFormat": "{instance=\"{{instance}}\"}",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Read Failure Counters By Instance",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "$$hashKey": "object:1138",
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "$$hashKey": "object:1139",
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "${DS_PROMETHEUS}",
+      "description": "Shows failure rate sum by which cluster was reponsible for the failure.",
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 8,
+        "y": 73
+      },
+      "hiddenSeries": false,
+      "id": 105,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "7.5.15",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "exemplar": true,
+          "expr": "sum(zdm_proxy_failed_writes_total{instance=~\"^($proxyinstance)$\"}) by (failed_on)",
+          "interval": "",
+          "legendFormat": "{failed_on=\"{{failed_on}}\"}",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Write Failure Counters by Cluster",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "$$hashKey": "object:1138",
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "$$hashKey": "object:1139",
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "${DS_PROMETHEUS}",
+      "description": "",
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 16,
+        "y": 73
+      },
+      "hiddenSeries": false,
+      "id": 106,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "7.5.15",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "exemplar": true,
+          "expr": "sum(zdm_proxy_failed_writes_total{instance=~\"^($proxyinstance)$\"}) by (instance)",
+          "interval": "",
+          "legendFormat": "{instance=\"{{instance}}\"}",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Write Failure Counters by Instance",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "$$hashKey": "object:1138",
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "$$hashKey": "object:1139",
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
       "collapsed": false,
       "datasource": "${DS_PROMETHEUS}",
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 40
+        "y": 81
       },
       "id": 17,
       "panels": [],
@@ -1672,7 +2862,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 41
+        "y": 82
       },
       "hiddenSeries": false,
       "id": 43,
@@ -1770,7 +2960,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 41
+        "y": 82
       },
       "hiddenSeries": false,
       "id": 42,
@@ -1868,7 +3058,7 @@
         "h": 9,
         "w": 12,
         "x": 0,
-        "y": 49
+        "y": 90
       },
       "hiddenSeries": false,
       "id": 29,
@@ -2013,7 +3203,7 @@
         "h": 9,
         "w": 12,
         "x": 12,
-        "y": 49
+        "y": 90
       },
       "hiddenSeries": false,
       "id": 41,
@@ -2158,7 +3348,7 @@
         "h": 9,
         "w": 12,
         "x": 0,
-        "y": 58
+        "y": 99
       },
       "hiddenSeries": false,
       "id": 54,
@@ -2263,6 +3453,7 @@
       },
       "yaxes": [
         {
+          "$$hashKey": "object:2177",
           "decimals": 1,
           "format": "s",
           "label": null,
@@ -2272,6 +3463,7 @@
           "show": true
         },
         {
+          "$$hashKey": "object:2178",
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -2303,7 +3495,7 @@
         "h": 9,
         "w": 12,
         "x": 12,
-        "y": 58
+        "y": 99
       },
       "hiddenSeries": false,
       "id": 53,
@@ -2448,7 +3640,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 67
+        "y": 108
       },
       "hiddenSeries": false,
       "id": 20,
@@ -2544,7 +3736,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 67
+        "y": 108
       },
       "hiddenSeries": false,
       "id": 37,
@@ -2640,7 +3832,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 75
+        "y": 116
       },
       "hiddenSeries": false,
       "id": 56,
@@ -2744,7 +3936,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 75
+        "y": 116
       },
       "hiddenSeries": false,
       "id": 55,
@@ -2848,7 +4040,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 83
+        "y": 124
       },
       "hiddenSeries": false,
       "id": 74,
@@ -2946,7 +4138,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 83
+        "y": 124
       },
       "hiddenSeries": false,
       "id": 80,
@@ -3044,7 +4236,7 @@
         "h": 8,
         "w": 6,
         "x": 0,
-        "y": 91
+        "y": 132
       },
       "hiddenSeries": false,
       "id": 49,
@@ -3157,7 +4349,7 @@
         "h": 8,
         "w": 6,
         "x": 6,
-        "y": 91
+        "y": 132
       },
       "hiddenSeries": false,
       "id": 77,
@@ -3254,7 +4446,7 @@
         "h": 8,
         "w": 6,
         "x": 12,
-        "y": 91
+        "y": 132
       },
       "hiddenSeries": false,
       "id": 78,
@@ -3367,7 +4559,7 @@
         "h": 8,
         "w": 6,
         "x": 18,
-        "y": 91
+        "y": 132
       },
       "hiddenSeries": false,
       "id": 86,
@@ -3464,7 +4656,7 @@
         "h": 8,
         "w": 6,
         "x": 0,
-        "y": 99
+        "y": 140
       },
       "hiddenSeries": false,
       "id": 76,
@@ -3561,7 +4753,7 @@
         "h": 8,
         "w": 6,
         "x": 6,
-        "y": 99
+        "y": 140
       },
       "hiddenSeries": false,
       "id": 75,
@@ -3658,7 +4850,7 @@
         "h": 8,
         "w": 6,
         "x": 12,
-        "y": 99
+        "y": 140
       },
       "hiddenSeries": false,
       "id": 84,
@@ -3755,7 +4947,7 @@
         "h": 8,
         "w": 6,
         "x": 18,
-        "y": 99
+        "y": 140
       },
       "hiddenSeries": false,
       "id": 82,
@@ -3852,7 +5044,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 107
+        "y": 148
       },
       "hiddenSeries": false,
       "id": 19,
@@ -3950,7 +5142,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 107
+        "y": 148
       },
       "hiddenSeries": false,
       "id": 81,
@@ -4048,7 +5240,7 @@
         "h": 8,
         "w": 6,
         "x": 0,
-        "y": 115
+        "y": 156
       },
       "hiddenSeries": false,
       "id": 73,
@@ -4161,7 +5353,7 @@
         "h": 8,
         "w": 6,
         "x": 6,
-        "y": 115
+        "y": 156
       },
       "hiddenSeries": false,
       "id": 47,
@@ -4258,7 +5450,7 @@
         "h": 8,
         "w": 6,
         "x": 12,
-        "y": 115
+        "y": 156
       },
       "hiddenSeries": false,
       "id": 79,
@@ -4371,7 +5563,7 @@
         "h": 8,
         "w": 6,
         "x": 18,
-        "y": 115
+        "y": 156
       },
       "hiddenSeries": false,
       "id": 87,
@@ -4468,7 +5660,7 @@
         "h": 8,
         "w": 6,
         "x": 0,
-        "y": 123
+        "y": 164
       },
       "hiddenSeries": false,
       "id": 46,
@@ -4565,7 +5757,7 @@
         "h": 8,
         "w": 6,
         "x": 6,
-        "y": 123
+        "y": 164
       },
       "hiddenSeries": false,
       "id": 50,
@@ -4662,7 +5854,7 @@
         "h": 8,
         "w": 6,
         "x": 12,
-        "y": 123
+        "y": 164
       },
       "hiddenSeries": false,
       "id": 85,
@@ -4759,7 +5951,7 @@
         "h": 8,
         "w": 6,
         "x": 18,
-        "y": 123
+        "y": 164
       },
       "hiddenSeries": false,
       "id": 83,
@@ -4845,7 +6037,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 131
+        "y": 172
       },
       "id": 61,
       "panels": [],
@@ -4870,7 +6062,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 132
+        "y": 173
       },
       "hiddenSeries": false,
       "id": 62,
@@ -4968,7 +6160,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 132
+        "y": 173
       },
       "hiddenSeries": false,
       "id": 63,
@@ -5066,7 +6258,7 @@
         "h": 9,
         "w": 12,
         "x": 0,
-        "y": 140
+        "y": 181
       },
       "hiddenSeries": false,
       "id": 64,
@@ -5211,7 +6403,7 @@
         "h": 9,
         "w": 12,
         "x": 12,
-        "y": 140
+        "y": 181
       },
       "hiddenSeries": false,
       "id": 65,
@@ -5356,7 +6548,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 149
+        "y": 190
       },
       "hiddenSeries": false,
       "id": 66,
@@ -5452,7 +6644,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 149
+        "y": 190
       },
       "hiddenSeries": false,
       "id": 67,
@@ -5556,7 +6748,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 157
+        "y": 198
       },
       "hiddenSeries": false,
       "id": 89,
@@ -5654,7 +6846,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 157
+        "y": 198
       },
       "hiddenSeries": false,
       "id": 88,
@@ -5767,7 +6959,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 165
+        "y": 206
       },
       "hiddenSeries": false,
       "id": 69,
@@ -5865,7 +7057,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 165
+        "y": 206
       },
       "hiddenSeries": false,
       "id": 68,
@@ -5978,7 +7170,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 173
+        "y": 214
       },
       "hiddenSeries": false,
       "id": 70,
@@ -6075,7 +7267,7 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 173
+        "y": 214
       },
       "hiddenSeries": false,
       "id": 92,
@@ -6172,7 +7364,7 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 173
+        "y": 214
       },
       "hiddenSeries": false,
       "id": 72,
@@ -6269,7 +7461,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 181
+        "y": 222
       },
       "hiddenSeries": false,
       "id": 90,
@@ -6366,7 +7558,7 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 181
+        "y": 222
       },
       "hiddenSeries": false,
       "id": 71,
@@ -6463,7 +7655,7 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 181
+        "y": 222
       },
       "hiddenSeries": false,
       "id": 91,
@@ -6729,5 +7921,5 @@
   "timezone": "",
   "title": "ZDM Proxy Dashboard v1",
   "uid": "1g2xwDV4k",
-  "version": 4
+  "version": 5
 }
