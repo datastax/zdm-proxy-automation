@@ -9,7 +9,9 @@ ZDM_PROXY_TOPOLOGY_ADDRESSES={{ zdm_proxy_address_list|join(',') }}
 
 {% if ( origin_contact_points is defined ) %}
 ZDM_ORIGIN_CONTACT_POINTS={{ origin_contact_points }}
+  {% if ( origin_port is defined ) %}
 ZDM_ORIGIN_PORT={{ origin_port }}
+  {% endif %}
 {% elif ( ( origin_scb_downloaded is defined and origin_scb_downloaded == 'success' ) or ( origin_scb_provided is defined and origin_scb_provided == 'success' ) )%}
 ZDM_ORIGIN_SECURE_CONNECT_BUNDLE_PATH={{ zdm_proxy_home_dir }}/{{ zdm_proxy_shared_assets_dir_name }}/origin_scb.zip
 {% endif %}
@@ -17,9 +19,11 @@ ZDM_ORIGIN_SECURE_CONNECT_BUNDLE_PATH={{ zdm_proxy_home_dir }}/{{ zdm_proxy_shar
 ZDM_ORIGIN_LOCAL_DATACENTER={{ origin_local_datacenter }}
 {% endif %}
 
-{% if ( target_contact_points is defined and target_contact_points is defined ) %}
+{% if ( target_contact_points is defined ) %}
 ZDM_TARGET_CONTACT_POINTS={{ target_contact_points }}
+  {% if ( target_port is defined ) %}
 ZDM_TARGET_PORT={{ target_port }}
+  {% endif %}
 {% elif ( target_scb_downloaded is defined and target_scb_downloaded == 'success' ) or ( target_scb_provided is defined and target_scb_provided == 'success' ) %}
 ZDM_TARGET_SECURE_CONNECT_BUNDLE_PATH={{ zdm_proxy_home_dir }}/{{ zdm_proxy_shared_assets_dir_name }}/target_scb.zip
 {% endif %}
