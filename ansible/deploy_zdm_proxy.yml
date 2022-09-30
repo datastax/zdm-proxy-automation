@@ -120,7 +120,7 @@
     - name: Copy SCB for Target to shared asset directory
       include_tasks: tasks/transfer_provided_scb_for_cluster.yml
       vars:
-        - secure_connect_bundle_path_name: "{{ target_astra_secure_connect_bundle_path }}"
+        - secure_connect_bundle_path: "{{ target_astra_secure_connect_bundle_path }}"
         - astra_db_id: "{{ target_astra_db_id }}"
         - scb_filename: "{{ target_scb_file_name }}"
         - zdm_proxy_shared_assets_dir: "{{ zdm_proxy_home_dir }}/{{ zdm_proxy_shared_assets_dir_name }}"
