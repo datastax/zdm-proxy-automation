@@ -49,13 +49,6 @@ zdm_proxy_listen_port: 9042
 #metrics_enable:
 metrics_port: 14001
 
-##############################
-### System queries routing ###
-##############################
-
-## Where to route the system queries. Valid values: PRIMARY, ORIGIN, TARGET. Defaults to PRIMARY.
-#system_queries_mode:
-
 #############################
 ##### Deprecated settings ###
 #############################
