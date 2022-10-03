@@ -63,5 +63,3 @@
 
 ## Boolean value indicating whether mutual TLS (mTLS) should be enabled between the application and the ZDM proxy. Defaults to false.
 #zdm_proxy_tls_require_client_auth:
-
-
