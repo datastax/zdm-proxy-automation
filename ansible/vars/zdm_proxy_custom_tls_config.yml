@@ -14,9 +14,8 @@
 ##################################################
 ### The ZDM proxy acts as the TLS client, the Origin cluster acts as the TLS server.
 
-## Path and name of the user-defined directory, on the Ansible Control host, containing all TLS assets (Server CA Cert / Client cert / Client key) for the Origin cluster.
-## Example: /home/ubuntu/origin_tls_assets
-#origin_tls_user_dir_path:
+## Path and name of the user-defined directory, on the Ansible Control host, containing all TLS files (Server CA Cert / Client cert / Client key) for the Origin cluster.
+#origin_tls_user_dir_path: "/home/ubuntu/origin_tls_files"
 
 ## Origin cluster's Server CA certificate filename (without path). Required for both one-way TLS and Mutual TLS.
 #origin_tls_server_ca_filename:
@@ -31,9 +30,8 @@
 ##################################################
 ### The ZDM proxy acts as the TLS client, the Target cluster acts as the TLS server.
 
-## Path and name of the user-defined directory, on the Ansible Control host, containing all TLS assets (Server CA Cert / Client cert / Client key) for the Target cluster
-## Example: /home/ubuntu/target_tls_assets
-#target_tls_user_dir_path:
+## Path and name of the user-defined directory, on the Ansible Control host, containing all TLS files (Server CA Cert / Client cert / Client key) for the Target cluster
+#target_tls_user_dir_path: "/home/ubuntu/target_tls_files"
 
 ## Target cluster's Server CA certificate filename (without path). Required for both one-way TLS and Mutual TLS.
 #target_tls_server_ca_filename:
@@ -48,9 +46,8 @@
 ###############################################
 ### The application acts as the TLS client, the ZDM proxy acts as the TLS server.
 
-## Path and name of the directory, on the Ansible control host, containing all TLS assets (CA cert / Server cert / Server key) for application-to-proxy TLS encryption
-## Example: /home/ubuntu/zdm_proxy_tls_assets
-#zdm_proxy_tls_user_dir_path:
+## Path and name of the directory, on the Ansible control host, containing all TLS files (CA cert / Server cert / Server key) for application-to-proxy TLS encryption
+#zdm_proxy_tls_user_dir_path: "/home/ubuntu/zdm_proxy_tls_files"
 
 ## Proxy CA certificate filename (without path). This is the CA certificate needed by the ZDM proxy to enable TLS encryption between itself and the application.
 ## Required for both one-way TLS and Mutual TLS.
