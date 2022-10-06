@@ -1,7 +1,0 @@
-[proxies]
-$PROXY_IP_1     ansible_connection=ssh     ansible_user=ubuntu
-$PROXY_IP_2     ansible_connection=ssh     ansible_user=ubuntu
-$PROXY_IP_3     ansible_connection=ssh     ansible_user=ubuntu
-
-[monitoring]
-$JUMPHOST_IP	ansible_connection=ssh     ansible_user=ubuntu

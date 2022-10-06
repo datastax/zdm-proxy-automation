@@ -7,56 +7,60 @@ networks:
     ipam:
       driver: default
       config:
-        - subnet: 192.168.100.0/24
+        - subnet: $NETWORK_SUBNET
 
 services:
   origin:
     image: cassandra:3.11
     restart: unless-stopped
+    environment:
+      - CASSANDRA_CLUSTER_NAME='origin_cluster'
+      - CASSANDRA_NUM_TOKENS=32
+      - CASSANDRA_DC=datacenter1
+      - CASSANDRA_ENDPOINT_SNITCH=GossipingPropertyFileSnitch
     networks:
       proxy:
 
   target:
     image: cassandra:4.0
     restart: unless-stopped
+    environment:
+      - CASSANDRA_CLUSTER_NAME='target_cluster'
+      - CASSANDRA_DC=datacenter1
+      - CASSANDRA_ENDPOINT_SNITCH=GossipingPropertyFileSnitch
     networks:
       proxy:
 
   proxy:
-    image: thesoul/ubuntu-dind:docker-20.10.12
+    build: ./docker-compose/services/proxy
     restart: unless-stopped
     tty: true
     privileged: true
     volumes:
-      - .:/opt/zdm-proxy-automation
-      - ./compose/keys:/run/keys
-    entrypoint:
-      - /opt/zdm-proxy-automation/compose/proxy-entrypoint.sh
+      - ./docker-compose/services/proxy/proxy-entrypoint.sh:/usr/bin/proxy-entrypoint.sh
+      - ./docker-compose/share:/run/zdm-proxy-automation/
     networks:
       proxy:
-    deploy:
-      mode: replicated
-      replicas: 3
 
   jumphost:
-    image: ubuntu:20.04
+    build: ./docker-compose/services/jumphost
     restart: unless-stopped
     tty: true
+    environment:
+      - CIDR_IP_SUBNET=$NETWORK_SUBNET
     volumes:
-      - .:/opt/zdm-proxy-automation
-      - ./compose/keys:/run/keys
-    entrypoint:
-      - /opt/zdm-proxy-automation/compose/jumphost-entrypoint.sh
+      - ./docker-compose/services/jumphost/jumphost-entrypoint.sh:/usr/bin/jumphost-entrypoint.sh
+      - ./docker-compose/share:/run/zdm-proxy-automation/
+      - ./ansible/:/opt/zdm-proxy-automation/ansible/
     networks:
       proxy:
 
   client:
-    image: ubuntu:20.04
+    build: ./docker-compose/services/client
     restart: unless-stopped
     tty: true
     volumes:
-      - .:/opt/zdm-proxy-automation
-    entrypoint:
-      - /opt/zdm-proxy-automation/compose/client-entrypoint.sh
+      - ./docker-compose/services/client/client-entrypoint.sh:/usr/bin/client-entrypoint.sh
+      - ./docker-compose/share:/run/zdm-proxy-automation/
     networks:
       proxy:
