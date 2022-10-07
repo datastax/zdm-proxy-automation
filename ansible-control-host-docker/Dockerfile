@@ -46,5 +46,10 @@ RUN chmod +x init_container_internal.sh
 
 USER ubuntu
 
+RUN cd
+RUN mkdir origin_tls_files
+RUN mkdir target_tls_files
+RUN mkdir zdm_proxy_tls_files
+
 ENTRYPOINT ["/bin/bash"]
 

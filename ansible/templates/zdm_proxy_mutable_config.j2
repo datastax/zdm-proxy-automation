@@ -1,38 +1,56 @@
 #jinja2: lstrip_blocks: "True", trim_blocks: "True"
 
-ORIGIN_CASSANDRA_USERNAME={{ origin_cassandra_username }}
-ORIGIN_CASSANDRA_PASSWORD={{ origin_cassandra_password }}
-
-TARGET_CASSANDRA_USERNAME={{ target_cassandra_username }}
-TARGET_CASSANDRA_PASSWORD={{ target_cassandra_password }}
-
-{% if ( forward_client_credentials_to_origin is defined ) %}
-FORWARD_CLIENT_CREDENTIALS_TO_ORIGIN={{ forward_client_credentials_to_origin }}
+{% if ( origin_username is defined and origin_password is defined ) %}
+ZDM_ORIGIN_USERNAME={{ origin_username }}
+ZDM_ORIGIN_PASSWORD={{ origin_password }}
 {% endif %}
-FORWARD_READS_TO_TARGET={{ forward_reads_to_target }}
+
+{% if ( target_username is defined and target_password is defined ) %}
+ZDM_TARGET_USERNAME={{ target_username }}
+ZDM_TARGET_PASSWORD={{ target_password }}
+{% endif %}
+
+{% if ( primary_cluster is defined ) %}
+ZDM_PRIMARY_CLUSTER={{ primary_cluster }}
+{% endif %}
+
+{% if ( read_mode is defined ) %}
+ZDM_READ_MODE={{ read_mode }}
+{% endif %}
 
 {% if ( log_level is defined ) %}
-LOG_LEVEL={{ log_level }}
+ZDM_LOG_LEVEL={{ log_level }}
 {% endif %}
 
-{% if ( cluster_connection_timeout_ms is defined ) %}
-CLUSTER_CONNECTION_TIMEOUT_MS={{ cluster_connection_timeout_ms }}
-{% endif %}
-{% if ( request_timeout_ms is defined ) %}
-REQUEST_TIMEOUT_MS={{ request_timeout_ms }}
+{% if ( zdm_proxy_max_clients_connections is defined ) %}
+ZDM_PROXY_MAX_CLIENT_CONNECTIONS={{ zdm_proxy_max_clients_connections }}
 {% endif %}
 
-{% if ( enable_metrics is defined ) %}
-ENABLE_METRICS={{ enable_metrics }}
+{% if ( zdm_proxy_request_timeout_ms is defined ) %}
+ZDM_PROXY_REQUEST_TIMEOUT_MS={{ zdm_proxy_request_timeout_ms }}
+{% endif %}
+{% if ( origin_connection_timeout_ms is defined ) %}
+ZDM_ORIGIN_CONNECTION_TIMEOUT_MS={{ origin_connection_timeout_ms }}
+{% endif %}
+{% if ( target_connection_timeout_ms is defined ) %}
+ZDM_TARGET_CONNECTION_TIMEOUT_MS={{ target_connection_timeout_ms }}
+{% endif %}
+{% if ( async_handshake_timeout_ms is defined ) %}
+ZDM_ASYNC_HANDSHAKE_TIMEOUT_MS={{ async_handshake_timeout_ms }}
 {% endif %}
 
-{% if ( max_clients_threshold is defined ) %}
-MAX_CLIENTS_THRESHOLD={{ max_clients_threshold }}
+{% if ( metrics_enable is defined ) %}
+ZDM_METRICS_ENABLE={{ metrics_enable }}
 {% endif %}
 
-{% if ( dual_reads_enabled is defined ) %}
-DUAL_READS_ENABLED={{ dual_reads_enabled }}
+{% if ( system_queries_mode is defined ) %}
+ZDM_SYSTEM_QUERIES_MODE={{ system_queries_mode }}
 {% endif %}
-{% if ( async_reads_on_secondary is defined ) %}
-ASYNC_READS_ON_SECONDARY={{ async_reads_on_secondary }}
+
+{% if ( replace_cql_functions is defined ) %}
+ZDM_REPLACE_CQL_FUNCTIONS={{ replace_cql_functions }}
+{% endif %}
+
+{% if ( forward_client_credentials_to_origin is defined ) %}
+ZDM_FORWARD_CLIENT_CREDENTIALS_TO_ORIGIN={{ forward_client_credentials_to_origin }}
 {% endif %}

@@ -4,7 +4,7 @@
       "type": "grafana",
       "id": "grafana",
       "name": "Grafana",
-      "version": "7.4.5"
+      "version": "7.5.15"
     },
     {
       "type": "panel",
@@ -37,7 +37,7 @@
   "gnetId": 6671,
   "graphTooltip": 0,
   "id": null,
-  "iteration": 1630075077560,
+  "iteration": 1664558042773,
   "links": [],
   "panels": [
     {
@@ -50,7 +50,6 @@
       "error": false,
       "fieldConfig": {
         "defaults": {
-          "custom": {},
           "links": []
         },
         "overrides": []
@@ -82,12 +81,12 @@
       "lines": true,
       "linewidth": 2,
       "links": [],
-      "nullPointMode": "connected",
+      "nullPointMode": "null",
       "options": {
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.4.5",
+      "pluginVersion": "7.5.15",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -183,7 +182,6 @@
       "error": false,
       "fieldConfig": {
         "defaults": {
-          "custom": {},
           "links": []
         },
         "overrides": []
@@ -213,17 +211,18 @@
       "lines": true,
       "linewidth": 2,
       "links": [],
-      "nullPointMode": "connected",
+      "nullPointMode": "null",
       "options": {
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.4.5",
+      "pluginVersion": "7.5.15",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
       "seriesOverrides": [
         {
+          "$$hashKey": "object:939",
           "alias": "resident",
           "yaxis": 1
         }
@@ -274,6 +273,7 @@
       },
       "yaxes": [
         {
+          "$$hashKey": "object:946",
           "format": "bytes",
           "label": null,
           "logBase": 1,
@@ -282,6 +282,7 @@
           "show": true
         },
         {
+          "$$hashKey": "object:947",
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -305,7 +306,6 @@
       "error": false,
       "fieldConfig": {
         "defaults": {
-          "custom": {},
           "links": []
         },
         "overrides": []
@@ -335,17 +335,18 @@
       "lines": true,
       "linewidth": 2,
       "links": [],
-      "nullPointMode": "connected",
+      "nullPointMode": "null",
       "options": {
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.4.5",
+      "pluginVersion": "7.5.15",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
       "seriesOverrides": [
         {
+          "$$hashKey": "object:332",
           "alias": "alloc rate",
           "yaxis": 2
         }
@@ -417,6 +418,7 @@
       },
       "yaxes": [
         {
+          "$$hashKey": "object:339",
           "format": "bytes",
           "label": null,
           "logBase": 1,
@@ -425,6 +427,7 @@
           "show": true
         },
         {
+          "$$hashKey": "object:340",
           "format": "Bps",
           "label": null,
           "logBase": 1,
@@ -448,7 +451,6 @@
       "error": false,
       "fieldConfig": {
         "defaults": {
-          "custom": {},
           "links": []
         },
         "overrides": []
@@ -478,17 +480,18 @@
       "lines": true,
       "linewidth": 2,
       "links": [],
-      "nullPointMode": "connected",
+      "nullPointMode": "null",
       "options": {
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.4.5",
+      "pluginVersion": "7.5.15",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
       "seriesOverrides": [
         {
+          "$$hashKey": "object:847",
           "alias": "alloc rate",
           "yaxis": 2
         }
@@ -560,6 +563,7 @@
       },
       "yaxes": [
         {
+          "$$hashKey": "object:854",
           "format": "bytes",
           "label": null,
           "logBase": 1,
@@ -568,6 +572,7 @@
           "show": true
         },
         {
+          "$$hashKey": "object:855",
           "format": "Bps",
           "label": null,
           "logBase": 1,
@@ -591,7 +596,6 @@
       "error": false,
       "fieldConfig": {
         "defaults": {
-          "custom": {},
           "links": []
         },
         "overrides": []
@@ -621,12 +625,12 @@
       "lines": true,
       "linewidth": 2,
       "links": [],
-      "nullPointMode": "connected",
+      "nullPointMode": "null",
       "options": {
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.4.5",
+      "pluginVersion": "7.5.15",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -667,6 +671,7 @@
       },
       "yaxes": [
         {
+          "$$hashKey": "object:424",
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -675,6 +680,7 @@
           "show": true
         },
         {
+          "$$hashKey": "object:425",
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -698,7 +704,6 @@
       "error": false,
       "fieldConfig": {
         "defaults": {
-          "custom": {},
           "links": []
         },
         "overrides": []
@@ -728,12 +733,12 @@
       "lines": true,
       "linewidth": 2,
       "links": [],
-      "nullPointMode": "connected",
+      "nullPointMode": "null",
       "options": {
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.4.5",
+      "pluginVersion": "7.5.15",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -774,6 +779,7 @@
       },
       "yaxes": [
         {
+          "$$hashKey": "object:509",
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -782,6 +788,7 @@
           "show": true
         },
         {
+          "$$hashKey": "object:510",
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -805,7 +812,6 @@
       "error": false,
       "fieldConfig": {
         "defaults": {
-          "custom": {},
           "links": []
         },
         "overrides": []
@@ -835,12 +841,12 @@
       "lines": true,
       "linewidth": 2,
       "links": [],
-      "nullPointMode": "connected",
+      "nullPointMode": "null",
       "options": {
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.4.5",
+      "pluginVersion": "7.5.15",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -881,6 +887,7 @@
       },
       "yaxes": [
         {
+          "$$hashKey": "object:594",
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -889,6 +896,7 @@
           "show": true
         },
         {
+          "$$hashKey": "object:595",
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -912,7 +920,6 @@
       "error": false,
       "fieldConfig": {
         "defaults": {
-          "custom": {},
           "links": []
         },
         "overrides": []
@@ -942,12 +949,12 @@
       "lines": true,
       "linewidth": 2,
       "links": [],
-      "nullPointMode": "connected",
+      "nullPointMode": "null",
       "options": {
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.4.5",
+      "pluginVersion": "7.5.15",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -988,6 +995,7 @@
       },
       "yaxes": [
         {
+          "$$hashKey": "object:679",
           "format": "s",
           "label": null,
           "logBase": 1,
@@ -996,6 +1004,7 @@
           "show": true
         },
         {
+          "$$hashKey": "object:680",
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -1020,7 +1029,7 @@
         "allValue": ".*",
         "current": {},
         "datasource": "Prometheus",
-        "definition": "{job=~\"cloudgate_proxy\"}",
+        "definition": "{job=~\"zdm_proxy\"}",
         "description": null,
         "error": null,
         "hide": 0,
@@ -1030,7 +1039,7 @@
         "name": "proxy",
         "options": [],
         "query": {
-          "query": "{job=~\"cloudgate_proxy\"}",
+          "query": "{job=~\"zdm_proxy\"}",
           "refId": "StandardVariableQuery"
         },
         "refresh": 2,
@@ -1149,7 +1158,7 @@
     ]
   },
   "time": {
-    "from": "now-15m",
+    "from": "now-30m",
     "to": "now"
   },
   "timepicker": {
@@ -1178,7 +1187,7 @@
     ]
   },
   "timezone": "browser",
-  "title": "Golang metrics v3",
-  "uid": "ypFZFgvmz",
-  "version": 6
+  "title": "ZDM Go Runtime Metrics v1",
+  "uid": "MSD-tO44k",
+  "version": 3
 }

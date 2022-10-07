@@ -1,37 +1,59 @@
 ---
-### Origin configuration
+##############################
+#### ORIGIN CONFIGURATION ####
+##############################
 
-# Origin credentials (always required)
-#origin_cassandra_username: < Origin username. Required. If Origin is an Astra cluster, this is the clientID of a role with appropriate permissions (see docs)>
-#origin_cassandra_password: < Origin password. Required. If Origin is an Astra cluster, this is the client secret of the same role as above >
+## Origin credentials
+#origin_username: < Origin username. If Origin is a self-managed cluster, this is required if authentication is enabled. If Origin is an Astra cluster, this is the clientID of a role with appropriate permissions (see docs)>
+#origin_password: < Origin password. If Origin is a self-managed cluster, this is required if authentication is enabled. If Origin is an Astra cluster, this is the client secret of the same role as above >
 
-# Set the following parameter only if Origin is an Astra cluster and you already have its secure connect bundle.
-#origin_secure_connect_bundle_path_name: <path and filename of the secure connect bundle zip file for Origin >
+## Set the following parameter only if Origin is an Astra cluster and you already have its secure connect bundle.
+#origin_astra_secure_connect_bundle_path: <path and filename of the secure connect bundle zip file for Origin >
 
-# Set the following two parameters only if Origin is an Astra cluster and you would like the automation to download the secure connect bundle automatically
+## Set the following two parameters only if Origin is an Astra cluster and you would like the automation to download the secure connect bundle automatically
 #origin_astra_db_id: <cluster id of the Origin Astra cluster>
 #origin_astra_token: <token of the same role as above >
 
-# Set the following two parameters only if Origin is a self-managed, non-Astra cluster 
-#origin_cassandra_contact_points: <comma-separated list of private IP addresses, no spaces>
-#origin_cassandra_port: <typically 9042>
+## Set the following two parameters only if Origin is a self-managed, non-Astra cluster
+#origin_contact_points: <comma-separated list of private IP addresses, no spaces>
+#origin_port: <typically 9042>
 
-### Target configuration
+##############################
+#### TARGET CONFIGURATION ####
+##############################
 
-# Target credentials (always required)
-#target_cassandra_username: < Target username. Required. If Target is an Astra cluster, this is the clientID of a read-only role >
-#target_cassandra_password: < Target password. Required. If Target is an Astra cluster, this is the client secret of the same role as above >
+## Target credentials
+#target_username: < Target username. If Target is a self-managed cluster, this is required if authentication is enabled. If Target is an Astra cluster, this is the clientID of a read-only role >
+#target_password: < Target password. If Target is a self-managed cluster, this is required if authentication is enabled. If Target is an Astra cluster, this is the client secret of the same role as above >
 
-# Set the following parameter only if Target is an Astra cluster and you already have its secure connect bundle.
-#target_secure_connect_bundle_path_name: <path and filename of the secure connect bundle zip file for Target >
+## Set the following parameter only if Target is an Astra cluster and you already have its secure connect bundle.
+#target_astra_secure_connect_bundle_path: <path and filename of the secure connect bundle zip file for Target >
 
-# Set the following two parameters only if Target is an Astra cluster and you would like the automation to download the secure connect bundle automatically
+## Set the following two parameters only if Target is an Astra cluster and you would like the automation to download the secure connect bundle automatically
 #target_astra_db_id: <cluster id of the Target Astra cluster>
 #target_astra_token: <token of the same role as above >
 
-# Set the following two parameters only if Target is a self-managed, non-Astra cluster
-#target_cassandra_contact_points: <comma-separated list of private IP addresses, no spaces>
-#target_cassandra_port: <typically 9042>
+## Set the following two parameters only if Target is a self-managed, non-Astra cluster
+#target_contact_points: <comma-separated list of private IP addresses, no spaces>
+#target_port: <typically 9042>
 
-# Destination for all read requests. Set to false to send all reads to Origin, or true to send all reads to Target
-forward_reads_to_target: false
+####################################
+#### READ ROUTING CONFIGURATION ####
+####################################
+
+## Cluster currently considered as "primary" by the ZDM proxy. Valid values are ORIGIN (default) or TARGET.
+## This is the current "source of truth" cluster.
+## Reads are always sent synchronously to the primary cluster, and their results (or any errors) are returned to the client application.
+primary_cluster: ORIGIN
+
+## Read handling behaviour.
+## Valid values: PRIMARY_ONLY (read synchronously from primary only) and DUAL_ASYNC_ON_SECONDARY (read synchronously from primary, and asynchronously from secondary)
+## Defaults to PRIMARY_ONLY. Set to DUAL_ASYNC_ON_SECONDARY for read mirroring.
+read_mode: PRIMARY_ONLY
+
+#################
+#### LOGGING ####
+#################
+
+## Proxy log level. Defaults to INFO. Setting it to DEBUG may have a small performance impact.
+log_level: INFO
