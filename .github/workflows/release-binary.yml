@@ -43,9 +43,9 @@ jobs:
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
-          name: ZDM Proxy ${{ github.ref_name }}
+          name: ZDM Proxy Util ${{ github.ref_name }}
           files: |
-            zdm-util-linux-amd64-${{ github.ref_name }}.tgz
-            zdm-util-linux-amd64-${{ github.ref_name }}-sha256.txt
-            zdm-util-windows-amd64-${{ github.ref_name }}.zip
-            zdm-util-windows-amd64-${{ github.ref_name }}-sha256.txt
+            ./zdm-util/zdm-util-linux-amd64-${{ github.ref_name }}.tgz
+            ./zdm-util/zdm-util-linux-amd64-${{ github.ref_name }}-sha256.txt
+            ./zdm-util/zdm-util-windows-amd64-${{ github.ref_name }}.zip
+            ./zdm-util/zdm-util-windows-amd64-${{ github.ref_name }}-sha256.txt
