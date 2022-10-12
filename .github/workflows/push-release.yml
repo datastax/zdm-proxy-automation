@@ -33,9 +33,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           file: Dockerfile
-          context: .
-          build-args: |
-            GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
+          context: ./ansible-control-host-docker
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           platforms: linux/amd64
