@@ -33,7 +33,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           file: Dockerfile
-          context: .
+          context: ./ansible-control-host-docker
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           platforms: linux/amd64
