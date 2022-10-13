@@ -1,4 +1,4 @@
-name: Build and publish commit release
+name: Build and publish zdm-ansible commit release
 
 on: workflow_dispatch
 
