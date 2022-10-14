@@ -46,7 +46,7 @@ zdm_proxy_listen_port: 9042
 ###############
 
 ## Metrics collection on the ZDM proxy is enabled by default. Metrics are scraped by Prometheus using the specified port.
-#metrics_enable:
+#metrics_enabled:
 metrics_port: 14001
 
 #############################
