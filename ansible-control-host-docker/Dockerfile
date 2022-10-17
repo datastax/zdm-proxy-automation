@@ -32,10 +32,6 @@ RUN mkdir zdm-proxy-ssh-key-dir/
 USER root
 RUN echo 'ubuntu ALL=NOPASSWD: ALL' >> /etc/sudoers
 
-RUN touch .ssh/config
-RUN chmod 664 .ssh/config
-RUN chown -R ubuntu:ubuntu .ssh/*
-
 COPY init_container_internal.sh .
 RUN chown ubuntu:ubuntu init_container_internal.sh
 RUN chmod +x init_container_internal.sh
