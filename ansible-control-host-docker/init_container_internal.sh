@@ -112,10 +112,6 @@ else
   exit 1
 fi
 
-echo "Changing permission of SSH config file to 664"
-sudo chmod 664 /home/ubuntu/.ssh/config
-echo
-
 echo "Changing ownership of all keys to user ubuntu"
 sudo chown -R ubuntu:ubuntu /home/ubuntu/.ssh/
 echo
