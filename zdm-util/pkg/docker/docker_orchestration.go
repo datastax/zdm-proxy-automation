@@ -21,7 +21,7 @@ import (
 )
 
 const (
-	dockerImageName                 = "datastax/zdm-ansible:1.0" // TODO check / amend
+	dockerImageName                 = "datastax/zdm-ansible:2.0"
 	dockerContainerName             = "zdm-ansible-container"
 	sshKeyPathOnContainer           = "/home/ubuntu/zdm-proxy-ssh-key-dir"
 	ansibleInventoryPathOnContainer = "/home/ubuntu"
