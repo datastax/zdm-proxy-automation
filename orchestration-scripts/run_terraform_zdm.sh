@@ -30,9 +30,9 @@
 ## *** OPTIONAL Variables. Leave commented if you are happy with the defaults. ***
 
 # OPTIONAL: IP ranges that must be allowed to connect to any instances within the ZDM VPC over SSH and HTTP (to view monitoring dashboards)
-# Typically these are IP ranges (CIDRs) from trusted VPNs. Defaults to the Santa Clara VPC CIDR.
+# Typically these are IP ranges (CIDRs) from trusted VPNs. Example format: "39.65.102.117/28"
 # Multiple CIDRs can be specified as a string containing a comma-separated list of elements, without whitespaces.
-whitelisted_inbound_ip_ranges="38.99.104.112/28"
+#whitelisted_inbound_ip_ranges=
 
 # OPTIONAL: IP ranges to which instances within the ZDM VPC must be able to connect.
 # These can be destinations such as Astra, Dockerhub, AWS apt-get mirrors. Defaults to everything (unrestricted).
