@@ -39,8 +39,8 @@ ZDM_TARGET_CONNECTION_TIMEOUT_MS={{ target_connection_timeout_ms }}
 ZDM_ASYNC_HANDSHAKE_TIMEOUT_MS={{ async_handshake_timeout_ms }}
 {% endif %}
 
-{% if ( metrics_enable is defined ) %}
-ZDM_METRICS_ENABLE={{ metrics_enable }}
+{% if ( metrics_enabled is defined ) %}
+ZDM_METRICS_ENABLED={{ metrics_enabled }}
 {% endif %}
 
 {% if ( system_queries_mode is defined ) %}
