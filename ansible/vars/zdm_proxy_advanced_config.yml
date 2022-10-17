@@ -4,7 +4,7 @@
 ##########################
 
 ## Maximum number of client connections that each ZDM proxy instance can accept. Defaults to 1000.
-## Ths limit can be increased, but it might impact performance especially at high throughput.
+## This limit can be increased, but it might impact performance especially at high throughput.
 #zdm_proxy_max_clients_connections:
 
 ##########################
