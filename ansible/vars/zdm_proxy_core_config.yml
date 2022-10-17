@@ -47,8 +47,7 @@
 primary_cluster: ORIGIN
 
 ## Read handling behaviour.
-## Valid values: PRIMARY_ONLY (read synchronously from primary only) and DUAL_ASYNC_ON_SECONDARY (read synchronously from primary, and asynchronously from secondary)
-## Defaults to PRIMARY_ONLY. Set to DUAL_ASYNC_ON_SECONDARY for read mirroring.
+## Valid values: PRIMARY_ONLY (default behaviour: read synchronously from primary only) and DUAL_ASYNC_ON_SECONDARY (read synchronously from primary, and also asynchronously from secondary)
 read_mode: PRIMARY_ONLY
 
 #################
