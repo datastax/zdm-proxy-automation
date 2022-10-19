@@ -32,11 +32,8 @@ RUN mkdir zdm-proxy-ssh-key-dir/
 USER root
 RUN echo 'ubuntu ALL=NOPASSWD: ALL' >> /etc/sudoers
 
-#TODO this will not be necessary once the automation repository is public
-COPY zdm-proxy-automation-deploy-key .ssh/
-RUN ls -l .ssh/
-RUN chmod 400 .ssh/zdm-proxy-automation-deploy-key
-RUN printf "# deploy key \nHost zdm-proxy-automation github.com\n  Hostname github.com\n  IdentityFile /home/ubuntu/.ssh/zdm-proxy-automation-deploy-key\n"  >> .ssh/config
+RUN mkdir .ssh
+RUN touch .ssh/config
 RUN chmod 664 .ssh/config
 RUN chown -R ubuntu:ubuntu .ssh/*
 

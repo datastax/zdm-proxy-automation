@@ -6,7 +6,6 @@
 
 ###  - ~/.ssh/<zdm_keypair_name>
 ###  - ~/.ssh/<zdm_keypair_name>.pub
-###  - ~/.ssh/zdm-proxy-automation-deploy-key
 ###  - ~/zdm_ansible_inventory
 
 #####################################################################################
@@ -69,14 +68,8 @@ ansible-galaxy collection install community.docker:3.0.2
 # Install the community.general dependency
 ansible-galaxy collection install community.general:4.8.6
 
-# Set up the ZDM proxy automation repository deploy key
-chmod 400 "${ssh_dir}"/zdm-proxy-automation-deploy-key
-
-# Append the following lines to the ssh config file (creating it if it doesn't exist)
-printf "# deploy key \nHost zdm-proxy-automation github.com\n  Hostname github.com\n  IdentityFile %s/zdm-proxy-automation-deploy-key\n"  "${ssh_dir}" >> "${ssh_dir}"/config
-
 # Clone the automation repo
-git clone git@github.com:datastax/zdm-proxy-automation.git
+git clone https://github.com/datastax/zdm-proxy-automation.git
 
 # Put the inventory file into the Ansible directory of the ZDM proxy automation code
 mv /home/ubuntu/zdm_ansible_inventory /home/ubuntu/zdm-proxy-automation/ansible
