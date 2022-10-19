@@ -118,16 +118,13 @@ echo
 
 cd || return
 
-# Add github.com to the known hosts to suppress confirmation prompt when cloning the automation project
-ssh-keyscan github.com >> ~/.ssh/known_hosts
-
 # Clone the automation if it is not already present
 if [ -d "/home/ubuntu/zdm-proxy-automation" ]
 then
   echo "The automation git repo has already been cloned."
 else
   echo "Cloning the automation git repo"
-  git clone git@github.com:datastax/zdm-proxy-automation.git
+  git clone https://github.com/datastax/zdm-proxy-automation.git
 fi
 echo
 

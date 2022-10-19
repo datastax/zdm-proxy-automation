@@ -69,7 +69,7 @@ ansible-galaxy collection install community.docker:3.0.2
 ansible-galaxy collection install community.general:4.8.6
 
 # Clone the automation repo
-git clone git@github.com:datastax/zdm-proxy-automation.git
+git clone https://github.com/datastax/zdm-proxy-automation.git
 
 # Put the inventory file into the Ansible directory of the ZDM proxy automation code
 mv /home/ubuntu/zdm_ansible_inventory /home/ubuntu/zdm-proxy-automation/ansible
