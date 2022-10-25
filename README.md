@@ -44,6 +44,8 @@ While it is perfectly possible to set up the Ansible Control Host manually, the 
 
 For detailed information about using the ZDM Utility, please see [this documentation page](https://docs.datastax.com/en/astra-serverless/docs/migrate/setup-ansible-playbooks.html).
 
+As explained in the [prerequisites](https://docs.datastax.com/en/astra-serverless/docs/migrate/setup-ansible-playbooks.html#_prerequisites), you will need to install Docker and enable your regular user to run the `docker` command without super user permissions.
+
 ### Alternative manual setup
 Using the ZDM Utility is convenient but not necessary. If you choose not to use it, you can install and configure the Ansible Control Host manually. This may be useful if you cannot or do not want to use Docker on the machine from which you will run the playbooks.
 
