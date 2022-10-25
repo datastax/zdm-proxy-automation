@@ -16,10 +16,10 @@ The Zero Downtime Migration Proxy [(ZDM proxy)](https://github.com/datastax/zdm-
 This automation suite provides several components to make it easier to provision, deploy and manage a cluster of ZDM Proxy instances in development, test and production environments.
 
 The components in this suite are:
-* A collection of Ansible playbooks to deploy the ZDM Proxy and its companion monitoring stack, perform operations (configuration changes, version upgrades and simple restarts) in a rolling fashion, and collect the logs from all instances.
+* A collection of Ansible playbooks to create a ZDM Proxy deployment and its companion monitoring stack, perform operations (configuration changes, version upgrades and simple restarts) in a rolling fashion, and collect the logs from all instances.
 * An interactive utility to easily create and configure a Docker container that acts as the Ansible Control Host, from which the Ansible playbooks can be configured and run. The ZDM Utility is written in Go and can be run on any platform.
-* A set of Terraform modules that can be **optionally** used to provision the infrastructure for a standard, self-contained ZDM deployment in a dedicated VPC, with some orchestration scripts to easily configure and run the Terraform automation. The Terraform automation is currently available for AWS only. Alternatively, you can provision the ZDM infrastructure manually or through your own automation - the infrastructure and connectivity requirements are covered [here](https://docs.datastax.com/en/astra-serverless/docs/migrate/deployment-infrastructure.html).
-* A Docker Compose descriptor and set of scripts to easily create a local ZDM proxy setup connecting to two single-node Cassandra clusters for testing and exploration purposes.
+* A set of Terraform modules that can be **optionally** used to provision the infrastructure for a standard, self-contained ZDM deployment in a dedicated VPC, with some orchestration scripts to easily configure and run the Terraform automation. The Terraform automation is currently available for AWS only. Alternatively, you can provision the ZDM infrastructure in other ways (manually or through your own automation) as long as it complies with these [infrastructure and connectivity requirements](https://docs.datastax.com/en/astra-serverless/docs/migrate/deployment-infrastructure.html).
+* A Docker Compose descriptor and set of scripts to easily create a local ZDM Proxy setup connecting to two single-node Cassandra clusters for testing and exploration purposes.
 * Some additional convenience scripts.
 
 ## Ansible automation
@@ -107,8 +107,15 @@ docker compose logs
 
 For more details on Docker Compose, please refer to the [official documentation](https://docs.docker.com/get-started/08_using_compose/).
 
-To issue CQL requests through the proxy, create a shell on the client container (`zdm-proxy-automation_client_1`) and run the cqlsh client connecting it to a ZDM proxy instance (for example `zdm-proxy-automation_proxy_1`), on which requests will be executed. For example:
+To issue CQL requests through the proxy, create a shell on the client container (`zdm-proxy-automation_client_1`)
 
 ```shell
-docker exec zdm-proxy-automation_client_1 cqlsh zdm-proxy-automation_proxy_1 -e 'select * from system.local;'
+docker exec -it zdm-proxy-automation_client_1 bash
 ```
+
+From this shell, run the cqlsh client connecting it to a ZDM proxy instance (for example `zdm-proxy-automation_proxy_1`), on which requests will be executed. For example:
+
+```shell
+cqlsh zdm-proxy-automation_proxy_1 -e 'select * from system.keyspaces;'
+```
+
