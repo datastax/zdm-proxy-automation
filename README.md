@@ -1,6 +1,6 @@
 # ZDM Proxy Automation
 
-### _An automation suite to deploy and manage the Zero Downtime Migration Proxy_
+### _An automation suite to deploy and manage the [Zero Downtime Migration Proxy](https://github.com/datastax/zdm-proxy)_
 
 ## Important note
 This automation is being widely used by DataStax as part of the Zero Downtime Migration suite. The Ansible automation and the ZDM Utility have been used in numerous migrations of large-scale production environments and we are actively evolving them. They are also fully documented in the [official ZDM Documentation](https://docs.datastax.com/en/astra-serverless/docs/migrate/introduction.html).
