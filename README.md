@@ -3,25 +3,22 @@
 ### _An automation suite to deploy and manage the Zero Downtime Migration Proxy_
 
 ## Important note
-This automation is being widely used by DataStax as part of the Zero Downtime Migration suite. The Ansible automation and the ZDM Utility have been used in numerous migrations of large-scale production environments and we are actively evolving them. They are also fully documented in the official ZDM Documentation <link>.
+This automation is being widely used by DataStax as part of the Zero Downtime Migration suite. The Ansible automation and the ZDM Utility have been used in numerous migrations of large-scale production environments and we are actively evolving them. They are also fully documented in the [official ZDM Documentation](https://docs.datastax.com/en/astra-serverless/docs/migrate/introduction.html).
 
-All the automation material in this repository is made freely available for general use. Feel free to clone this repository and use this material as it is, as well as fork it and adapt it as appropriate if your environment or deployment strategy preferences are different.
+All the automation material in this repository is licensed under the Apache Licence v2.0. Feel free to clone this repository and use this material as it is, as well as fork it and adapt it as appropriate if your environment or deployment strategy preferences are different.
 
 We endeavor to expand and maintain this automation to ensure it works as expected, and we welcome suggestions from the community. However, we cannot always guarantee that we will implement feature requests or review and merge community contributions in a defined timeframe.
 
-
 ## Overview
 
-The Zero Downtime Migration Proxy [(ZDM proxy)](https://github.com/datastax/zdm-proxy) is an open-source component written in Go and designed to seamlessly handle the real-time client application activity while the client application's data is being migrated between CQL clusters.
-
-For comprehensive documentation on how to use the ZDM Proxy to perform a zero-downtime migration between two CQL clusters, please see [here](https://docs.datastax.com/en/astra-serverless/docs/migrate/introduction.html)
+The Zero Downtime Migration Proxy [(ZDM proxy)](https://github.com/datastax/zdm-proxy) is an open-source component written in Go and designed to seamlessly handle the real-time client application activity while the client application's data is being migrated between CQL clusters. For comprehensive documentation on how to use the ZDM Proxy to perform a zero-downtime migration between two CQL clusters, please see the [official ZDM Documentation](https://docs.datastax.com/en/astra-serverless/docs/migrate/introduction.html)
 
 This automation suite provides several components to make it easier to provision, deploy and manage a cluster of ZDM Proxy instances in development, test and production environments.
 
 The components in this suite are:
-* A collection of Ansible playbooks to deploy the ZDM proxy and its companion monitoring stack, perform operations (configuration changes, version upgrades and simple restarts) in a rolling fashion, and collect the logs from all instances.
-* An interactive utility to easily create and configure a Docker container that acts as the Ansible Control Host, from which the Ansible playbooks can be configured and run. The ZDM Utility is written in Go and can be run anywhere.
-* A set of Terraform modules to provision the infrastructure for a standard, self-contained ZDM deployment in a dedicated VPC, with some orchestration scripts to easily configure and run the Terraform automation. The Terraform automation is currently available for AWS only.
+* A collection of Ansible playbooks to deploy the ZDM Proxy and its companion monitoring stack, perform operations (configuration changes, version upgrades and simple restarts) in a rolling fashion, and collect the logs from all instances.
+* An interactive utility to easily create and configure a Docker container that acts as the Ansible Control Host, from which the Ansible playbooks can be configured and run. The ZDM Utility is written in Go and can be run on any platform.
+* A set of Terraform modules that can be optionally used to provision the infrastructure for a standard, self-contained ZDM deployment in a dedicated VPC, with some orchestration scripts to easily configure and run the Terraform automation. The Terraform automation is currently available for AWS only. Alternatively, you can provision the ZDM infrastructure manually or through your own automation - the infrastructure and connectivity requirements are covered [here](https://docs.datastax.com/en/astra-serverless/docs/migrate/deployment-infrastructure.html) 
 * A Docker Compose descriptor and set of scripts to easily create a local ZDM proxy setup connecting to two single-node Cassandra clusters for testing purposes.
 * Some additional convenience scripts.
 
@@ -55,6 +52,8 @@ To do so, if your machine runs Ubuntu you can use the script `setup_ansible_cont
 ## Terraform automation
 
 The Terraform automation contains a set of modules to provision infrastructure and configure the networking for a standard, self-contained ZDM deployment in a dedicated VPC to which your VPC can be peered. This automation is currently only available for AWS. Other cloud providers may be supported in the future.
+
+**Using this Terraform automation is completely optional**: the infrastructure can be provisioned manually or by any other means, as long as it complies with the requirements documented [here](https://docs.datastax.com/en/astra-serverless/docs/migrate/deployment-infrastructure.html).
 
 The following diagram shows the infrastructure and networking layout provisioned in AWS using these modules. Note that Target can be any cluster in any infrastructure, as long as it is reachable by the ZDM Proxy instances on the port on which the cluster listens for client connections.
 
