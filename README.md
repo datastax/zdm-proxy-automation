@@ -80,14 +80,14 @@ In addition, the Terraform automation creates the following two files:
 * `zdm_ansible_inventory`, which contains the newly provisioned instance IPs in a file that can be passed directly to the Ansible automation to indicate which instances it must operate on.
 * `zdm_ssh_config`, a custom SSH configuration file that allows you to easily connect to the jumphost or ZDM Proxy instances from an external machine with a single command. See [here](https://docs.datastax.com/en/astra-serverless/docs/migrate/deployment-infrastructure.html#_connecting_to_the_zdm_infrastructure_from_an_external_machine) for details.
 
-## Docker Compose deployment
+## Docker Compose for Local Development
 
 The Compose file `docker_compose.yml` in the base directory of this repository and the scripts in the `compose` directory can be used to spin up a local ZDM deployment using containers. This can be convenient for exploration and local testing, including testing of the Ansible automation.
 
 The ZDM deployment thus created includes:
 * A proxy network of type `bridge`.
 * Two single-node Cassandra clusters, with specified versions, which are used as Origin and Target.
-* A jumphost machine, from which the Ansible automation is run (specifically, the playbook to deploy the ZDM Proxy).
+* A jumphost container, from which the Ansible automation is run (specifically, the playbook to deploy the ZDM Proxy).
 * Three Docker containers representing three Linux machines, which are used to run the ZDM Proxy instances as Docker containers (using Docker-in-Docker).
 * A client machine, on which the CQLSH standalone client is installed to test the ZDM Proxy deployment.
 
@@ -102,22 +102,13 @@ To create this deployment, simply run:
 docker compose up
 ```
 
-To view the logs:
-```shell
-docker compose logs
-```
-
 For more details on Docker Compose, please refer to the [official documentation](https://docs.docker.com/get-started/08_using_compose/).
 
-To issue CQL requests through the proxy, create a shell on the client container (`zdm-proxy-automation_client_1`)
+To issue CQL requests through the proxy, launch `cqlsh` on the client container (`zdm-proxy-automation_client_1`) connecting to a proxy instance: 
 
 ```shell
-docker exec -it zdm-proxy-automation_client_1 bash
+docker exec -it zdm-proxy-automation_client_1 cqlsh zdm-proxy-automation_proxy_1
 ```
 
-From this shell, run the cqlsh client connecting it to a ZDM proxy instance (for example `zdm-proxy-automation_proxy_1`), on which requests will be executed. For example:
-
-```shell
-cqlsh zdm-proxy-automation_proxy_1 -e 'select * from system.keyspaces;'
-```
+From this shell, you can execute read and write CQL requests that will be handled by the proxy and routed appropriately.
 
