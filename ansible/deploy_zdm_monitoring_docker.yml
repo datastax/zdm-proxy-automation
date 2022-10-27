@@ -1,0 +1,116 @@
+---
+- name: Install Docker
+  hosts: monitoring
+  become: yes
+
+  tasks:
+    - name: Check if Docker is already installed
+      command: docker --version
+      register: docker_installed_check
+      ignore_errors: yes
+    - name: Install Docker if it is not yet present
+      include_tasks: tasks/install_docker.yml
+      when:
+        - docker_installed_check.failed
+
+- name: Prepare all Prometheus configuration
+  hosts: monitoring
+  become: yes
+  vars_files:
+    - vars/zdm_monitoring_config.yml
+    - vars/zdm_playbook_internal_config.yml
+
+  tasks:
+    - name: Create Prometheus configuration directory
+      file:
+        path: "{{ monitoring_home_dir }}/{{ prometheus_dir_name }}"
+        state: directory
+    - name: Create Prometheus rules directory
+      file:
+        path: "{{ monitoring_home_dir }}/{{ prometheus_dir_name }}/rules"
+        state: directory
+    - name: Generate Prometheus alert rule file
+        template:
+          src: "alert.rules.j2"
+          dest: "{{ monitoring_home_dir }}/{{ prometheus_dir_name }}/rules/prometheus_alerts.rules"
+    - name: Generate Prometheus configuration file to scrape metrics from all proxies
+      template:
+        src: "prometheus.yml.j2"
+        dest: "{{ monitoring_home_dir }}/{{ prometheus_dir_name }}/prometheus.yml"
+
+- name: Create and start Prometheus container
+  hosts: monitoring
+  become: yes
+  vars_files:
+    - vars/zdm_monitoring_config.yml
+    - vars/zdm_playbook_internal_config.yml
+
+  tasks:
+    - name: Create Docker named volume to persist metrics if it does not already exist
+      docker_volume:
+        name: {{ prometheus_container_storage_volume }}
+        recreate: never
+    - name: Pull Prometheus Docker image from DockerHub
+      docker_image:
+        name: "{{ prometheus_image }}"
+        source: pull
+    - name: Create Prometheus container
+      docker_container:
+        name: "{{ prometheus_container_name }}"
+        image: "{{ prometheus_image }}"
+        mounts:
+          - source: "{{ monitoring_home_dir }}/{{ prometheus_dir_name }}"
+            target: "/etc/prometheus/"
+            type: bind
+        network_mode: host
+        restart_policy: unless-stopped
+        restart: yes
+        state: started
+
+
+- name: Install Grafana
+  hosts: monitoring
+  become: yes
+  vars_files:
+    - vars/zdm_monitoring_config.yml
+    - vars/zdm_playbook_internal_config.yml
+
+  tasks:
+    - name: Create Prometheus configuration directory
+      file:
+        path: "{{ monitoring_home_dir }}/{{ prometheus_dir_name }}"
+        state: directory
+    - name: Create Prometheus rules directory
+      file:
+        path: "{{ monitoring_home_dir }}/{{ prometheus_dir_name }}/rules"
+        state: directory
+    - name: Generate Prometheus alert rule file
+        template:
+          src: "alert.rules.j2"
+          dest: "{{ monitoring_home_dir }}/{{ prometheus_dir_name }}/rules/prometheus_alerts.rules"
+    - name: Generate Prometheus configuration file to scrape metrics from all proxies
+      template:
+        src: "prometheus.yml.j2"
+        dest: "{{ monitoring_home_dir }}/{{ prometheus_dir_name }}/prometheus.yml"
+    - name: Pull Prometheus Docker image from DockerHub
+      docker_image:
+        name: "{{ prometheus_image }}"
+        source: pull
+    - name: Create Prometheus container
+      docker_container:
+        name: "{{ prometheus_container_name }}"
+        image: "{{ prometheus_image }}"
+        mounts:
+          - source: "{{ monitoring_home_dir }}/{{ prometheus_dir_name }}"
+            target: "/etc/prometheus/"
+            type: bind
+        network_mode: host
+        restart_policy: unless-stopped
+        restart: yes
+        state: started
+
+# TODO
+#- name: Install and configure Prometheus Node Exporter on the proxy instances
+#  hosts: proxies
+#  roles:
+#    - ansible-node-exporter

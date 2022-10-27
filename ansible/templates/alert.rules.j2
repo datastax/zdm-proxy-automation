@@ -1,0 +1,7 @@
+# From CloudAlchemy's ansible-prometheus role - TODO add to licence notice
+{{ ansible_managed | comment }}
+
+groups:
+- name: ansible managed alert rules
+  rules:
+  {{ prometheus_alert_rules | to_nice_yaml(indent=2) | indent(2,False) }}
