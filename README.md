@@ -92,14 +92,14 @@ The ZDM deployment thus created includes:
 * A client machine, on which the CQLSH standalone client is installed to test the ZDM Proxy deployment.
 
 As prerequisites, ensure that:
-* [Docker](https://docs.docker.com/get-docker/) and [Docker Compose](https://docs.docker.com/compose/install/) are installed on your machine 
-* The Docker daemon is up and running
+* [Docker](https://docs.docker.com/get-docker/) and [Docker Compose](https://docs.docker.com/compose/install/) are installed on your machine. 
+* The Docker daemon is up and running.
 
-You will be using the `docker compose` command, which in some installations may be available as `docker-compose`.
+You will be using the `docker-compose` command, which in some installations may be available as `docker compose`.
 
 To create this deployment, simply run:
 ```shell
-docker compose up
+docker-compose up
 ```
 
 For more details on Docker Compose, please refer to the [official documentation](https://docs.docker.com/get-started/08_using_compose/).
