@@ -30,5 +30,5 @@ prometheus_scrape_interval: 15s
 prometheus_scrape_timeout: 10s
 prometheus_environment_label_prefix: "zdm-monitoring"
 
-grafana_image: "grafana/grafana-oss:7.5.17"
+grafana_image: "grafana/grafana:7.5.17"
 grafana_container_name: "zdm-grafana-container"
