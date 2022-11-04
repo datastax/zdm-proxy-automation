@@ -41,10 +41,9 @@
     group: "docker"
     append: yes
 
-- name: reset ssh connection to allow user changes to affect ansible user
-  ansible.builtin.meta:
-    reset_connection
-  
+- name: Reset SSH connection to allow user changes to come into effect
+  ansible.builtin.meta: reset_connection
+
 # sudo chown -R ubuntu:docker /home/ubuntu/.docker
 - name: Change ownership of Docker internal directory to this user and docker group
   file:
