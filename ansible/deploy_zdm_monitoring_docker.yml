@@ -95,12 +95,12 @@
         dest: "{{ monitoring_home_dir }}/{{ grafana_config_dir_name }}/grafana.ini"
     - name: Create Grafana dashboard directory on monitoring host
       file:
-        path: "{{ monitoring_home_dir }}/{{ grafana_dashboard_dir_name }}"
+        path: "{{ monitoring_home_dir }}/{{ grafana_dashboards_dir_name }}"
         state: directory
     - name: Copy dashboards to directory on monitoring host
       copy:
         src: "../grafana-dashboards"
-        dest: "{{ monitoring_home_dir }}/{{ grafana_dashboard_dir_name }}"
+        dest: "{{ monitoring_home_dir }}/{{ grafana_dashboards_dir_name }}"
 
 
 - name: Create and start Grafana container
