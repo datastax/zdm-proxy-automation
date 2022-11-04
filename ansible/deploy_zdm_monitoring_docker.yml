@@ -23,20 +23,20 @@
   tasks:
     - name: Create Prometheus configuration directory
       file:
-        path: "{{ monitoring_home_dir }}/{{ prometheus_dir_name }}"
+        path: "{{ monitoring_home_dir }}/{{ prometheus_config_dir_name }}"
         state: directory
     - name: Create Prometheus rules directory
       file:
-        path: "{{ monitoring_home_dir }}/{{ prometheus_dir_name }}/rules"
+        path: "{{ monitoring_home_dir }}/{{ prometheus_config_dir_name }}/rules"
         state: directory
     - name: Generate Prometheus alert rule file
         template:
           src: "alert.rules.j2"
-          dest: "{{ monitoring_home_dir }}/{{ prometheus_dir_name }}/rules/prometheus_alerts.rules"
+          dest: "{{ monitoring_home_dir }}/{{ prometheus_config_dir_name }}/rules/prometheus_alerts.rules"
     - name: Generate Prometheus configuration file to scrape metrics from all proxies
       template:
         src: "prometheus.yml.j2"
-        dest: "{{ monitoring_home_dir }}/{{ prometheus_dir_name }}/prometheus.yml"
+        dest: "{{ monitoring_home_dir }}/{{ prometheus_config_dir_name }}/prometheus.yml"
 
 - name: Create and start Prometheus container
   hosts: monitoring
@@ -48,7 +48,7 @@
   tasks:
     - name: Create Docker named volume to persist metrics if it does not already exist
       docker_volume:
-        name: {{ prometheus_container_storage_volume }}
+        name: "{{ prometheus_container_storage_volume }}"
         recreate: never
     - name: Pull Prometheus Docker image from DockerHub
       docker_image:
@@ -59,16 +59,17 @@
         name: "{{ prometheus_container_name }}"
         image: "{{ prometheus_image }}"
         mounts:
-          - source: "{{ monitoring_home_dir }}/{{ prometheus_dir_name }}"
+          - source: "{{ monitoring_home_dir }}/{{ prometheus_config_dir_name }}"
             target: "/etc/prometheus/"
             type: bind
+        volumes:
+          - "{{ prometheus_container_storage_volume }}:/prometheus:rw"
         network_mode: host
         restart_policy: unless-stopped
         restart: yes
         state: started
 
-
-- name: Install Grafana
+- name: Prepare all Grafana configuration
   hosts: monitoring
   become: yes
   vars_files:
@@ -76,33 +77,46 @@
     - vars/zdm_playbook_internal_config.yml
 
   tasks:
-    - name: Create Prometheus configuration directory
+    - name: Create Grafana configuration directory on monitoring host
       file:
-        path: "{{ monitoring_home_dir }}/{{ prometheus_dir_name }}"
+        path: "{{ monitoring_home_dir }}/{{ grafana_config_dir_name }}"
         state: directory
-    - name: Create Prometheus rules directory
-      file:
-        path: "{{ monitoring_home_dir }}/{{ prometheus_dir_name }}/rules"
-        state: directory
-    - name: Generate Prometheus alert rule file
-        template:
-          src: "alert.rules.j2"
-          dest: "{{ monitoring_home_dir }}/{{ prometheus_dir_name }}/rules/prometheus_alerts.rules"
-    - name: Generate Prometheus configuration file to scrape metrics from all proxies
+    - name: Generate Grafana configuration file
       template:
-        src: "prometheus.yml.j2"
-        dest: "{{ monitoring_home_dir }}/{{ prometheus_dir_name }}/prometheus.yml"
-    - name: Pull Prometheus Docker image from DockerHub
+        src: "grafana.ini.j2"
+        dest: "{{ monitoring_home_dir }}/{{ grafana_config_dir_name }}/grafana.ini"
+    - name: Create Grafana dashboard directory on monitoring host
+      file:
+        path: "{{ monitoring_home_dir }}/{{ grafana_dashboard_dir_name }}"
+        state: directory
+    - name: Copy dashboards to directory on monitoring host
+      copy:
+        src: "../grafana-dashboards/"
+        dest: "{{ monitoring_home_dir }}/{{ grafana_dashboard_dir_name }}"
+
+
+- name: Create and start Grafana container
+  hosts: monitoring
+  become: yes
+  vars_files:
+    - vars/zdm_monitoring_config.yml
+    - vars/zdm_playbook_internal_config.yml
+
+  tasks:
+    - name: Pull Grafana Docker image from DockerHub
       docker_image:
-        name: "{{ prometheus_image }}"
+        name: "{{ grafana_image }}"
         source: pull
-    - name: Create Prometheus container
+    - name: Create Grafana container
       docker_container:
-        name: "{{ prometheus_container_name }}"
-        image: "{{ prometheus_image }}"
+        name: "{{ grafana_container_name }}"
+        image: "{{ grafana_image }}"
         mounts:
-          - source: "{{ monitoring_home_dir }}/{{ prometheus_dir_name }}"
-            target: "/etc/prometheus/"
+          - source: "{{ monitoring_home_dir }}/{{ grafana_config_dir_name }}"
+            target: "/etc/grafana/"
+            type: bind
+          - source: "{{ monitoring_home_dir }}/{{ grafana_dashboards_dir_name }}"
+            target: "/var/lib/grafana/dashboards/"
             type: bind
         network_mode: host
         restart_policy: unless-stopped

@@ -1,4 +1,6 @@
 ---
+
+zdm_proxy_user_name: ubuntu
 zdm_proxy_home_dir: /home/ubuntu
 
 zdm_proxy_config_fragments_dir_name: zdm_proxy_config_fragments
@@ -20,4 +22,6 @@ target_tls_dest_dir_name: target_tls
 zdm_proxy_tls_dest_dir_name: proxy_tls
 
 monitoring_home_dir: /home/ubuntu
-prometheus_dir_name: zdm_prometheus
+prometheus_config_dir_name: zdm_prometheus_config
+grafana_config_dir_name: zdm_grafana_config
+grafana_dashboard_dir_name: zdm_grafana_dashboards

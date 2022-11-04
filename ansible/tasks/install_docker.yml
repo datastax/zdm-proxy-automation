@@ -27,3 +27,24 @@
 - name: Install Docker Module for Python
   pip:
     name: docker
+
+# sudo groupadd docker
+- name: Create "docker" group
+  group:
+    name: "docker"
+    state: present
+
+# sudo usermod -aG docker root
+- name: Add OS user to "docker" group
+  user:
+    name: "{{ zdm_proxy_user_name }}"
+    group: "docker"
+    append: yes
+
+# sudo chown -R ubuntu:docker /home/ubuntu/.docker
+- name: Change ownership of Docker internal directory to this user and docker group
+  file:
+    path: "{{ zdm_proxy_home_dir }}/.docker"
+    owner: "{{ zdm_proxy_user_name }}"
+    group: "docker"
+    recurse: yes
