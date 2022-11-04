@@ -259,7 +259,6 @@ func (o *DockerOrchestrator) createContainer(imageName, containerName string) (s
 	}, &container.HostConfig{
 			RestartPolicy: container.RestartPolicy{
 				Name: "unless-stopped",
-				MaximumRetryCount: 10,
 			},
 		}, nil, nil, containerName)
 	if err != nil {
