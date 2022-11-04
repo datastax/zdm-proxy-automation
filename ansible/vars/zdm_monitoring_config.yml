@@ -3,8 +3,6 @@ grafana_version: 7.5.15
 grafana_admin_user: admin
 grafana_admin_password: testpasswordchangeme
 
-grafana_dashboards_dir: ~/zdm-proxy-automation/grafana-dashboards
-
 grafana_datasources:
   - name: "Prometheus"
     type: "prometheus"

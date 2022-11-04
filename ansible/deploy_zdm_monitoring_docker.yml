@@ -13,8 +13,8 @@
     - name: Install Docker if it is not yet present
       include_tasks: tasks/install_docker.yml
       vars:
-        - user_name: "{{ zdm_proxy_user_name }}"
-        - home_dir: "{{ zdm_proxy_home_dir }}"
+        - user_name: "{{ monitoring_user_name }}"
+        - home_dir: "{{ monitoring_home_dir }}"
       when:
         - docker_installed.failed
     - name: Install Docker Ansible module
@@ -99,7 +99,7 @@
         state: directory
     - name: Copy dashboards to directory on monitoring host
       copy:
-        src: "../grafana-dashboards/"
+        src: "../grafana-dashboards"
         dest: "{{ monitoring_home_dir }}/{{ grafana_dashboard_dir_name }}"
 
 
