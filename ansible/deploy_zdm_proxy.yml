@@ -2,6 +2,8 @@
 - name: Install Docker
   hosts: proxies
   become: yes
+  vars_files:
+    - vars/zdm_playbook_internal_config.yml
 
   tasks:
     - name: Check if Docker is already installed
@@ -10,6 +12,9 @@
       ignore_errors: yes
     - name: Install Docker if it is not yet present
       include_tasks: tasks/install_docker.yml
+      vars:
+        - user_name: "{{ zdm_proxy_user_name }}"
+        - home_dir: "{{ zdm_proxy_home_dir }}"
       when:
         - docker_installed.failed
 
