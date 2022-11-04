@@ -12,7 +12,10 @@
       include_tasks: tasks/install_docker.yml
       when:
         - docker_installed_check.failed
-
+    - name: Install Docker Module for Python
+      pip:
+        name: docker
+        
 - name: Prepare all Prometheus configuration
   hosts: monitoring
   become: yes
