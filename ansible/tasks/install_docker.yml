@@ -3,7 +3,7 @@
 
 - name: Install required system packages
   apt: name={{ item }} state=latest update_cache=yes
-  loop: [ 'apt-transport-https', 'ca-certificates', 'curl', 'software-properties-common', 'python3-pip', 'virtualenv', 'python3-setuptools']
+  loop: [ 'apt-transport-https', 'ca-certificates', 'curl', 'software-properties-common']
 
 - name: Add Docker GPG apt Key
   apt_key:
@@ -18,16 +18,6 @@
 - name: Update apt and install docker-ce
   apt: update_cache=yes name=docker-ce state=latest
 
-- name: Uninstall incompatible Docker-py Module
-  become: no
-  pip:
-    name: docker-py
-    state: absent
-
-- name: Install Docker Module for Python
-  pip:
-    name: docker
-
 # sudo groupadd docker
 - name: Create "docker" group
   group:
@@ -41,13 +31,7 @@
     group: "docker"
     append: yes
 
-#- name: Print message as META module won't in non verbose mode
-#  debug:
-#    msg: Calling meta module to reset_connection
-
-#- name: Reset SSH connection to allow user changes to come into effect
-#  ansible.builtin.meta: reset_connection
-
+# Needed because of meta reset_connection known issue
 - name: Kill SSH connection to allow user changes to come into effect
   shell: sleep 1; pkill -u {{ ansible_ssh_user }} sshd
   async: 3

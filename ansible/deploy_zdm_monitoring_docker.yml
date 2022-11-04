@@ -2,20 +2,24 @@
 - name: Install Docker
   hosts: monitoring
   become: yes
+  vars_files:
+    - vars/zdm_playbook_internal_config.yml
 
   tasks:
     - name: Check if Docker is already installed
       command: docker --version
-      register: docker_installed_check
+      register: docker_installed
       ignore_errors: yes
     - name: Install Docker if it is not yet present
       include_tasks: tasks/install_docker.yml
+      vars:
+        - user_name: "{{ zdm_proxy_user_name }}"
+        - home_dir: "{{ zdm_proxy_home_dir }}"
       when:
-        - docker_installed_check.failed
-    - name: Install Docker Module for Python
-      pip:
-        name: docker
-        
+        - docker_installed.failed
+    - name: Install Docker Ansible module
+      include_tasks: tasks/install_docker_ansible_module.yml
+
 - name: Prepare all Prometheus configuration
   hosts: monitoring
   become: yes

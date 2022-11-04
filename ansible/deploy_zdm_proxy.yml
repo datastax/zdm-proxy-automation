@@ -17,6 +17,8 @@
         - home_dir: "{{ zdm_proxy_home_dir }}"
       when:
         - docker_installed.failed
+    - name: Install Docker Ansible module
+      include_tasks: tasks/install_docker_ansible_module.yml
 
 - name: Clean up any previous installations on ZDM proxy hosts
   hosts: proxies

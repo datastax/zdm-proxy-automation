@@ -1,0 +1,16 @@
+- name: Install aptitude using apt (this will take some time)
+  apt: name=aptitude state=latest update_cache=yes force_apt_get=yes
+
+- name: Install required system packages
+  apt: name={{ item }} state=latest update_cache=yes
+  loop: [ 'curl', 'software-properties-common', 'python3-pip', 'virtualenv', 'python3-setuptools']
+
+- name: Uninstall incompatible Docker-py Module
+  become: no
+  pip:
+    name: docker-py
+    state: absent
+
+- name: Install Docker Module for Python
+  pip:
+    name: docker
