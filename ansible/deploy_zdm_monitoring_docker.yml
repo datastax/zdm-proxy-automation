@@ -18,6 +18,7 @@
   become: yes
   vars_files:
     - vars/zdm_monitoring_config.yml
+    - vars/zdm_proxy_advanced_config.yml
     - vars/zdm_playbook_internal_config.yml
 
   tasks:

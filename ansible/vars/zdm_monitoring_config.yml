@@ -25,7 +25,6 @@ prometheus_web_listen_address: "{{ groups['monitoring'][0] }}:9090"
 prometheus_image: "prom/prometheus:latest"
 prometheus_container_name: "zdm-prometheus-container"
 prometheus_container_storage_volume: "zdm-prometheus-metrics-volume"
-prometheus_zdm_metrics_port: "{{ metrics_port }}"
 prometheus_evaluation_interval: 15s
 prometheus_scrape_interval: 15s
 prometheus_scrape_timeout: 10s
