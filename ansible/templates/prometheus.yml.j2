@@ -33,25 +33,3 @@ scrape_configs:
 {% for host in groups['proxies'] %}
         - {{ host }}:9100
 {% endfor %}
-
-# Rendered example - TODO remove
-#scrape_configs:
-#  - job_name: prometheus
-#    metrics_path: /metrics
-#    static_configs:
-#    - targets:
-#      - 172.18.100.31:9090
-#  - job_name: zdm_proxy
-#    metrics_path: /metrics
-#    static_configs:
-#      - targets:
-#        - 172.18.10.91:14001
-#        - 172.18.11.27:14001
-#        - 172.18.12.219:14001
-#  - job_name: node
-#    metrics_path: /metrics
-#    static_configs:
-#      - targets:
-#        - 172.18.10.91:9100
-#        - 172.18.11.27:9100
-#        - 172.18.12.219:9100
