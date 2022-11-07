@@ -49,6 +49,12 @@
         name: "{{ grafana_container_name }}"
         state: absent
 
+# TODO
+#- name: Install and configure Prometheus Node Exporter on the proxy instances
+#  hosts: proxies
+#  roles:
+#    - ansible-node-exporter
+
 - name: Prepare all ZDM Prometheus configuration
   hosts: monitoring
   become: yes
@@ -159,9 +165,3 @@
         restart_policy: unless-stopped
         restart: yes
         state: started
-
-# TODO
-#- name: Install and configure Prometheus Node Exporter on the proxy instances
-#  hosts: proxies
-#  roles:
-#    - ansible-node-exporter
