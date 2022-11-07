@@ -18,7 +18,7 @@ scrape_configs:
     metrics_path: /metrics
     static_configs:
     - targets:
-      - {{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}:9090
+      - {{ prometheus_web_listen_address }}
   - job_name: zdm_proxy
     metrics_path: /metrics
     static_configs:
