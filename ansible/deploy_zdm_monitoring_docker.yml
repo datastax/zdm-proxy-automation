@@ -66,6 +66,7 @@
   become: yes
   vars_files:
     - vars/zdm_playbook_internal_config.yml
+    - vars/zdm_monitoring_config.yml
 
   tasks:
     - name: Check if Docker is already installed
