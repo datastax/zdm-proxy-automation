@@ -20,7 +20,36 @@
     - name: Install Docker Ansible module
       include_tasks: tasks/install_docker_ansible_module.yml
 
-- name: Prepare all Prometheus configuration
+- name: Clean up any previous ZDM monitoring containers (except for named volume containing metrics data)
+  hosts: monitoring
+  become: yes
+  vars_files:
+    - vars/zdm_monitoring_config.yml
+    - vars/zdm_playbook_internal_config.yml
+
+  tasks:
+    - name: Remove ZDM Prometheus configuration directory if it already exists
+      file:
+        path: "{{ monitoring_home_dir }}/{{ prometheus_config_dir_name }}"
+        state: absent
+    - name: Remove any existing ZDM Prometheus container
+      docker_container:
+        name: "{{ prometheus_container_name }}"
+        state: absent
+    - name: Remove ZDM Grafana configuration directory if it already exists
+      file:
+        path: "{{ monitoring_home_dir }}/{{ grafana_config_dir_name }}"
+        state: absent
+    - name: Remove ZDM Grafana dashboards directory if it already exists
+      file:
+        path: "{{ monitoring_home_dir }}/{{ grafana_dashboards_dir_name }}"
+        state: absent
+    - name: Remove any existing ZDM Grafana container
+      docker_container:
+        name: "{{ grafana_container_name }}"
+        state: absent
+
+- name: Prepare all ZDM Prometheus configuration
   hosts: monitoring
   become: yes
   vars_files:
@@ -99,7 +128,7 @@
         state: directory
     - name: Copy dashboards to directory on monitoring host
       copy:
-        src: "../grafana-dashboards"
+        src: "../grafana-dashboards/"
         dest: "{{ monitoring_home_dir }}/{{ grafana_dashboards_dir_name }}"
 
 
