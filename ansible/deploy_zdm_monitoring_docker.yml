@@ -20,7 +20,7 @@
     - name: Install Docker Ansible module
       include_tasks: tasks/install_docker_ansible_module.yml
 
-- name: Clean up any previous ZDM monitoring containers (except for named volume containing metrics data)
+- name: Clean up any existing ZDM monitoring containers (except for named volume containing metrics data)
   hosts: monitoring
   become: yes
   vars_files:
@@ -49,6 +49,51 @@
         name: "{{ grafana_container_name }}"
         state: absent
 
+- name: Clean up any existing Prometheus Node Exporter containers from the ZDM proxy instances
+  hosts: proxies
+  become: yes
+  vars_files:
+    - vars/zdm_monitoring_config.yml
+
+  tasks:
+    - name: Remove any existing Prometheus Node Exporter container from the ZDM Proxy instances
+      docker_container:
+        name: "{{ zdm-node-exporter-container }}"
+        state: absent
+
+- name: Create and start Prometheus Node Exporter container on the ZDM Proxy instances
+  hosts: proxies
+  become: yes
+  vars_files:
+    - vars/zdm_playbook_internal_config.yml
+
+  tasks:
+    - name: Check if Docker is already installed
+      command: docker --version
+      register: docker_installed
+      ignore_errors: yes
+    - name: Install Docker if it is not yet present
+      include_tasks: tasks/install_docker.yml
+      vars:
+        - user_name: "{{ zdm_proxy_user_name }}"
+        - home_dir: "{{ zdm_proxy_home_dir }}"
+      when:
+        - docker_installed.failed
+    - name: Install Docker Ansible module
+      include_tasks: tasks/install_docker_ansible_module.yml
+    - name: Pull Prometheus Node Exporter Docker image from DockerHub
+      docker_image:
+        name: "{{ prometheus_node_exporter_image }}"
+        source: pull
+    - name: Create Prometheus Node Exporter container
+      docker_container:
+        name: "{{ prometheus_node_exporter_container_name }}"
+        image: "{{ prometheus_node_exporter_image }}"
+        network_mode: host
+        restart_policy: unless-stopped
+        restart: yes
+        state: started
+   
 # TODO
 #- name: Install and configure Prometheus Node Exporter on the proxy instances
 #  hosts: proxies
@@ -156,7 +201,6 @@
       copy:
         src: "../grafana-dashboards/"
         dest: "{{ monitoring_home_dir }}/{{ grafana_dashboards_dir_name }}"
-
 
 - name: Create and start Grafana container
   hosts: monitoring

@@ -12,4 +12,4 @@ datasources:
         tlsSkipVerify: true
     name: Prometheus
     type: prometheus
-    url: {{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}:9090
+    url: {{ prometheus_web_listen_address }}
