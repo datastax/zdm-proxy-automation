@@ -124,10 +124,30 @@
       file:
         path: "{{ monitoring_home_dir }}/{{ grafana_config_dir_name }}"
         state: directory
-    - name: Generate Grafana configuration file
+    - name: Create Grafana provisioning directory
+      file:
+        path: "{{ monitoring_home_dir }}/{{ grafana_config_dir_name }}/provisioning"
+        state: directory
+    - name: Create Grafana provisioning dashboards directory
+      file:
+        path: "{{ monitoring_home_dir }}/{{ grafana_config_dir_name }}/provisioning/dashboards"
+        state: directory
+    - name: Create Grafana provisioning datasources directory
+      file:
+        path: "{{ monitoring_home_dir }}/{{ grafana_config_dir_name }}/provisioning/datasources"
+        state: directory
+    - name: Generate grafana.ini configuration file
       template:
         src: "grafana.ini.j2"
         dest: "{{ monitoring_home_dir }}/{{ grafana_config_dir_name }}/grafana.ini"
+    - name: Generate provisioning dashboards configuration file
+      template:
+        src: "provisioning.dashboards.j2"
+        dest: "{{ monitoring_home_dir }}/{{ grafana_config_dir_name }}/provisioning/dashboards/zdm-dashboards.yml"
+    - name: Generate provisioning datasources configuration file
+      template:
+        src: "provisioning.datasources.j2"
+        dest: "{{ monitoring_home_dir }}/{{ grafana_config_dir_name }}/provisioning/datasources/zdm-datasources.yml"
     - name: Create Grafana dashboard directory on monitoring host
       file:
         path: "{{ monitoring_home_dir }}/{{ grafana_dashboards_dir_name }}"

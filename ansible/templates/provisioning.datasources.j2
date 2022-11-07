@@ -1,0 +1,15 @@
+apiVersion: 1
+deleteDatasources: []
+datasources:
+-   access: proxy
+    basicAuth: false
+    basicAuthPassword: password
+    basicAuthUser: admin
+    isDefault: true
+    jsonData:
+        tlsAuth: false
+        tlsAuthWithCACert: false
+        tlsSkipVerify: true
+    name: Prometheus
+    type: prometheus
+    url: {{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}:9090
