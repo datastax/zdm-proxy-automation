@@ -24,7 +24,7 @@
   hosts: proxies
   become: yes
   vars_files:
-    - vars/zdm_proxy_container.yml
+    - vars/zdm_proxy_container_config.yml
     - vars/zdm_playbook_internal_config.yml
 
   tasks:
@@ -207,7 +207,7 @@
   hosts: proxies
   become: yes
   vars_files:
-    - vars/zdm_proxy_container.yml
+    - vars/zdm_proxy_container_config.yml
     - vars/zdm_playbook_internal_config.yml
 
   tasks:
