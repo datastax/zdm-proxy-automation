@@ -32,12 +32,12 @@
 # OPTIONAL: IP ranges that must be allowed to connect to any instances within the ZDM VPC over SSH and HTTP (to view monitoring dashboards)
 # Typically these are IP ranges (CIDRs) from trusted VPNs. Example format: "39.65.102.117/28"
 # Multiple CIDRs can be specified as a string containing a comma-separated list of elements, without whitespaces.
-#whitelisted_inbound_ip_ranges=
+#allowed_inbound_ip_ranges=
 
 # OPTIONAL: IP ranges to which instances within the ZDM VPC must be able to connect.
 # These can be destinations such as Astra, Dockerhub, AWS apt-get mirrors. Defaults to everything (unrestricted).
 # Multiple CIDRs can be specified as a string containing a comma-separated list of elements, without whitespaces.
-whitelisted_outbound_ip_ranges="0.0.0.0/0"
+allowed_outbound_ip_ranges="0.0.0.0/0"
 
 # OPTIONAL: AWS credentials to be used to access the user's own infrastructure. Defaults to zdm_aws_profile.
 #user_aws_profile=
@@ -120,16 +120,16 @@ build_terraform_var_str () {
   rt_tbls_var+="]' "
   terraform_vars+="${rt_tbls_var}"
 
-  if [ -n "${whitelisted_inbound_ip_ranges}" ]; then
-      wl_inbound_var="-var 'whitelisted_inbound_ip_ranges=["
-      wl_inbound_var+=$(add_quotes_around_elements "${whitelisted_inbound_ip_ranges}")
+  if [ -n "${allowed_inbound_ip_ranges}" ]; then
+      wl_inbound_var="-var 'allowed_inbound_ip_ranges=["
+      wl_inbound_var+=$(add_quotes_around_elements "${allowed_inbound_ip_ranges}")
       wl_inbound_var+="]' "
       terraform_vars+="${wl_inbound_var}"
   fi
 
-    if [ -n "${whitelisted_outbound_ip_ranges}" ]; then
-        wl_outbound_var="-var 'whitelisted_outbound_ip_ranges=["
-        wl_outbound_var+=$(add_quotes_around_elements "${whitelisted_outbound_ip_ranges}")
+    if [ -n "${allowed_outbound_ip_ranges}" ]; then
+        wl_outbound_var="-var 'allowed_outbound_ip_ranges=["
+        wl_outbound_var+=$(add_quotes_around_elements "${allowed_outbound_ip_ranges}")
         wl_outbound_var+="]' "
         terraform_vars+="${wl_outbound_var}"
     fi

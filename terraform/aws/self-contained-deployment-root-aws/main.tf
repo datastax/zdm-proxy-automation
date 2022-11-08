@@ -24,8 +24,8 @@ module "zdm_proxy_networking" {
 
   zdm_vpc_cidr_prefix = var.zdm_vpc_cidr_prefix
 
-  whitelisted_inbound_ip_ranges = var.whitelisted_inbound_ip_ranges
-  whitelisted_outbound_ip_ranges = var.whitelisted_outbound_ip_ranges
+  allowed_inbound_ip_ranges = var.allowed_inbound_ip_ranges
+  allowed_outbound_ip_ranges = var.allowed_inbound_ip_ranges
 }
 
 // peers the ZDM VPC with the existing VPC specified by the user

@@ -37,8 +37,8 @@
 #  async: 3
 #  poll: 2
 
-- name: Activate changes to the docker group
-  command: newgrp docker
+- name: Activate changes to "docker" group
+  meta: reset_connection
 
 # sudo chown -R ubuntu:docker /home/ubuntu/.docker
 - name: Change ownership of Docker internal directory to this user and docker group
