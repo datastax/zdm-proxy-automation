@@ -34,4 +34,9 @@ echo \
 sudo apt-get update
 
 #Install the docker engine:
-sudo apt-get install docker-ce docker-ce-cli containerd.io docker-compose-plugin
+sudo apt-get install docker-ce docker-ce-cli containerd.io
+
+#Enable your current user to run the docker command without sudo
+sudo groupadd docker
+sudo usermod -aG docker $USER
+newgrp docker

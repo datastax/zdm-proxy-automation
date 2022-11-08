@@ -32,10 +32,13 @@
     append: yes
 
 # Needed because of meta reset_connection known issue
-- name: Kill SSH connection to allow user changes to come into effect
-  shell: sleep 1; pkill -u {{ ansible_ssh_user }} sshd
-  async: 3
-  poll: 2
+#- name: Kill SSH connection to allow user changes to come into effect
+#  shell: sleep 1; pkill -u {{ ansible_ssh_user }} sshd
+#  async: 3
+#  poll: 2
+
+- name: Activate changes to the docker group
+  command: newgrp docker
 
 # sudo chown -R ubuntu:docker /home/ubuntu/.docker
 - name: Change ownership of Docker internal directory to this user and docker group
