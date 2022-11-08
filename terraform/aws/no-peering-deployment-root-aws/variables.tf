@@ -6,8 +6,6 @@ variable "zdm_proxy_instance_count" {}
 
 variable "whitelisted_inbound_ip_ranges" {
   type = list(string)
-  # defaults to Santa Clara VPN IP range
-  default = ["38.99.104.112/28"]
 }
 
 variable "whitelisted_outbound_ip_ranges" {
