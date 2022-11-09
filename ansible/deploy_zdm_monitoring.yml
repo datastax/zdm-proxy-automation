@@ -27,9 +27,9 @@
         name: "{{ prometheus_node_exporter_image }}"
         source: pull
     - name: Remove any existing Prometheus Node Exporter container from the ZDM Proxy instances
-        docker_container:
-          name: "{{ prometheus_node_exporter_container_name }}"
-          state: absent
+      docker_container:
+        name: "{{ prometheus_node_exporter_container_name }}"
+        state: absent
     - name: Create Prometheus Node Exporter container on each ZDM Proxy instance
       docker_container:
         name: "{{ prometheus_node_exporter_container_name }}"
