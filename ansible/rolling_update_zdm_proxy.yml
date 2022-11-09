@@ -8,15 +8,6 @@
         include_tasks: tasks/install_docker_ansible_module.yml
         vars:
           - install_packages: false
-#    - name: Uninstall incompatible Docker-py Module
-#      become: no
-#      pip:
-#        name: docker-py
-#        state: absent
-#
-#    - name: Install Docker Module for Python
-#      pip:
-#        name: docker
 
 - name: Create ZDM proxy configuration env file based on the latest configuration
   hosts: proxies
@@ -67,8 +58,8 @@
       retries: 6
       delay: 5
     - pause:
-        prompt: "Pause for 10s after restarting this ZDM proxy"
-        seconds: 10
+        prompt: "Pause for {{ pause_between_restarts_in_seconds }} after restarting this ZDM proxy instance"
+        seconds: "{{ pause_between_restarts_in_seconds }}"
 
 
 
