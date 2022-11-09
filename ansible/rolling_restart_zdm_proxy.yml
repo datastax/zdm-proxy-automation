@@ -1,6 +1,6 @@
 ---
 
-- name: Do a rolling restart of all ZDM proxies
+- name: Do a rolling restart of all ZDM proxies. This operation does not apply any configuration changes.
   hosts: proxies
   serial: 1
   become: yes
