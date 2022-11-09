@@ -114,7 +114,7 @@
         state: directory
     - name: Generate Prometheus alert rule file
       template:
-        src: "alert.rules.j2"
+        src: "cloudalchemy/alert.rules.j2"
         dest: "{{ monitoring_home_dir }}/{{ prometheus_config_dir_name }}/rules/prometheus_alerts.rules"
     - name: Generate Prometheus configuration file to scrape metrics from all proxies
       template:
