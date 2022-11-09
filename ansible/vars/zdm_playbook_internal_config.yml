@@ -28,4 +28,4 @@ prometheus_config_dir_name: zdm_prometheus_config
 grafana_config_dir_name: zdm_grafana_config
 grafana_dashboards_dir_name: zdm_grafana_dashboards
 
-pause_between_restarts_in_seconds: 30
+pause_between_restarts_in_seconds: 10
