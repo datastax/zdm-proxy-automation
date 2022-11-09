@@ -5,9 +5,9 @@
 
   tasks:
     - name: Ensure Docker Ansible module is installed
-        include_tasks: tasks/install_docker_ansible_module.yml
-        vars:
-          - install_packages: false
+      include_tasks: tasks/install_docker_ansible_module.yml
+      vars:
+        - install_packages: false
 
 - name: Create ZDM proxy configuration env file based on the latest configuration
   hosts: proxies
