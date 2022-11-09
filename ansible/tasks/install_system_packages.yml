@@ -3,4 +3,4 @@
 
 - name: Install required system packages
   apt: name={{ item }} state=latest update_cache=yes
-  loop: package_list
+  loop: {{ package_list }}
