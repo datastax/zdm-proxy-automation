@@ -1,9 +1,13 @@
-- name: Install aptitude using apt (this will take some time)
-  apt: name=aptitude state=latest update_cache=yes force_apt_get=yes
-
+#- name: Install aptitude using apt (this will take some time)
+#  apt: name=aptitude state=latest update_cache=yes force_apt_get=yes
+#
+#- name: Install required system packages
+#  apt: name={{ item }} state=latest update_cache=yes
+#  loop: [ 'apt-transport-https', 'ca-certificates', 'curl', 'software-properties-common']
 - name: Install required system packages
-  apt: name={{ item }} state=latest update_cache=yes
-  loop: [ 'apt-transport-https', 'ca-certificates', 'curl', 'software-properties-common']
+  include_tasks: install_system_packages.yml
+  vars:
+    - package_list: [ 'apt-transport-https', 'ca-certificates', 'curl', 'software-properties-common' ]
 
 - name: Add Docker GPG apt Key
   apt_key:

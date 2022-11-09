@@ -19,6 +19,8 @@
         - docker_installed.failed
     - name: Install Docker Ansible module
       include_tasks: tasks/install_docker_ansible_module.yml
+      vars:
+        - install_packages_required: true
 
 - name: Clean up any existing ZDM monitoring containers (except for named volume containing metrics data)
   hosts: monitoring
