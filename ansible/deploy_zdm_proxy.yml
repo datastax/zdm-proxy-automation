@@ -20,7 +20,7 @@
     - name: Install Docker Ansible module
       include_tasks: tasks/install_docker_ansible_module.yml
       vars:
-        - install_packages_required: true
+        - install_packages: true
 
 - name: Clean up any previous installations on ZDM proxy hosts
   hosts: proxies

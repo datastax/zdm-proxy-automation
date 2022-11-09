@@ -1,12 +1,52 @@
 ---
-- name: Install Docker
+- name: Deploy a Prometheus Node Exporter container on each ZDM Proxy instance
+  hosts: proxies
+  become: yes
+  vars_files:
+    - vars/zdm_playbook_internal_config.yml
+    - vars/zdm_monitoring_config.yml
+
+  tasks:
+    - name: Check if Docker is already installed
+      command: docker --version
+      register: docker_installed
+      ignore_errors: yes
+    - name: Install Docker if it is not yet present
+      include_tasks: tasks/install_docker.yml
+      vars:
+        - user_name: "{{ zdm_proxy_user_name }}"
+        - home_dir: "{{ zdm_proxy_home_dir }}"
+      when:
+        - docker_installed.failed
+    - name: Install Docker Ansible module
+      include_tasks: tasks/install_docker_ansible_module.yml
+      vars:
+        - install_packages: true
+    - name: Pull Prometheus Node Exporter Docker image from DockerHub
+      docker_image:
+        name: "{{ prometheus_node_exporter_image }}"
+        source: pull
+    - name: Remove any existing Prometheus Node Exporter container from the ZDM Proxy instances
+        docker_container:
+          name: "{{ prometheus_node_exporter_container_name }}"
+          state: absent
+    - name: Create Prometheus Node Exporter container on each ZDM Proxy instance
+      docker_container:
+        name: "{{ prometheus_node_exporter_container_name }}"
+        image: "{{ prometheus_node_exporter_image }}"
+        network_mode: host
+        restart_policy: unless-stopped
+        restart: yes
+        state: started
+
+- name: Install Docker on the monitoring server
   hosts: monitoring
   become: yes
   vars_files:
     - vars/zdm_playbook_internal_config.yml
 
   tasks:
-    - name: Check if Docker is already installed
+    - name: Check if Docker is already installed on the monitoring server
       command: docker --version
       register: docker_installed
       ignore_errors: yes
@@ -20,7 +60,7 @@
     - name: Install Docker Ansible module
       include_tasks: tasks/install_docker_ansible_module.yml
       vars:
-        - install_packages_required: true
+        - install_packages: true
 
 - name: Clean up any existing ZDM monitoring containers (except for named volume containing metrics data)
   hosts: monitoring
@@ -51,53 +91,7 @@
         name: "{{ grafana_container_name }}"
         state: absent
 
-- name: Clean up any existing Prometheus Node Exporter containers from the ZDM proxy instances
-  hosts: proxies
-  become: yes
-  vars_files:
-    - vars/zdm_monitoring_config.yml
-
-  tasks:
-    - name: Remove any existing Prometheus Node Exporter container from the ZDM Proxy instances
-      docker_container:
-        name: "{{ prometheus_node_exporter_container_name }}"
-        state: absent
-
-- name: Create and start Prometheus Node Exporter container on the ZDM Proxy instances
-  hosts: proxies
-  become: yes
-  vars_files:
-    - vars/zdm_playbook_internal_config.yml
-    - vars/zdm_monitoring_config.yml
-
-  tasks:
-    - name: Check if Docker is already installed
-      command: docker --version
-      register: docker_installed
-      ignore_errors: yes
-    - name: Install Docker if it is not yet present
-      include_tasks: tasks/install_docker.yml
-      vars:
-        - user_name: "{{ zdm_proxy_user_name }}"
-        - home_dir: "{{ zdm_proxy_home_dir }}"
-      when:
-        - docker_installed.failed
-    - name: Install Docker Ansible module
-      include_tasks: tasks/install_docker_ansible_module.yml
-    - name: Pull Prometheus Node Exporter Docker image from DockerHub
-      docker_image:
-        name: "{{ prometheus_node_exporter_image }}"
-        source: pull
-    - name: Create Prometheus Node Exporter container
-      docker_container:
-        name: "{{ prometheus_node_exporter_container_name }}"
-        image: "{{ prometheus_node_exporter_image }}"
-        network_mode: host
-        restart_policy: unless-stopped
-        restart: yes
-        state: started
-
-- name: Prepare all ZDM Prometheus configuration
+- name: Prepare all ZDM Prometheus configuration on the monitoring host
   hosts: monitoring
   become: yes
   vars_files:
@@ -123,7 +117,7 @@
         src: "prometheus.yml.j2"
         dest: "{{ monitoring_home_dir }}/{{ prometheus_config_dir_name }}/prometheus.yml"
 
-- name: Create and start Prometheus container
+- name: Create and start ZDM Prometheus container on the monitoring host
   hosts: monitoring
   become: yes
   vars_files:
@@ -139,7 +133,7 @@
       docker_image:
         name: "{{ prometheus_image }}"
         source: pull
-    - name: Create Prometheus container
+    - name: Create ZDM Prometheus container
       docker_container:
         name: "{{ prometheus_container_name }}"
         image: "{{ prometheus_image }}"
@@ -154,7 +148,7 @@
         restart: yes
         state: started
 
-- name: Prepare all Grafana configuration
+- name: Prepare all ZDM Grafana configuration on the monitoring host
   hosts: monitoring
   become: yes
   vars_files:
@@ -162,7 +156,7 @@
     - vars/zdm_playbook_internal_config.yml
 
   tasks:
-    - name: Create Grafana configuration directory on monitoring host
+    - name: Create Grafana configuration directory
       file:
         path: "{{ monitoring_home_dir }}/{{ grafana_config_dir_name }}"
         state: directory
@@ -194,12 +188,12 @@
       file:
         path: "{{ monitoring_home_dir }}/{{ grafana_dashboards_dir_name }}"
         state: directory
-    - name: Copy dashboards to directory on monitoring host
+    - name: Copy ZDM dashboards to directory on monitoring host
       copy:
         src: "../grafana-dashboards/"
         dest: "{{ monitoring_home_dir }}/{{ grafana_dashboards_dir_name }}"
 
-- name: Create and start Grafana container
+- name: Create and start ZDM Grafana container on the monitoring host
   hosts: monitoring
   become: yes
   vars_files:

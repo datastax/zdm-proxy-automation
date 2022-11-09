@@ -7,7 +7,7 @@
     - name: Ensure Docker Ansible module is installed
         include_tasks: tasks/install_docker_ansible_module.yml
         vars:
-          - install_packages_required: false
+          - install_packages: false
 #    - name: Uninstall incompatible Docker-py Module
 #      become: no
 #      pip:
