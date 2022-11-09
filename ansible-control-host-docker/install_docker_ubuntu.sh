@@ -11,7 +11,7 @@ sudo apt-get remove docker docker-engine docker.io containerd runc
 sudo apt-get update
 
 #Install packages needed by the installation process:
-sudo apt-get install \
+sudo apt-get install -y \
     ca-certificates \
     curl \
     gnupg \
@@ -34,7 +34,7 @@ echo \
 sudo apt-get update
 
 #Install the docker engine:
-sudo apt-get install docker-ce docker-ce-cli containerd.io
+sudo apt-get install -y docker-ce docker-ce-cli containerd.io
 
 #Enable your current user to run the docker command without sudo
 sudo groupadd docker
