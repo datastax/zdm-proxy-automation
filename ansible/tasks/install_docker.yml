@@ -31,12 +31,9 @@
     group: "docker"
     append: yes
 
-# Needed because of meta reset_connection known issue
-#- name: Kill SSH connection to allow user changes to come into effect
-#  shell: sleep 1; pkill -u {{ ansible_ssh_user }} sshd
-#  async: 3
-#  poll: 2
-
+# Resets the ssh connection to activate the "docker" group change
+# Equivalent to logging out and in again
+# Note: this step will not show in the output, unless using a higher verbosity level
 - name: Activate changes to "docker" group
   meta: reset_connection
 
