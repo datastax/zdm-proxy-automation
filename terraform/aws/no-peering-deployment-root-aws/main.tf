@@ -25,8 +25,8 @@ module "zdm_proxy_networking" {
   // variable wirings for the networking module
   zdm_vpc_cidr_prefix = var.zdm_vpc_cidr_prefix
 
-  whitelisted_inbound_ip_ranges = var.whitelisted_inbound_ip_ranges
-  whitelisted_outbound_ip_ranges = var.whitelisted_outbound_ip_ranges
+  allowed_inbound_ip_ranges = var.allowed_inbound_ip_ranges
+  allowed_outbound_ip_ranges = var.allowed_outbound_ip_ranges
 }
 
 module "zdm_instances" {

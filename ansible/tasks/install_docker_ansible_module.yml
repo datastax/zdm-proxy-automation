@@ -1,0 +1,15 @@
+- name: Install system packages if required
+  include_tasks: install_system_packages.yml
+  vars:
+    - package_list: [ 'curl', 'software-properties-common', 'python3-pip', 'virtualenv', 'python3-setuptools' ]
+  when: install_packages | bool
+
+- name: Uninstall incompatible Docker-py Module
+  become: no
+  pip:
+    name: docker-py
+    state: absent
+
+- name: Install Docker Module for Python
+  pip:
+    name: docker

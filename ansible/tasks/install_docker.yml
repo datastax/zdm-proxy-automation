@@ -1,0 +1,44 @@
+- name: Install required system packages
+  include_tasks: install_system_packages.yml
+  vars:
+    - package_list: [ 'apt-transport-https', 'ca-certificates', 'curl', 'software-properties-common' ]
+
+- name: Add Docker GPG apt Key
+  apt_key:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    state: present
+
+- name: Add Docker Repository
+  apt_repository:
+    repo: deb https://download.docker.com/linux/ubuntu bionic stable
+    state: present
+
+- name: Update apt and install docker-ce
+  apt: update_cache=yes name=docker-ce state=latest
+
+# sudo groupadd docker
+- name: Create "docker" group
+  group:
+    name: "docker"
+    state: present
+
+# sudo usermod -aG docker root
+- name: Add OS user to "docker" group
+  user:
+    name: "{{ user_name }}"
+    group: "docker"
+    append: yes
+
+# Resets the ssh connection to activate the "docker" group change
+# Equivalent to logging out and in again
+# Note: this step will not show in the output, unless using a higher verbosity level
+- name: Activate changes to "docker" group
+  meta: reset_connection
+
+# sudo chown -R ubuntu:docker /home/ubuntu/.docker
+- name: Change ownership of Docker internal directory to this user and docker group
+  file:
+    path: "{{ home_dir }}/.docker"
+    owner: "{{ user_name }}"
+    group: "docker"
+    recurse: yes

@@ -102,7 +102,7 @@ resource "aws_security_group" "private_instance_sg" {
     from_port = 0
     to_port = 0
     protocol = "-1"
-    cidr_blocks = var.whitelisted_outbound_ip_ranges
+    cidr_blocks = var.allowed_outbound_ip_ranges
   }
 
   tags = {
@@ -175,10 +175,10 @@ resource "aws_route_table" "internet_gateway_rt" {
 }
 
 resource "aws_route" "igw_route" {
-  count = length(var.whitelisted_outbound_ip_ranges)
+  count = length(var.allowed_outbound_ip_ranges)
 
   route_table_id = aws_route_table.internet_gateway_rt.id
-  destination_cidr_block = var.whitelisted_outbound_ip_ranges[count.index]
+  destination_cidr_block = var.allowed_outbound_ip_ranges[count.index]
   gateway_id = aws_internet_gateway.internet_gateway.id
 }
 
@@ -196,7 +196,7 @@ resource "aws_security_group" "public_instance_sg" {
 
   // Inbound SSH from trusted VPNs
   ingress {
-    cidr_blocks = var.whitelisted_inbound_ip_ranges
+    cidr_blocks = var.allowed_inbound_ip_ranges
     from_port = 22
     to_port = 22
     protocol = "tcp"
@@ -204,14 +204,14 @@ resource "aws_security_group" "public_instance_sg" {
 
   // Grafana UI
   ingress {
-    cidr_blocks = var.whitelisted_inbound_ip_ranges
+    cidr_blocks = var.allowed_inbound_ip_ranges
     from_port = 3000
     to_port = 3000
     protocol = "tcp"
   }
   // Prometheus UI
   ingress {
-    cidr_blocks = var.whitelisted_inbound_ip_ranges
+    cidr_blocks = var.allowed_inbound_ip_ranges
     from_port = 9090
     to_port = 9090
     protocol = "tcp"
@@ -229,7 +229,7 @@ resource "aws_security_group" "public_instance_sg" {
     from_port = 0
     to_port = 0
     protocol = "-1"
-    cidr_blocks = var.whitelisted_outbound_ip_ranges
+    cidr_blocks = var.allowed_outbound_ip_ranges
   }
 
   tags = {

@@ -2,43 +2,31 @@
 - name: Install Docker
   hosts: proxies
   become: yes
+  vars_files:
+    - vars/zdm_playbook_internal_config.yml
 
   tasks:
-    - name: Install aptitude using apt (this will take some time)
-      apt: name=aptitude state=latest update_cache=yes force_apt_get=yes
-
-    - name: Install required system packages
-      apt: name={{ item }} state=latest update_cache=yes
-      loop: [ 'apt-transport-https', 'ca-certificates', 'curl', 'software-properties-common', 'python3-pip', 'virtualenv', 'python3-setuptools']
-
-    - name: Add Docker GPG apt Key
-      apt_key:
-        url: https://download.docker.com/linux/ubuntu/gpg
-        state: present
-
-    - name: Add Docker Repository
-      apt_repository:
-        repo: deb https://download.docker.com/linux/ubuntu bionic stable
-        state: present
-
-    - name: Update apt and install docker-ce
-      apt: update_cache=yes name=docker-ce state=latest
-
-    - name: Uninstall incompatible Docker-py Module
-      become: no
-      pip:
-        name: docker-py
-        state: absent
-
-    - name: Install Docker Module for Python
-      pip:
-        name: docker
+    - name: Check if Docker is already installed
+      command: docker --version
+      register: docker_installed
+      ignore_errors: yes
+    - name: Install Docker if it is not yet present
+      include_tasks: tasks/install_docker.yml
+      vars:
+        - user_name: "{{ zdm_proxy_user_name }}"
+        - home_dir: "{{ zdm_proxy_home_dir }}"
+      when:
+        - docker_installed.failed
+    - name: Install Docker Ansible module
+      include_tasks: tasks/install_docker_ansible_module.yml
+      vars:
+        - install_packages: true
 
 - name: Clean up any previous installations on ZDM proxy hosts
   hosts: proxies
   become: yes
   vars_files:
-    - vars/zdm_proxy_container.yml
+    - vars/zdm_proxy_container_config.yml
     - vars/zdm_playbook_internal_config.yml
 
   tasks:
@@ -221,7 +209,7 @@
   hosts: proxies
   become: yes
   vars_files:
-    - vars/zdm_proxy_container.yml
+    - vars/zdm_proxy_container_config.yml
     - vars/zdm_playbook_internal_config.yml
 
   tasks:

@@ -1,12 +1,13 @@
 ---
 
-- name: Do a rolling restart of all ZDM proxies
+- name: Do a rolling restart of all ZDM proxies. This operation does not apply any configuration changes.
   hosts: proxies
   serial: 1
   become: yes
   vars_files:
-    - vars/zdm_proxy_container.yml
+    - vars/zdm_proxy_container_config.yml
     - vars/zdm_proxy_advanced_config.yml
+    - vars/zdm_playbook_internal_config.yml
 
   tasks:
     - name: Restart one ZDM proxy instance at a time
@@ -23,8 +24,8 @@
       retries: 6
       delay: 5
     - pause:
-        prompt: "Pause for 10s after restarting this ZDM proxy"
-        seconds: 10
+        prompt: "Pause for {{ pause_between_restarts_in_seconds }} seconds after restarting this ZDM proxy instance"
+        seconds: "{{ pause_between_restarts_in_seconds }}"
 
 
 

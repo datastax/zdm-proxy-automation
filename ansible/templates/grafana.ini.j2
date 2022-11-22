@@ -1,0 +1,32 @@
+{{ ansible_managed | comment }}
+# More informations:
+# http://docs.grafana.org/installation/configuration
+# https://github.com/grafana/grafana/blob/master/conf/sample.ini
+
+app_mode = production
+instance_name = "{{ ansible_fqdn | default(ansible_host) | default(inventory_hostname) }}"
+
+[paths]
+data = /var/lib/grafana
+logs = /var/log/grafana
+plugins = /var/lib/grafana/plugins
+
+[server]
+domain = "{{ ansible_fqdn | default(ansible_host) | default(inventory_hostname) }}"
+
+[security]
+admin_user = {{ grafana_admin_user }}
+admin_password = {{ grafana_admin_password }}
+
+[users]
+allow_sign_up = False
+
+[dashboards.json]
+enabled = true
+path = /var/lib/grafana/dashboards
+
+[alerting]
+enabled = true
+
+[metrics]
+enabled = false

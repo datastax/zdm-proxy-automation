@@ -1,0 +1,35 @@
+#jinja2: trim_blocks: True, lstrip_blocks: True
+{{ ansible_managed | comment }}
+# http://prometheus.io/docs/operating/configuration/
+
+global:
+  evaluation_interval: {{ prometheus_evaluation_interval }}
+  scrape_interval: {{ prometheus_scrape_interval }}
+  scrape_timeout: {{ prometheus_scrape_timeout }}
+
+  external_labels:
+    environment: {{ prometheus_environment_label_prefix }}-"{{ ansible_fqdn | default(ansible_host) | default(inventory_hostname) }}"
+
+rule_files:
+  - /etc/prometheus/rules/*.rules
+
+scrape_configs:
+  - job_name: prometheus
+    metrics_path: /metrics
+    static_configs:
+    - targets:
+      - {{ prometheus_web_listen_address }}
+  - job_name: zdm_proxy
+    metrics_path: /metrics
+    static_configs:
+      - targets:
+{% for host in groups['proxies'] %}
+        - {{ host }}:{{ metrics_port }}
+{% endfor %}
+  - job_name: node
+    metrics_path: /metrics
+    static_configs:
+      - targets:
+{% for host in groups['proxies'] %}
+        - {{ host }}:9100
+{% endfor %}

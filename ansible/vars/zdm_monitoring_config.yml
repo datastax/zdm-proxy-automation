@@ -3,22 +3,17 @@ grafana_version: 7.5.15
 grafana_admin_user: admin
 grafana_admin_password: testpasswordchangeme
 
-grafana_dashboards_dir: ~/zdm-proxy-automation/grafana-dashboards
+prometheus_node_exporter_image: "prom/node-exporter:latest"
+prometheus_node_exporter_container_name: "zdm-node-exporter-container"
 
-grafana_datasources:
-  - name: "Prometheus"
-    type: "prometheus"
-    access: "proxy"
-    url: "{{ prometheus_web_listen_address }}"
-    basicAuth: false
-    basicAuthUser: "admin"
-    basicAuthPassword: "password"
-    isDefault: true
-    jsonData:
-      tlsAuth: false
-      tlsAuthWithCACert: false
-      tlsSkipVerify: true
-
+prometheus_image: "prom/prometheus:latest"
+prometheus_container_name: "zdm-prometheus-container"
+prometheus_container_storage_volume: "zdm-prometheus-metrics-volume"
 prometheus_web_listen_address: "{{ groups['monitoring'][0] }}:9090"
+prometheus_evaluation_interval: 15s
+prometheus_scrape_interval: 15s
+prometheus_scrape_timeout: 10s
+prometheus_environment_label_prefix: "zdm-monitoring"
 
-
+grafana_image: "grafana/grafana:7.5.17"
+grafana_container_name: "zdm-grafana-container"

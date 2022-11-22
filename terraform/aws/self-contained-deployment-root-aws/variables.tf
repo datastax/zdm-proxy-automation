@@ -13,13 +13,13 @@ variable "user_aws_profile" {
   default = ""
 }
 
-variable "whitelisted_inbound_ip_ranges" {
+variable "allowed_inbound_ip_ranges" {
   type = list(string)
-  # defaults to Santa Clara VPN IP range
-  default = ["38.99.104.112/28"]
+  # defaults to everything (unrestricted)
+  default = ["0.0.0.0/0"]
 }
 
-variable "whitelisted_outbound_ip_ranges" {
+variable "allowed_outbound_ip_ranges" {
   type = list(string)
   # defaults to everything (unrestricted)
   default = ["0.0.0.0/0"]

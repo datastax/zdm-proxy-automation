@@ -252,10 +252,15 @@ func (o *DockerOrchestrator) removeExistingContainer(containerId string) error {
 }
 
 func (o *DockerOrchestrator) createContainer(imageName, containerName string) (string, error) {
-	containerCreationResponse, err := o.cli.ContainerCreate(o.ctx, &container.Config{
-		Image: imageName,
-		Tty:   true,
-	}, nil, nil, nil, containerName)
+	containerCreationResponse, err := o.cli.ContainerCreate(o.ctx,
+		&container.Config{
+			Image: imageName,
+			Tty:   true,
+	}, &container.HostConfig{
+			RestartPolicy: container.RestartPolicy{
+				Name: "unless-stopped",
+			},
+		}, nil, nil, containerName)
 	if err != nil {
 		return "", err
 	}
