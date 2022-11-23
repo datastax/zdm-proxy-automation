@@ -1,3 +1,10 @@
+- name: Allow release info change
+  lineinfile:
+    path: /etc/apt/apt.conf.d/99releaseinfochange
+    state: present
+    create: yes
+    line: Acquire::AllowReleaseInfoChange::Suite "true";
+
 - name: Install aptitude using apt (this will take some time)
   apt: name=aptitude state=latest update_cache=yes force_apt_get=yes
 
