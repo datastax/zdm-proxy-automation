@@ -41,7 +41,7 @@
 
 - name: Install Docker on the monitoring server
   hosts: monitoring
-  #become: yes
+  become: yes
   vars_files:
     - vars/zdm_playbook_internal_config.yml
 
