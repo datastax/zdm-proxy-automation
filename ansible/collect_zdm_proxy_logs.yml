@@ -1,19 +1,36 @@
 ---
-- name: Create log collection directories on the control host
+- name: Create log collection directories on the control host (tmp)
   hosts: "{{ log_collection_playbook_host }}"
   vars_files:
     - vars/zdm_proxy_log_collection_config.yml
     - vars/zdm_playbook_internal_config.yml
 
   tasks:
+#    - name: Create log archive directory
+#      file:
+#        path: "{{ control_host_home_dir }}/{{ archived_log_dir_name }}/"
+#        state: directory
     - name: Create temporary log collection directory
       file:
         path: "{{ control_host_home_dir }}/{{ tmp_log_dir_name }}/"
         state: directory
+
+- name: Create log collection directories on the control host (archive)
+  hosts: "{{ log_collection_playbook_host }}"
+  vars_files:
+    - vars/zdm_proxy_log_collection_config.yml
+    - vars/zdm_playbook_internal_config.yml
+
+  tasks:
     - name: Create log archive directory
       file:
         path: "{{ control_host_home_dir }}/{{ archived_log_dir_name }}/"
         state: directory
+#    - name: Create temporary log collection directory
+#      file:
+#        path: "{{ control_host_home_dir }}/{{ tmp_log_dir_name }}/"
+#        state: directory
+
 
 - name: Collect all ZDM proxy logs
   hosts: proxies
