@@ -53,7 +53,7 @@
       register: logfilenames
       when:
         - containerinfo is defined
-    - name: Fetch the logs of the container, copying them to the temporary log collection direcotry on the control host
+    - name: Fetch the logs of the container, copying them to the temporary log collection directory on the control host
       fetch:
         src: "{{ item.path }}"
         dest: "{{ control_host_home_dir }}/{{ tmp_log_dir_name }}/"
@@ -70,9 +70,10 @@
     - name: Create the zip archive
       community.general.archive:
         path: "{{ control_host_home_dir }}/{{ tmp_log_dir_name }}/"
-        dest: "{{ control_host_home_dir }}/{{ archived_log_dir_name }}/zdm_proxy_logs_{{ ansible_date_time.iso8601_basic_short }}.zip"
+        #dest: "{{ control_host_home_dir }}/{{ archived_log_dir_name }}/zdm_proxy_logs_{{ ansible_date_time.iso8601_basic_short }}.zip"
+        dest: "{{ control_host_home_dir }}/{{ tmp_log_dir_name }}/zdm_proxy_logs_{{ ansible_date_time.iso8601_basic_short }}.zip"
         format: zip
-    - name: Remove the temporary directory where the logs were copied on the control host
-      file:
-        path: "{{ control_host_home_dir }}/{{ tmp_log_dir_name }}/"
-        state: absent
+#    - name: Remove the temporary directory where the logs were copied on the control host
+#      file:
+#        path: "{{ control_host_home_dir }}/{{ tmp_log_dir_name }}/"
+#        state: absent
