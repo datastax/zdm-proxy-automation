@@ -1,19 +1,22 @@
 ---
 - name: Create log collection directories on the control host
-  hosts: "{{ log_collection_playbook_host }}"
+  host: localhost
   vars_files:
     - vars/zdm_proxy_log_collection_config.yml
     - vars/zdm_playbook_internal_config.yml
 
   tasks:
     - name: Create log archive directory
+      #delegate_to: localhost
       file:
-        path: "{{ control_host_home_dir }}/{{ archived_log_dir_name }}/"
+        path: "/home/ubuntu/{{ archived_log_dir_name }}/"
         state: directory
     - name: Create temporary log collection directory
+      #delegate_to: localhost
       file:
-        path: "{{ control_host_home_dir }}/{{ host_tmp_log_dir_name }}/"
+        path: "/home/ubuntu/{{ tmp_log_dir_name }}/"
         state: directory
+
 
 - name: Collect all ZDM proxy logs
   hosts: proxies
@@ -39,25 +42,26 @@
     - name: Fetch the logs of the container, copying them to the temporary log collection directory in the control host container
       fetch:
         src: "{{ item.path }}"
-        dest: "{{ control_host_home_dir }}/{{ container_tmp_log_dir_name }}/"
+        dest: "/home/ubuntu/{{ tmp_log_dir_name }}/"
         flat: yes
       with_items: "{{ logfilenames.files }}"
-    - name: Copy files from the temporary log collection directory in the control host container to the one on the host
-      command: "docker cp zdm-ansible-container:/home/ubuntu/cont_tmp_logs/. /home/ubuntu/host_tmp_logs/"
-#
-#- name: Zip the logs in a single archive
-#  hosts: "{{ log_collection_playbook_host }}"
-#  vars_files:
-#    - vars/zdm_proxy_log_collection_config.yml
-#    - vars/zdm_playbook_internal_config.yml
-#
-#  tasks:
-#    - name: Create the zip archive
-#      community.general.archive:
-#        path: "{{ control_host_home_dir }}/{{ tmp_log_dir_name }}/"
-#        dest: "{{ control_host_home_dir }}/{{ archived_log_dir_name }}/zdm_proxy_logs_{{ ansible_date_time.iso8601_basic_short }}.zip"
-#        format: zip
-#    - name: Remove the temporary directory where the logs were copied on the control host
-#      file:
-#        path: "{{ control_host_home_dir }}/{{ tmp_log_dir_name }}/"
-#        state: absent
+
+
+- name: Zip the logs in a single archive
+  hosts: localhost
+  vars_files:
+    - vars/zdm_proxy_log_collection_config.yml
+    - vars/zdm_playbook_internal_config.yml
+
+  tasks:
+    - name: Create the zip archive
+      #delegate_to: localhost
+      community.general.archive:
+        path: "/home/ubuntu/{{ tmp_log_dir_name }}/"
+        dest: "/home/ubuntu/{{ archived_log_dir_name }}/zdm_proxy_logs_{{ ansible_date_time.iso8601_basic_short }}.zip"
+        format: zip
+    - name: Remove the temporary directory where the logs were copied on the control host
+      #delegate_to: localhost
+      file:
+        path: "/home/ubuntu/{{ tmp_log_dir_name }}/"
+        state: absent

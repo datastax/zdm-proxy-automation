@@ -10,7 +10,4 @@ archived_log_dir_name: zdm_proxy_archived_logs
 # Temporary directory, one the Ansible control host, used while handling the log files. Will be removed at the end of the playbook execution.
 # If running the playbook on local machine, provide the desired absolute path (the directory will be created if it does not exist)
 # If running the playbook on the jumphost, the default value is fine
-host_tmp_log_dir_name: host_tmp_logs
-
-
-container_tmp_log_dir_name: cont_tmp_logs
+tmp_log_dir_name: tmp_logs
