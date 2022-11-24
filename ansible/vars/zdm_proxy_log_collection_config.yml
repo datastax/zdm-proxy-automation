@@ -1,6 +1,0 @@
----
-# Directory, on the Ansible control host, where the zipped log archive should be placed.
-archived_log_dir_name: zdm_proxy_archived_logs
-
-# Temporary directory, one the Ansible control host, used while handling the log files. Will be removed at the end of the playbook execution.
-tmp_log_dir_name: tmp_logs

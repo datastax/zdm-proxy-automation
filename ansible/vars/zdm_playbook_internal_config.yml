@@ -1,12 +1,13 @@
 ---
+# Rolling restarts
+pause_between_restarts_in_seconds: 10
 
+# Proxy
 zdm_proxy_user_name: ubuntu
 zdm_proxy_home_dir: /home/ubuntu
 
-zdm_proxy_config_fragments_dir_name: zdm_proxy_config_fragments
-
 zdm_proxy_shared_assets_dir_name: shared_assets
-
+zdm_proxy_config_fragments_dir_name: zdm_proxy_config_fragments
 zdm_proxy_mutable_config_fragment_file_name: zdm_proxy_mutable_config.env
 zdm_proxy_immutable_config_fragment_file_name: zdm_proxy_immutable_config.env
 zdm_proxy_environment_config_file_name: zdm_proxy_config.env
@@ -21,6 +22,7 @@ origin_tls_dest_dir_name: origin_tls
 target_tls_dest_dir_name: target_tls
 zdm_proxy_tls_dest_dir_name: proxy_tls
 
+# Monitoring
 monitoring_user_name: ubuntu
 monitoring_home_dir: /home/ubuntu
 
@@ -28,4 +30,5 @@ prometheus_config_dir_name: zdm_prometheus_config
 grafana_config_dir_name: zdm_grafana_config
 grafana_dashboards_dir_name: zdm_grafana_dashboards
 
-pause_between_restarts_in_seconds: 10
+# Log collection
+archived_log_dir_name: zdm_proxy_archived_logs
