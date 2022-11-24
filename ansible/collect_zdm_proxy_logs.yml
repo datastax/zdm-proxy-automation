@@ -7,12 +7,10 @@
 
   tasks:
     - name: Create log archive directory
-      #delegate_to: localhost
       file:
         path: "/home/ubuntu/{{ archived_log_dir_name }}/"
         state: directory
     - name: Create temporary log collection directory
-      #delegate_to: localhost
       file:
         path: "/home/ubuntu/{{ tmp_log_dir_name }}/"
         state: directory
@@ -39,7 +37,7 @@
       register: logfilenames
       when:
         - containerinfo is defined
-    - name: Fetch the logs of the container, copying them to the temporary log collection directory in the control host container
+    - name: Fetch the proxy logs, copying them to the temporary log collection directory in the control host container
       fetch:
         src: "{{ item.path }}"
         dest: "/home/ubuntu/{{ tmp_log_dir_name }}/"
@@ -55,13 +53,11 @@
 
   tasks:
     - name: Create the zip archive
-      #delegate_to: localhost
       community.general.archive:
         path: "/home/ubuntu/{{ tmp_log_dir_name }}/"
         dest: "/home/ubuntu/{{ archived_log_dir_name }}/zdm_proxy_logs_{{ ansible_date_time.iso8601_basic_short }}.zip"
         format: zip
     - name: Remove the temporary directory where the logs were copied on the control host
-      #delegate_to: localhost
       file:
         path: "/home/ubuntu/{{ tmp_log_dir_name }}/"
         state: absent
