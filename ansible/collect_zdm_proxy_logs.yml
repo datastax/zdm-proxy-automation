@@ -10,10 +10,10 @@
 #      file:
 #        path: "{{ control_host_home_dir }}/{{ archived_log_dir_name }}/"
 #        state: directory
-    - name: Create temporary log collection directory
-      file:
-        path: "{{ control_host_home_dir }}/{{ tmp_log_dir_name }}/"
-        state: directory
+#    - name: Create temporary log collection directory
+#      file:
+#        path: "{{ control_host_home_dir }}/{{ tmp_log_dir_name }}/"
+#        state: directory
 
 - name: Create log collection directories on the control host (archive)
   hosts: "{{ log_collection_playbook_host }}"
