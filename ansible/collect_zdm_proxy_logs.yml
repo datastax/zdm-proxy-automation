@@ -12,36 +12,38 @@
         state: directory
     - name: Create temporary log collection directory
       file:
-        path: "{{ control_host_home_dir }}/{{ tmp_log_dir_name }}/"
+        path: "{{ control_host_home_dir }}/{{ host_tmp_log_dir_name }}/"
         state: directory
 
-#- name: Collect all ZDM proxy logs
-#  hosts: proxies
-#  become: yes
-#  vars_files:
-#    - vars/zdm_proxy_container_config.yml
-#    - vars/zdm_proxy_log_collection_config.yml
-#    - vars/zdm_playbook_internal_config.yml
-#
-#  tasks:
-#    - name: Inspect the ZDM proxy container
-#      docker_container_info:
-#        name: "{{ zdm_proxy_container_name }}"
-#      register: containerinfo
-#    - name: Find the log files to copy/fetch
-#      find:
-#        paths: "/var/lib/docker/containers/{{ containerinfo.container.Id }}"
-#        patterns: ".*-json.log$"
-#        use_regex: yes
-#      register: logfilenames
-#      when:
-#        - containerinfo is defined
-#    - name: Fetch the logs of the container, copying them to the temporary log collection directory on the control host
-#      fetch:
-#        src: "{{ item.path }}"
-#        dest: "{{ control_host_home_dir }}/{{ tmp_log_dir_name }}/"
-#        flat: yes
-#      with_items: "{{ logfilenames.files }}"
+- name: Collect all ZDM proxy logs
+  hosts: proxies
+  become: yes
+  vars_files:
+    - vars/zdm_proxy_container_config.yml
+    - vars/zdm_proxy_log_collection_config.yml
+    - vars/zdm_playbook_internal_config.yml
+
+  tasks:
+    - name: Inspect the ZDM proxy container
+      docker_container_info:
+        name: "{{ zdm_proxy_container_name }}"
+      register: containerinfo
+    - name: Find the log files to copy/fetch
+      find:
+        paths: "/var/lib/docker/containers/{{ containerinfo.container.Id }}"
+        patterns: ".*-json.log$"
+        use_regex: yes
+      register: logfilenames
+      when:
+        - containerinfo is defined
+    - name: Fetch the logs of the container, copying them to the temporary log collection directory in the control host container
+      fetch:
+        src: "{{ item.path }}"
+        dest: "{{ control_host_home_dir }}/{{ container_tmp_log_dir_name }}/"
+        flat: yes
+      with_items: "{{ logfilenames.files }}"
+    - name: Copy files from the temporary log collection directory in the control host container to the one on the host
+      command: "docker cp zdm-ansible-container:/home/ubuntu/cont_tmp_logs/. /home/ubuntu/host_tmp_logs/"
 #
 #- name: Zip the logs in a single archive
 #  hosts: "{{ log_collection_playbook_host }}"
