@@ -1,6 +1,6 @@
 ---
 - name: Create log collection directories on the control host
-  host: localhost
+  hosts: localhost
   vars_files:
     - vars/zdm_proxy_log_collection_config.yml
     - vars/zdm_playbook_internal_config.yml
