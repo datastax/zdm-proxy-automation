@@ -47,6 +47,10 @@
         path: "{{ zdm_proxy_home_dir }}/{{ tmp_log_dir_name }}/"
         dest: "{{ zdm_proxy_home_dir }}/{{ archived_log_dir_name }}/zdm_proxy_logs_{{ ansible_date_time.iso8601_basic_short }}.zip"
         format: zip
+    - name: Remove the temporary directory where the logs were copied on the control host
+      file:
+        path: "{{ zdm_proxy_home_dir }}/{{ tmp_log_dir_name }}/"
+        state: absent
 
 - name: Remove the temporary directory from all proxies
   hosts: proxies
@@ -55,7 +59,7 @@
     - vars/zdm_playbook_internal_config.yml
 
   tasks:
-    - name: Remove the temporary directory where the logs were copied
+    - name: Remove the temporary directories where the logs were copied on each proxy host
       file:
         path: "{{ zdm_proxy_home_dir }}/{{ tmp_log_dir_name }}/"
         state: absent
