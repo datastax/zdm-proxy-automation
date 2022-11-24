@@ -32,3 +32,4 @@ grafana_dashboards_dir_name: zdm_grafana_dashboards
 
 # Log collection
 archived_log_dir_name: zdm_proxy_archived_logs
+tmp_log_dir_name: tmp_logs
