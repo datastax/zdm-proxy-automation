@@ -1,7 +1,7 @@
 ---
 - name: Deploy a Prometheus Node Exporter container on each ZDM Proxy instance
   hosts: proxies
-  become: yes
+  #become: yes
   vars_files:
     - vars/zdm_playbook_internal_config.yml
     - vars/zdm_monitoring_config.yml
@@ -41,7 +41,7 @@
 
 - name: Install Docker on the monitoring server
   hosts: monitoring
-  become: yes
+  #become: yes
   vars_files:
     - vars/zdm_playbook_internal_config.yml
 
@@ -64,7 +64,7 @@
 
 - name: Clean up any existing ZDM monitoring containers (except for named volume containing metrics data)
   hosts: monitoring
-  become: yes
+  #become: yes
   vars_files:
     - vars/zdm_monitoring_config.yml
     - vars/zdm_playbook_internal_config.yml
@@ -93,7 +93,7 @@
 
 - name: Prepare all ZDM Prometheus configuration on the monitoring host
   hosts: monitoring
-  become: yes
+  #become: yes
   vars_files:
     - vars/zdm_monitoring_config.yml
     - vars/zdm_proxy_advanced_config.yml
@@ -119,7 +119,7 @@
 
 - name: Create and start ZDM Prometheus container on the monitoring host
   hosts: monitoring
-  become: yes
+  #become: yes
   vars_files:
     - vars/zdm_monitoring_config.yml
     - vars/zdm_playbook_internal_config.yml
@@ -150,7 +150,7 @@
 
 - name: Prepare all ZDM Grafana configuration on the monitoring host
   hosts: monitoring
-  become: yes
+  #become: yes
   vars_files:
     - vars/zdm_monitoring_config.yml
     - vars/zdm_playbook_internal_config.yml
@@ -195,7 +195,7 @@
 
 - name: Create and start ZDM Grafana container on the monitoring host
   hosts: monitoring
-  become: yes
+  #become: yes
   vars_files:
     - vars/zdm_monitoring_config.yml
     - vars/zdm_playbook_internal_config.yml
