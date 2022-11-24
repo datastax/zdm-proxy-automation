@@ -1,7 +1,7 @@
 ---
 - name: Deploy a Prometheus Node Exporter container on each ZDM Proxy instance
   hosts: proxies
-  #become: yes
+  become: yes
   vars_files:
     - vars/zdm_playbook_internal_config.yml
     - vars/zdm_monitoring_config.yml
