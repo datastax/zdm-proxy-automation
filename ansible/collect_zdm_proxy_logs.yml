@@ -1,4 +1,20 @@
 ---
+- name: Create log collection directories on the control host
+  hosts: "{{ log_collection_playbook_host }}"
+  vars_files:
+    - vars/zdm_proxy_log_collection_config.yml
+    - vars/zdm_playbook_internal_config.yml
+
+  tasks:
+    - name: Create temporary log collection directory
+      file:
+        path: "{{ control_host_home_dir }}/{{ tmp_log_dir_name }}/"
+        state: directory
+    - name: Create log archive directory
+      file:
+        path: "{{ control_host_home_dir }}/{{ archived_log_dir_name }}/"
+        state: directory
+
 - name: Collect all ZDM proxy logs
   hosts: proxies
   become: yes
@@ -20,14 +36,10 @@
       register: logfilenames
       when:
         - containerinfo is defined
-    - name: Create temporary directory
-      file:
-        path: "{{ zdm_proxy_home_dir }}/{{ tmp_log_dir_name }}/"
-        state: directory
-    - name: Fetch the logs of the container
+    - name: Fetch the logs of the container, copying them to the temporary log collection direcotry on the control host
       fetch:
         src: "{{ item.path }}"
-        dest: "{{ zdm_proxy_home_dir }}/{{ tmp_log_dir_name }}/"
+        dest: "{{ control_host_home_dir }}/{{ tmp_log_dir_name }}/"
         flat: yes
       with_items: "{{ logfilenames.files }}"
 
@@ -38,28 +50,12 @@
     - vars/zdm_playbook_internal_config.yml
 
   tasks:
-    - name: Create general log archive directory if it doesn't exist
-      file:
-        path: "{{ zdm_proxy_home_dir }}/{{ archived_log_dir_name }}/"
-        state: directory
-    - name: Zip the logs in a single archive
+    - name: Create the zip archive
       community.general.archive:
-        path: "{{ zdm_proxy_home_dir }}/{{ tmp_log_dir_name }}/"
-        dest: "{{ zdm_proxy_home_dir }}/{{ archived_log_dir_name }}/zdm_proxy_logs_{{ ansible_date_time.iso8601_basic_short }}.zip"
+        path: "{{ control_host_home_dir }}/{{ tmp_log_dir_name }}/"
+        dest: "{{ control_host_home_dir }}/{{ archived_log_dir_name }}/zdm_proxy_logs_{{ ansible_date_time.iso8601_basic_short }}.zip"
         format: zip
     - name: Remove the temporary directory where the logs were copied on the control host
       file:
-        path: "{{ zdm_proxy_home_dir }}/{{ tmp_log_dir_name }}/"
-        state: absent
-
-- name: Remove the temporary directory from all proxies
-  hosts: proxies
-  vars_files:
-    - vars/zdm_proxy_log_collection_config.yml
-    - vars/zdm_playbook_internal_config.yml
-
-  tasks:
-    - name: Remove the temporary directories where the logs were copied on each proxy host
-      file:
-        path: "{{ zdm_proxy_home_dir }}/{{ tmp_log_dir_name }}/"
+        path: "{{ control_host_home_dir }}/{{ tmp_log_dir_name }}/"
         state: absent
