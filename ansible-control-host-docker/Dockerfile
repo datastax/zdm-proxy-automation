@@ -18,16 +18,11 @@ RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 93C4A3FD7BB9C367 &&
     apt-get install python-jmespath && \
     apt-get autoremove && apt-get autoclean
 
-RUN ansible-galaxy collection install community.docker:3.0.2
-RUN ansible-galaxy collection install community.general:4.8.6
-
 # create ubuntu user
 RUN useradd -ms /bin/bash ubuntu
 RUN usermod -aG sudo ubuntu
 USER ubuntu
 WORKDIR /home/ubuntu/
-
-RUN mkdir zdm-proxy-ssh-key-dir/
 
 USER root
 RUN echo 'ubuntu ALL=NOPASSWD: ALL' >> /etc/sudoers
@@ -43,7 +38,11 @@ RUN chmod +x init_container_internal.sh
 
 USER ubuntu
 
+RUN ansible-galaxy collection install community.docker:3.0.2
+RUN ansible-galaxy collection install community.general:4.8.6
+
 RUN cd
+RUN mkdir zdm-proxy-ssh-key-dir
 RUN mkdir origin_tls_files
 RUN mkdir target_tls_files
 RUN mkdir zdm_proxy_tls_files
