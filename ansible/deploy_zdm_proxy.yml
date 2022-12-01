@@ -6,8 +6,8 @@
     - vars/zdm_playbook_internal_config.yml
 
   tasks:
-    - name: Check if Docker is already installed
-      command: docker --version
+    - name: Check if Docker Engine is already installed
+      command: docker run hello-world
       register: docker_installed
       ignore_errors: yes
     - name: Install Docker if it is not yet present
