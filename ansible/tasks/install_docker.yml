@@ -13,9 +13,6 @@
     repo: deb https://download.docker.com/linux/ubuntu bionic stable
     state: present
 
-- name: Update apt and install docker-ce
-  apt: update_cache=yes name=docker-ce state=latest
-
 # sudo groupadd docker
 - name: Create "docker" group
   group:
@@ -26,8 +23,11 @@
 - name: Add OS user to "docker" group
   user:
     name: "{{ user_name }}"
-    group: "docker"
+    groups: "docker"
     append: yes
+
+- name: Update apt and install docker-ce
+  apt: update_cache=yes name=docker-ce state=latest
 
 # Resets the ssh connection to activate the "docker" group change
 # Equivalent to logging out and in again
