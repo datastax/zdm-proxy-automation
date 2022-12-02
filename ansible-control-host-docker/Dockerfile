@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM ubuntu:18.04
+FROM ubuntu:22.04
 
 # install all necessary software packages and dependencies
 RUN apt-get update && apt-get install -y software-properties-common \
@@ -38,8 +38,8 @@ RUN chmod +x init_container_internal.sh
 
 USER ubuntu
 
-RUN ansible-galaxy collection install community.docker:3.0.2
-RUN ansible-galaxy collection install community.general:4.8.6
+RUN ansible-galaxy collection install community.docker
+RUN ansible-galaxy collection install community.general
 
 RUN cd
 RUN mkdir zdm-proxy-ssh-key-dir
