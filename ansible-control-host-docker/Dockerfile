@@ -1,5 +1,6 @@
 # syntax=docker/dockerfile:1
 FROM ubuntu:22.04
+ENV DEBIAN_FRONTEND noninteractive
 
 # install all necessary software packages and dependencies
 RUN apt-get update && apt-get install -y software-properties-common \
@@ -12,10 +13,10 @@ RUN apt-get update && apt-get install -y software-properties-common \
     gnupg
 
 RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 93C4A3FD7BB9C367 && \
-    apt-add-repository "deb http://ppa.launchpad.net/ansible/ansible/ubuntu bionic main" && \
+    apt-add-repository "deb http://ppa.launchpad.net/ansible/ansible/ubuntu jammy main" && \
     apt-get update && apt-get upgrade --yes &&  \
     apt-get install --yes ansible && \
-    apt-get install python-jmespath && \
+    apt-get install python3-jmespath && \
     apt-get autoremove && apt-get autoclean
 
 # create ubuntu user
