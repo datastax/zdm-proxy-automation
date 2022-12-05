@@ -15,9 +15,11 @@ RUN apt-get update && apt-get install -y software-properties-common \
 RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 93C4A3FD7BB9C367 && \
     apt-add-repository "deb http://ppa.launchpad.net/ansible/ansible/ubuntu jammy main" && \
     apt-get update && apt-get upgrade --yes &&  \
-    apt-get install --yes ansible && \
+    apt-get install --yes python3-pip && \
     apt-get install python3-jmespath && \
     apt-get autoremove && apt-get autoclean
+
+RUN sudo python3 -m pip install ansible
 
 # create ubuntu user
 RUN useradd -ms /bin/bash ubuntu
