@@ -50,23 +50,24 @@ printf "# proxy instances \nHost %s.*\n  IdentityFile %s/%s\n" "${zdm_proxy_priv
 if ! command -v ansible &> /dev/null; then
   echo "Installing Ansible"
   sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 93C4A3FD7BB9C367
-  sudo apt-add-repository "deb http://ppa.launchpad.net/ansible/ansible/ubuntu bionic main"
+  sudo apt-add-repository "deb http://ppa.launchpad.net/ansible/ansible/ubuntu jammy main"
   sudo apt update --yes
   sudo apt upgrade --yes
   sudo apt install --yes software-properties-common
-  sudo apt install --yes ansible
+  sudo apt install --yes python3-pip
   sudo apt-get autoremove
   sudo apt-get autoclean
+  sudo python3 -m pip install ansible
 fi
 
 # Install the jmespath dependency
 sudo apt-get install --yes python-jmespath
 
 # Install the community.docker dependency
-ansible-galaxy collection install community.docker:3.0.2
+ansible-galaxy collection install community.docker
 
 # Install the community.general dependency
-ansible-galaxy collection install community.general:4.8.6
+ansible-galaxy collection install community.general
 
 # Clone the automation repo
 git clone https://github.com/datastax/zdm-proxy-automation.git
