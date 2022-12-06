@@ -61,7 +61,7 @@ if ! command -v ansible &> /dev/null; then
 fi
 
 # Install the jmespath dependency
-sudo apt-get install --yes python-jmespath
+sudo apt-get install --yes python3-jmespath
 
 # Install the community.docker dependency
 ansible-galaxy collection install community.docker
