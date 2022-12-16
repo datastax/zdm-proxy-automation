@@ -1,5 +1,5 @@
 ---
-zdm_proxy_image: datastax/zdm-proxy:2.0.x
+zdm_proxy_image: datastax/zdm-proxy:2.1.0-rc1
 
 create_containers: 1
 zdm_proxy_container_name: zdm-proxy-container
