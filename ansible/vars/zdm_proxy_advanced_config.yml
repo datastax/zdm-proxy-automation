@@ -41,6 +41,13 @@ zdm_proxy_listen_port: 9042
 #origin_local_datacenter:
 #target_local_datacenter:
 
+###################################
+### Request processing settings ###
+###################################
+
+## Maximum number of Stream IDs that the ZDM proxy should use when forwarding requests. Defaults to 2048.
+#max_stream_ids:
+
 ###############
 ### Metrics ###
 ###############
