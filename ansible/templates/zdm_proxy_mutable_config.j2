@@ -39,8 +39,8 @@ ZDM_TARGET_CONNECTION_TIMEOUT_MS={{ target_connection_timeout_ms }}
 ZDM_ASYNC_HANDSHAKE_TIMEOUT_MS={{ async_handshake_timeout_ms }}
 {% endif %}
 
-{% if ( max_stream_ids is defined ) %}
-ZDM_MAX_STREAM_IDS={{ max_stream_ids }}
+{% if ( zdm_proxy_max_stream_ids is defined ) %}
+ZDM_PROXY_MAX_STREAM_IDS={{ zdm_proxy_max_stream_ids }}
 {% endif %}
 
 {% if ( metrics_enabled is defined ) %}
