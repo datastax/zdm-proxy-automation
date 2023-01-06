@@ -13,6 +13,7 @@
   hosts: proxies
   vars_files:
     - vars/zdm_proxy_core_config.yml
+    - vars/zdm_proxy_cluster_config.yml
     - vars/zdm_proxy_advanced_config.yml
     - vars/zdm_playbook_internal_config.yml
 

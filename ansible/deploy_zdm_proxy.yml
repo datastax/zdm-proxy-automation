@@ -61,7 +61,7 @@
 - name: If Origin is Astra and a Secure Connect Bundle was provided, make it available to all ZDM proxies
   hosts: proxies
   vars_files:
-    - vars/zdm_proxy_core_config.yml
+    - vars/zdm_proxy_cluster_config.yml
     - vars/zdm_playbook_internal_config.yml
 
   tasks:
@@ -79,7 +79,7 @@
 - name: If Origin is Astra and a Secure Connect Bundle was not provided, download it for all ZDM proxies
   hosts: proxies
   vars_files:
-    - vars/zdm_proxy_core_config.yml
+    - vars/zdm_proxy_cluster_config.yml
     - vars/zdm_playbook_internal_config.yml
 
   tasks:
@@ -101,7 +101,7 @@
 - name: If Target is Astra and a Secure Connect Bundle was provided, make it available to all ZDM proxies
   hosts: proxies
   vars_files:
-    - vars/zdm_proxy_core_config.yml
+    - vars/zdm_proxy_cluster_config.yml
     - vars/zdm_playbook_internal_config.yml
 
   tasks:
@@ -119,7 +119,7 @@
 - name: If Target is Astra and a Secure Connect Bundle was not provided, download it for all ZDM proxies
   hosts: proxies
   vars_files:
-    - vars/zdm_proxy_core_config.yml
+    - vars/zdm_proxy_cluster_config.yml
     - vars/zdm_playbook_internal_config.yml
 
   tasks:
@@ -183,6 +183,7 @@
   hosts: proxies
   vars_files:
     - vars/zdm_proxy_core_config.yml
+    - vars/zdm_proxy_cluster_config.yml
     - vars/zdm_proxy_advanced_config.yml
     - vars/zdm_proxy_custom_tls_config.yml
     - vars/zdm_playbook_internal_config.yml
