@@ -213,6 +213,7 @@
     - vars/zdm_proxy_container_config.yml
     - vars/zdm_playbook_internal_config.yml
     - vars/zdm_proxy_cluster_config.yml
+  vars:
 
   tasks:
     - name: Pull ZDM Proxy Docker image from DockerHub
@@ -226,10 +227,10 @@
         image: "{{ zdm_proxy_image }}"
         env_file: "{{ zdm_proxy_home_dir }}/{{ zdm_proxy_environment_config_file_name }}"
         env:
-          ZDM_ORIGIN_USERNAME: "{{ origin_username }}"
-          ZDM_ORIGIN_PASSWORD: "{{ origin_password }}"
-          ZDM_TARGET_USERNAME: "{{ target_username }}"
-          ZDM_TARGET_PASSWORD: "{{ target_password }}"
+          ZDM_ORIGIN_USERNAME: "{{ origin_username | default("") }}"
+          ZDM_ORIGIN_PASSWORD: "{{ origin_password | default("") }}"
+          ZDM_TARGET_USERNAME: "{{ target_username | default("") }}"
+          ZDM_TARGET_PASSWORD: "{{ target_password | default("") }}"
         mounts:
           - source: "{{ zdm_proxy_home_dir }}/{{ zdm_proxy_shared_assets_dir_name }}"
             target: "{{ zdm_proxy_home_dir }}/{{ zdm_proxy_shared_assets_dir_name }}"
