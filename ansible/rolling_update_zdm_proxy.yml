@@ -35,6 +35,7 @@
     - vars/zdm_proxy_container_config.yml
     - vars/zdm_proxy_advanced_config.yml
     - vars/zdm_playbook_internal_config.yml
+    - vars/zdm_proxy_cluster_config.yml
 
   tasks:
     - name: Create ZDM proxy container with updated configuration
