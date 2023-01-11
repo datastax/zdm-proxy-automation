@@ -33,9 +33,10 @@
   become: yes
   vars_files:
     - vars/zdm_proxy_container_config.yml
-    - vars/zdm_proxy_advanced_config.yml
+    - vars/zdm_proxy_advanced_config.yml  # needed for the metrics_port variable
     - vars/zdm_playbook_internal_config.yml
     - vars/zdm_proxy_cluster_config.yml
+    - vars/zdm_proxy_core_config.yml  # this inclusion is for backward compatibility and will be removed in the future
 
   tasks:
     - name: Create ZDM proxy container with updated configuration
