@@ -1,0 +1,217 @@
+---
+- name: Deploy a Prometheus Node Exporter container on each ZDM Proxy instance
+  hosts: proxies
+  become: yes
+  vars_files:
+    - vars/zdm_playbook_internal_config.yml
+    - vars/zdm_monitoring_config.yml
+
+  tasks:
+    - name: Check if Docker is already installed
+      command: docker --version
+      register: docker_installed
+      ignore_errors: yes
+    - name: Install Docker if it is not yet present
+      include_tasks: tasks/install_docker-centos.yml
+      vars:
+        - user_name: "{{ zdm_proxy_user_name }}"
+        - home_dir: "{{ zdm_proxy_home_dir }}"
+      when:
+        - docker_installed.failed
+    - name: Install Docker Ansible module
+      include_tasks: tasks/install_docker_ansible_module-centos.yml
+      vars:
+        - install_packages: true
+    - name: Pull Prometheus Node Exporter Docker image from DockerHub
+      docker_image:
+        name: "{{ prometheus_node_exporter_image }}"
+        source: pull
+    - name: Remove any existing Prometheus Node Exporter container from the ZDM Proxy instances
+      docker_container:
+        name: "{{ prometheus_node_exporter_container_name }}"
+        state: absent
+    - name: Create Prometheus Node Exporter container on each ZDM Proxy instance
+      docker_container:
+        name: "{{ prometheus_node_exporter_container_name }}"
+        image: "{{ prometheus_node_exporter_image }}"
+        network_mode: host
+        restart_policy: unless-stopped
+        restart: yes
+        state: started
+
+- name: Install Docker on the monitoring server
+  hosts: monitoring
+  become: yes
+  vars_files:
+    - vars/zdm_playbook_internal_config.yml
+
+  tasks:
+    - name: Check if Docker is already installed on the monitoring server
+      command: docker --version
+      register: docker_installed
+      ignore_errors: yes
+    - name: Install Docker if it is not yet present
+      include_tasks: tasks/install_docker-centos.yml
+      vars:
+        - user_name: "{{ monitoring_user_name }}"
+        - home_dir: "{{ monitoring_home_dir }}"
+      when:
+        - docker_installed.failed
+    - name: Install Docker Ansible module
+      include_tasks: tasks/install_docker_ansible_module-centos.yml
+      vars:
+        - install_packages: true
+
+- name: Clean up any existing ZDM monitoring containers (except for named volume containing metrics data)
+  hosts: monitoring
+  vars_files:
+    - vars/zdm_monitoring_config.yml
+    - vars/zdm_playbook_internal_config.yml
+
+  tasks:
+    - name: Remove ZDM Prometheus configuration directory if it already exists
+      file:
+        path: "{{ monitoring_home_dir }}/{{ prometheus_config_dir_name }}"
+        state: absent
+    - name: Remove any existing ZDM Prometheus container
+      docker_container:
+        name: "{{ prometheus_container_name }}"
+        state: absent
+    - name: Remove ZDM Grafana configuration directory if it already exists
+      file:
+        path: "{{ monitoring_home_dir }}/{{ grafana_config_dir_name }}"
+        state: absent
+    - name: Remove ZDM Grafana dashboards directory if it already exists
+      file:
+        path: "{{ monitoring_home_dir }}/{{ grafana_dashboards_dir_name }}"
+        state: absent
+    - name: Remove any existing ZDM Grafana container
+      docker_container:
+        name: "{{ grafana_container_name }}"
+        state: absent
+
+- name: Prepare all ZDM Prometheus configuration on the monitoring host
+  hosts: monitoring
+  vars_files:
+    - vars/zdm_monitoring_config.yml
+    - vars/zdm_proxy_advanced_config.yml
+    - vars/zdm_playbook_internal_config.yml
+
+  tasks:
+    - name: Create Prometheus configuration directory
+      file:
+        path: "{{ monitoring_home_dir }}/{{ prometheus_config_dir_name }}"
+        state: directory
+    - name: Create Prometheus rules directory
+      file:
+        path: "{{ monitoring_home_dir }}/{{ prometheus_config_dir_name }}/rules"
+        state: directory
+    - name: Generate Prometheus alert rule file
+      template:
+        src: "cloudalchemy/alert.rules.j2"
+        dest: "{{ monitoring_home_dir }}/{{ prometheus_config_dir_name }}/rules/prometheus_alerts.rules"
+    - name: Generate Prometheus configuration file to scrape metrics from all proxies
+      template:
+        src: "prometheus.yml.j2"
+        dest: "{{ monitoring_home_dir }}/{{ prometheus_config_dir_name }}/prometheus.yml"
+
+- name: Create and start ZDM Prometheus container on the monitoring host
+  hosts: monitoring
+  vars_files:
+    - vars/zdm_monitoring_config.yml
+    - vars/zdm_playbook_internal_config.yml
+
+  tasks:
+    - name: Create Docker named volume to persist metrics if it does not already exist
+      docker_volume:
+        name: "{{ prometheus_container_storage_volume }}"
+        recreate: never
+    - name: Pull Prometheus Docker image from DockerHub
+      docker_image:
+        name: "{{ prometheus_image }}"
+        source: pull
+    - name: Create ZDM Prometheus container
+      docker_container:
+        name: "{{ prometheus_container_name }}"
+        image: "{{ prometheus_image }}"
+        mounts:
+          - source: "{{ monitoring_home_dir }}/{{ prometheus_config_dir_name }}"
+            target: "/etc/prometheus/"
+            type: bind
+        volumes:
+          - "{{ prometheus_container_storage_volume }}:/prometheus:rw"
+        network_mode: host
+        restart_policy: unless-stopped
+        restart: yes
+        state: started
+
+- name: Prepare all ZDM Grafana configuration on the monitoring host
+  hosts: monitoring
+  vars_files:
+    - vars/zdm_monitoring_config.yml
+    - vars/zdm_playbook_internal_config.yml
+
+  tasks:
+    - name: Create Grafana configuration directory
+      file:
+        path: "{{ monitoring_home_dir }}/{{ grafana_config_dir_name }}"
+        state: directory
+    - name: Create Grafana provisioning directory
+      file:
+        path: "{{ monitoring_home_dir }}/{{ grafana_config_dir_name }}/provisioning"
+        state: directory
+    - name: Create Grafana provisioning dashboards directory
+      file:
+        path: "{{ monitoring_home_dir }}/{{ grafana_config_dir_name }}/provisioning/dashboards"
+        state: directory
+    - name: Create Grafana provisioning datasources directory
+      file:
+        path: "{{ monitoring_home_dir }}/{{ grafana_config_dir_name }}/provisioning/datasources"
+        state: directory
+    - name: Generate grafana.ini configuration file
+      template:
+        src: "grafana.ini.j2"
+        dest: "{{ monitoring_home_dir }}/{{ grafana_config_dir_name }}/grafana.ini"
+    - name: Generate provisioning dashboards configuration file
+      template:
+        src: "provisioning.dashboards.j2"
+        dest: "{{ monitoring_home_dir }}/{{ grafana_config_dir_name }}/provisioning/dashboards/zdm-dashboards.yml"
+    - name: Generate provisioning datasources configuration file
+      template:
+        src: "provisioning.datasources.j2"
+        dest: "{{ monitoring_home_dir }}/{{ grafana_config_dir_name }}/provisioning/datasources/zdm-datasources.yml"
+    - name: Create Grafana dashboard directory on monitoring host
+      file:
+        path: "{{ monitoring_home_dir }}/{{ grafana_dashboards_dir_name }}"
+        state: directory
+    - name: Copy ZDM dashboards to directory on monitoring host
+      copy:
+        src: "../grafana-dashboards/"
+        dest: "{{ monitoring_home_dir }}/{{ grafana_dashboards_dir_name }}"
+
+- name: Create and start ZDM Grafana container on the monitoring host
+  hosts: monitoring
+  vars_files:
+    - vars/zdm_monitoring_config.yml
+    - vars/zdm_playbook_internal_config.yml
+
+  tasks:
+    - name: Pull Grafana Docker image from DockerHub
+      docker_image:
+        name: "{{ grafana_image }}"
+        source: pull
+    - name: Create Grafana container
+      docker_container:
+        name: "{{ grafana_container_name }}"
+        image: "{{ grafana_image }}"
+        mounts:
+          - source: "{{ monitoring_home_dir }}/{{ grafana_config_dir_name }}"
+            target: "/etc/grafana/"
+            type: bind
+          - source: "{{ monitoring_home_dir }}/{{ grafana_dashboards_dir_name }}"
+            target: "/var/lib/grafana/dashboards/"
+            type: bind
+        network_mode: host
+        restart_policy: unless-stopped
+        restart: yes
+        state: started
