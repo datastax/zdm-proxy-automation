@@ -20,6 +20,7 @@ RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 93C4A3FD7BB9C367 &&
     apt-get autoremove && apt-get autoclean
 
 RUN sudo python3 -m pip install ansible
+RUN sudo python3 -m pip install cryptography
 
 # create ubuntu user
 RUN useradd -ms /bin/bash ubuntu

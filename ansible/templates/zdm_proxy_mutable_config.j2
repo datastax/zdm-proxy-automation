@@ -1,15 +1,5 @@
 #jinja2: lstrip_blocks: "True", trim_blocks: "True"
 
-{% if ( origin_username is defined and origin_password is defined ) %}
-ZDM_ORIGIN_USERNAME={{ origin_username }}
-ZDM_ORIGIN_PASSWORD={{ origin_password }}
-{% endif %}
-
-{% if ( target_username is defined and target_password is defined ) %}
-ZDM_TARGET_USERNAME={{ target_username }}
-ZDM_TARGET_PASSWORD={{ target_password }}
-{% endif %}
-
 {% if ( primary_cluster is defined ) %}
 ZDM_PRIMARY_CLUSTER={{ primary_cluster }}
 {% endif %}

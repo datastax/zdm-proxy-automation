@@ -201,7 +201,7 @@
       template:
         src: "zdm_proxy_mutable_config.j2"
         dest: "{{ zdm_proxy_home_dir }}/{{ zdm_proxy_config_fragments_dir_name }}/{{ zdm_proxy_mutable_config_fragment_file_name }}"
-    - name: Merge the immutable and mutable configuration files into a single one
+    - name: Merge the immutable, mutable and credentials configuration files into a single one
       assemble:
         src: "{{ zdm_proxy_home_dir }}/{{ zdm_proxy_config_fragments_dir_name }}"
         dest: "{{ zdm_proxy_home_dir }}/{{ zdm_proxy_environment_config_file_name }}"
@@ -212,6 +212,7 @@
   vars_files:
     - vars/zdm_proxy_container_config.yml
     - vars/zdm_playbook_internal_config.yml
+    - vars/zdm_proxy_cluster_config.yml
 
   tasks:
     - name: Pull ZDM Proxy Docker image from DockerHub
@@ -224,6 +225,11 @@
         name: "{{ zdm_proxy_container_name }}"
         image: "{{ zdm_proxy_image }}"
         env_file: "{{ zdm_proxy_home_dir }}/{{ zdm_proxy_environment_config_file_name }}"
+        env:
+          ZDM_ORIGIN_USERNAME: "{{ origin_username }}"
+          ZDM_ORIGIN_PASSWORD: "{{ origin_password }}"
+          ZDM_TARGET_USERNAME: "{{ target_username }}"
+          ZDM_TARGET_PASSWORD: "{{ target_password }}"
         mounts:
           - source: "{{ zdm_proxy_home_dir }}/{{ zdm_proxy_shared_assets_dir_name }}"
             target: "{{ zdm_proxy_home_dir }}/{{ zdm_proxy_shared_assets_dir_name }}"
