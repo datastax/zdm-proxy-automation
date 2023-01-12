@@ -32,6 +32,14 @@ zdm_proxy_listen_port: 9042
 #target_connection_timeout_ms:
 #async_handshake_timeout_ms:
 
+#################
+### Heartbeat ###
+#################
+
+## Frequency of the heartbeats sent on cluster connections (both control and request connections) to keep the connection alive
+## Defaults to 30 ms.
+#heartbeat_interval_ms:
+
 #########################
 ### Multi-DC settings ###
 #########################
