@@ -1,5 +1,6 @@
 - name: yum update (this will take some time)
   yum:
-    name: "python3-pip"
+    name: "{{ item }}"
     state: present
     update_cache: true
+  loop: "{{ package_list }}"
