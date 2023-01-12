@@ -1,7 +1,7 @@
 - name: Install system packages if required
   include_tasks: install_system_packages-centos.yml
   vars:
-    - package_list: [ 'epel-release', 'curl', 'python2-pip', 'python2-setuptools' ]
+    - package_list: [ 'epel-release', 'curl', 'python3-pip', 'python3-setuptools', 'libselinux-python3' ]
   when: install_packages | bool
 
 - name: Uninstall incompatible Docker-py Module
@@ -13,5 +13,4 @@
 - name: Install Docker Module for Python
   pip:
     name:
-    - docker==5.0.3
-    - requests==2.18.2
+    - docker
