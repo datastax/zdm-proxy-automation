@@ -1,11 +1,11 @@
 - name: Install system packages if required
   include_tasks: install_system_packages-centos.yml
   vars:
-    - package_list: [ 'epel-release', 'curl', 'python3-pip', 'python3-setuptools', 'libselinux-python3' ]
+    - package_list: [ 'epel-release', 'curl', 'python3-pip', 'python3-setuptools', 'libselinux-python3', 'python2-pip' ]
   when: install_packages | bool
 
 - name: Uninstall incompatible Docker-py Module
-  become: no
+  become: yes
   pip:
     name: docker-py
     state: absent
@@ -14,3 +14,5 @@
   pip:
     name:
     - docker
+  vars:
+    ansible_python_interpreter: "/usr/bin/python3"

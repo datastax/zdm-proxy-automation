@@ -46,6 +46,8 @@
       docker_container:
         name: "{{ zdm_proxy_container_name }}"
         state: absent
+      vars:
+        ansible_python_interpreter: "/usr/bin/python3"
 
 - name: Create directory to share assets between host and container
   hosts: proxies
@@ -217,6 +219,8 @@
       docker_image:
         name: "docker.io/{{ zdm_proxy_image }}"
         source: pull
+      vars:
+        ansible_python_interpreter: "/usr/bin/python3"
 
     - name: Create ZDM proxy container
       docker_container:
@@ -231,7 +235,8 @@
         restart_policy: unless-stopped
         restart: yes
         state: started 
-
+      vars:
+        ansible_python_interpreter: "/usr/bin/python3"
 
 
 
