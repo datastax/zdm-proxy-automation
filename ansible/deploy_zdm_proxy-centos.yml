@@ -7,7 +7,7 @@
 
   tasks:
     - name: Check if Docker Engine is already installed
-      command: docker run hello-world
+      command: docker run --name test hello-world
       register: docker_installed
       ignore_errors: yes
     - name: Install Docker if it is not yet present
@@ -42,6 +42,12 @@
       file:
         path: "{{ zdm_proxy_home_dir }}/{{ zdm_proxy_environment_config_file_name }}"
         state: absent
+    - name: Clean up the test container if it exists
+      docker_container:
+        name: "test"
+        state: absent
+      vars:
+        ansible_python_interpreter: "/usr/bin/python3"
     - name: Remove any existing proxy container
       docker_container:
         name: "{{ zdm_proxy_container_name }}"
