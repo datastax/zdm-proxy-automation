@@ -6,8 +6,8 @@
     - vars/zdm_playbook_internal_config.yml
 
   tasks:
-    - name: Check if Docker is already installed
-      command: docker --version
+    - name: Check if Docker Engine is already installed
+      command: docker run --name test hello-world
       register: docker_installed
       ignore_errors: yes
     - name: Install Docker if it is not yet present
@@ -41,6 +41,10 @@
     - name: Remove environment configuration file if it already exists
       file:
         path: "{{ zdm_proxy_home_dir }}/{{ zdm_proxy_environment_config_file_name }}"
+        state: absent
+    - name: Clean up the test container if it exists
+      docker_container:
+        name: "test"
         state: absent
     - name: Remove any existing proxy container
       docker_container:
