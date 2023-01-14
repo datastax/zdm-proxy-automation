@@ -4,5 +4,6 @@
     state: present
     update_cache: true
   loop: "{{ package_list }}"
+  ignore_errors: yes
   vars:
     ansible_python_interpreter: auto
