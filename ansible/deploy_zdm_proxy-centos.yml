@@ -47,13 +47,13 @@
         name: "test"
         state: absent
       vars:
-        ansible_python_interpreter: "/usr/bin/python3"
+        ansible_python_interpreter: python3
     - name: Remove any existing proxy container
       docker_container:
         name: "{{ zdm_proxy_container_name }}"
         state: absent
       vars:
-        ansible_python_interpreter: "/usr/bin/python3"
+        ansible_python_interpreter: python3
 
 - name: Create directory to share assets between host and container
   hosts: proxies
@@ -226,7 +226,7 @@
         name: "docker.io/{{ zdm_proxy_image }}"
         source: pull
       vars:
-        ansible_python_interpreter: "/usr/bin/python3"
+        ansible_python_interpreter: python3
 
     - name: Create ZDM proxy container
       docker_container:
@@ -242,7 +242,7 @@
         restart: yes
         state: started 
       vars:
-        ansible_python_interpreter: "/usr/bin/python3"
+        ansible_python_interpreter: python3
 
 
 

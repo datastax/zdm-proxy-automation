@@ -27,7 +27,7 @@
       docker_container_info:
         name: "{{ zdm_proxy_container_name }}"
       vars:
-        ansible_python_interpreter: "/usr/bin/python3"
+        ansible_python_interpreter: python3
       register: containerinfo
     - name: Find the log files to copy/fetch
       find:
