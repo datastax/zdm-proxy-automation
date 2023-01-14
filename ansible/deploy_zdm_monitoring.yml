@@ -7,8 +7,8 @@
     - vars/zdm_monitoring_config.yml
 
   tasks:
-    - name: Check if Docker is already installed
-      command: docker --version
+    - name: Check if Docker Engine is already installed
+      command: docker run --name test_exporter hello-world
       register: docker_installed
       ignore_errors: yes
     - name: Install Docker if it is not yet present
@@ -18,18 +18,43 @@
         - home_dir: "{{ zdm_proxy_home_dir }}"
       when:
         - docker_installed.failed
+        - ansible_os_family == "Debian"
+    - name: Install Docker if it is not yet present
+      include_tasks: tasks/install_docker-centos.yml
+      vars:
+        - user_name: "{{ zdm_proxy_user_name }}"
+        - home_dir: "{{ zdm_proxy_home_dir }}"
+      when:
+        - docker_installed.failed
+        - ansible_os_family == "RedHat"
     - name: Install Docker Ansible module
       include_tasks: tasks/install_docker_ansible_module.yml
       vars:
         - install_packages: true
+      when: ansible_os_family == "Debian"
+    - name: Install Docker Ansible module
+      include_tasks: tasks/install_docker_ansible_module-centos.yml
+      vars:
+        - install_packages: true
+      when: ansible_os_family == "RedHat"
     - name: Pull Prometheus Node Exporter Docker image from DockerHub
       docker_image:
         name: "{{ prometheus_node_exporter_image }}"
         source: pull
+      vars:
+        ansible_python_interpreter: python3
     - name: Remove any existing Prometheus Node Exporter container from the ZDM Proxy instances
       docker_container:
         name: "{{ prometheus_node_exporter_container_name }}"
         state: absent
+      vars:
+        ansible_python_interpreter: python3
+    - name: Remove any existing test_exporter container from the ZDM Proxy instances
+      docker_container:
+        name: "test_exporter"
+        state: absent
+      vars:
+        ansible_python_interpreter: python3
     - name: Create Prometheus Node Exporter container on each ZDM Proxy instance
       docker_container:
         name: "{{ prometheus_node_exporter_container_name }}"
@@ -38,6 +63,8 @@
         restart_policy: unless-stopped
         restart: yes
         state: started
+      vars:
+        ansible_python_interpreter: python3
 
 - name: Install Docker on the monitoring server
   hosts: monitoring
@@ -46,8 +73,8 @@
     - vars/zdm_playbook_internal_config.yml
 
   tasks:
-    - name: Check if Docker is already installed on the monitoring server
-      command: docker --version
+    - name: Check if Docker Engine is already installed on the monitoring server
+      command: docker run --name test_monitoring hello-world
       register: docker_installed
       ignore_errors: yes
     - name: Install Docker if it is not yet present
@@ -57,10 +84,25 @@
         - home_dir: "{{ monitoring_home_dir }}"
       when:
         - docker_installed.failed
+        - ansible_os_family == "Debian"
+    - name: Install Docker if it is not yet present
+      include_tasks: tasks/install_docker-centos.yml
+      vars:
+        - user_name: "{{ monitoring_user_name }}"
+        - home_dir: "{{ monitoring_home_dir }}"
+      when:
+        - docker_installed.failed
+        - ansible_os_family == "RedHat"
     - name: Install Docker Ansible module
       include_tasks: tasks/install_docker_ansible_module.yml
       vars:
         - install_packages: true
+      when: ansible_os_family == "Debian"
+    - name: Install Docker Ansible module
+      include_tasks: tasks/install_docker_ansible_module-centos.yml
+      vars:
+        - install_packages: true
+      when: ansible_os_family == "RedHat"
 
 - name: Clean up any existing ZDM monitoring containers (except for named volume containing metrics data)
   hosts: monitoring
@@ -77,6 +119,14 @@
       docker_container:
         name: "{{ prometheus_container_name }}"
         state: absent
+      vars:
+        ansible_python_interpreter: python3
+    - name: Remove any existing test_monitoring container
+      docker_container:
+        name: "test_monitoring"
+        state: absent
+      vars:
+        ansible_python_interpreter: python3
     - name: Remove ZDM Grafana configuration directory if it already exists
       file:
         path: "{{ monitoring_home_dir }}/{{ grafana_config_dir_name }}"
@@ -89,6 +139,8 @@
       docker_container:
         name: "{{ grafana_container_name }}"
         state: absent
+      vars:
+        ansible_python_interpreter: python3
 
 - name: Prepare all ZDM Prometheus configuration on the monitoring host
   hosts: monitoring
@@ -126,10 +178,14 @@
       docker_volume:
         name: "{{ prometheus_container_storage_volume }}"
         recreate: never
+      vars:
+        ansible_python_interpreter: python3
     - name: Pull Prometheus Docker image from DockerHub
       docker_image:
         name: "{{ prometheus_image }}"
         source: pull
+      vars:
+        ansible_python_interpreter: python3
     - name: Create ZDM Prometheus container
       docker_container:
         name: "{{ prometheus_container_name }}"
@@ -144,6 +200,8 @@
         restart_policy: unless-stopped
         restart: yes
         state: started
+      vars:
+        ansible_python_interpreter: python3
 
 - name: Prepare all ZDM Grafana configuration on the monitoring host
   hosts: monitoring
@@ -200,6 +258,8 @@
       docker_image:
         name: "{{ grafana_image }}"
         source: pull
+      vars:
+        ansible_python_interpreter: python3
     - name: Create Grafana container
       docker_container:
         name: "{{ grafana_container_name }}"
@@ -215,3 +275,5 @@
         restart_policy: unless-stopped
         restart: yes
         state: started
+      vars:
+        ansible_python_interpreter: python3

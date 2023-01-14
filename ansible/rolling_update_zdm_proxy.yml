@@ -8,6 +8,12 @@
       include_tasks: tasks/install_docker_ansible_module.yml
       vars:
         - install_packages: false
+      when: ansible_os_family == "Debian"
+    - name: Ensure Docker Ansible module is installed
+      include_tasks: tasks/install_docker_ansible_module-centos.yml
+      vars:
+        - install_packages: false
+      when: ansible_os_family == "RedHat"
 
 - name: Create ZDM proxy configuration env file based on the latest configuration
   hosts: proxies
@@ -49,6 +55,8 @@
         restart_policy: unless-stopped
         restart: yes
         state: started
+      vars:
+        ansible_python_interpreter: python3
     - name: Wait for this ZDM proxy to come up
       uri:
         url: "http://{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}:{{ metrics_port }}/health/readiness"

@@ -15,6 +15,8 @@
         name: "{{ zdm_proxy_container_name }}"
         restart: yes
         state: started
+      vars:
+        ansible_python_interpreter: python3
     - name: Wait for this ZDM proxy to come up
       uri:
         url: "http://{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}:{{ metrics_port }}/health/readiness"
