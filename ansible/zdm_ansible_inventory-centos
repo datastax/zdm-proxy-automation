@@ -1,7 +1,0 @@
-[proxies]
-172.18.10.43 ansible_connection=ssh ansible_user=centos
-172.18.10.153 ansible_connection=ssh ansible_user=centos
-172.18.10.67 ansible_connection=ssh ansible_user=centos
-
-[monitoring]
-172.18.100.189 ansible_connection=ssh ansible_user=ubuntu
