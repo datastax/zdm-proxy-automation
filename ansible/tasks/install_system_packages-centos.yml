@@ -5,4 +5,4 @@
     update_cache: true
   loop: "{{ package_list }}"
   vars:
-    ansible_python_interpreter: "/usr/bin/python2"
+    ansible_python_interpreter: python2
