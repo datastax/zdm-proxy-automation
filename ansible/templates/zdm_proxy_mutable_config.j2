@@ -28,6 +28,12 @@ ZDM_TARGET_CONNECTION_TIMEOUT_MS={{ target_connection_timeout_ms }}
 {% if ( async_handshake_timeout_ms is defined ) %}
 ZDM_ASYNC_HANDSHAKE_TIMEOUT_MS={{ async_handshake_timeout_ms }}
 {% endif %}
+{% if ( heartbeat_interval_ms is defined ) %}
+ZDM_HEARTBEAT_INTERVAL_MS={{ heartbeat_interval_ms }}
+{% endif %}
+{% if ( zdm_proxy_max_stream_ids is defined ) %}
+ZDM_PROXY_MAX_STREAM_IDS={{ zdm_proxy_max_stream_ids }}
+{% endif %}
 
 {% if ( metrics_enabled is defined ) %}
 ZDM_METRICS_ENABLED={{ metrics_enabled }}

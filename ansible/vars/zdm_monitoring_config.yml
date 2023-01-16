@@ -1,5 +1,5 @@
 ---
-grafana_version: 7.5.15
+grafana_version: 7.5.17
 grafana_admin_user: admin
 grafana_admin_password: testpasswordchangeme
 

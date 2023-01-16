@@ -32,6 +32,14 @@ zdm_proxy_listen_port: 9042
 #target_connection_timeout_ms:
 #async_handshake_timeout_ms:
 
+#################
+### Heartbeat ###
+#################
+
+## Frequency of the heartbeats sent on cluster connections (both control and request connections) to keep the connection alive
+## Defaults to 30 ms.
+#heartbeat_interval_ms:
+
 #########################
 ### Multi-DC settings ###
 #########################
@@ -40,6 +48,13 @@ zdm_proxy_listen_port: 9042
 ## Very important when connecting to multi-DC clusters
 #origin_local_datacenter:
 #target_local_datacenter:
+
+###################################
+### Request processing settings ###
+###################################
+
+## Maximum number of Stream IDs that the ZDM proxy should use when forwarding requests on a cluster connection. This value is per cluster connection. Defaults to 2048.
+#zdm_proxy_max_stream_ids:
 
 ###############
 ### Metrics ###
