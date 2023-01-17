@@ -65,12 +65,6 @@
     enabled: yes
   become: true
 
-# Resets the ssh connection to activate the "docker" group change
-# Equivalent to logging out and in again
-# Note: this step will not show in the output, unless using a higher verbosity level
-- name: Activate changes to "docker" group
-  meta: reset_connection
-
 # sudo chown -R ubuntu:docker /home/ubuntu/.docker
 - name: Change ownership of Docker internal directory to this user and docker group
   file:
@@ -78,3 +72,9 @@
     owner: "{{ user_name }}"
     group: "docker"
     recurse: yes
+
+# Resets the ssh connection to activate the "docker" group change
+# Equivalent to logging out and in again
+# Note: this step will not show in the output, unless using a higher verbosity level
+- name: Activate changes to "docker" group
+  meta: reset_connection
