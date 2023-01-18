@@ -53,6 +53,13 @@ zdm_vpc_cidr_prefix="172.18"
 # Defaults to an empty string.
 #custom_name_suffix=
 
+# OPTIONAL: ansible_os_family to be used for both proxy and monitoring instances.
+# Defaults to Debian, valid options are Debian and RedHat.
+# Ubuntu and other Debian family Linux distros can set this value to Debian.
+# CentOS, Red Hat Enterprise Linux, Oracle Linux can set this value to RedHat.
+# Full mapping see: https://github.com/ansible/ansible/blob/1a47a21b65d3746a9feeeceea0cf15eaf011efef/lib/ansible/module_utils/facts/system/distribution.py#L512
+#zdm_ansible_os_family=Debian
+
 # OPTIONAL: AWS instance type to be used for each ZDM proxy. Defaults to c5.xlarge, almost always fine.
 #zdm_proxy_instance_type=
 
