@@ -11,7 +11,7 @@
       command: docker run --name test_exporter hello-world
       register: docker_installed
       ignore_errors: yes
-    - name: Install Docker if it is not yet present
+    - name: Install Docker if it is not yet present - Debian/Ubuntu
       include_tasks: tasks/install_docker.yml
       vars:
         - user_name: "{{ zdm_proxy_user_name }}"
@@ -19,24 +19,24 @@
       when:
         - docker_installed.failed
         - ansible_os_family == "Debian"
-    - name: Install Docker if it is not yet present
+    - name: Install Docker if it is not yet present - RedHat
       include_tasks: tasks/install_docker-centos.yml
       vars:
         - user_name: "{{ zdm_proxy_user_name }}"
         - home_dir: "{{ zdm_proxy_home_dir }}"
       when:
         - docker_installed.failed
-        - ansible_os_family == "RedHat"
-    - name: Install Docker Ansible module
+        - ansible_os_family == "RedHat" or ansible_os_family == "Rocky"
+    - name: Install Docker Ansible module - Debian/Ubuntu
       include_tasks: tasks/install_docker_ansible_module.yml
       vars:
         - install_packages: true
       when: ansible_os_family == "Debian"
-    - name: Install Docker Ansible module
+    - name: Install Docker Ansible module - RedHat
       include_tasks: tasks/install_docker_ansible_module-centos.yml
       vars:
         - install_packages: true
-      when: ansible_os_family == "RedHat"
+      when: ansible_os_family == "RedHat" or ansible_os_family == "Rocky"
     - name: Pull Prometheus Node Exporter Docker image from DockerHub
       docker_image:
         name: "{{ prometheus_node_exporter_image }}"
@@ -77,7 +77,7 @@
       command: docker run --name test_monitoring hello-world
       register: docker_installed
       ignore_errors: yes
-    - name: Install Docker if it is not yet present
+    - name: Install Docker if it is not yet present - Debian/Ubuntu
       include_tasks: tasks/install_docker.yml
       vars:
         - user_name: "{{ monitoring_user_name }}"
@@ -85,24 +85,24 @@
       when:
         - docker_installed.failed
         - ansible_os_family == "Debian"
-    - name: Install Docker if it is not yet present
+    - name: Install Docker if it is not yet present - RedHat
       include_tasks: tasks/install_docker-centos.yml
       vars:
         - user_name: "{{ monitoring_user_name }}"
         - home_dir: "{{ monitoring_home_dir }}"
       when:
         - docker_installed.failed
-        - ansible_os_family == "RedHat"
-    - name: Install Docker Ansible module
+        - ansible_os_family == "RedHat" or ansible_os_family == "Rocky"
+    - name: Install Docker Ansible module - Debian/Ubuntu
       include_tasks: tasks/install_docker_ansible_module.yml
       vars:
         - install_packages: true
       when: ansible_os_family == "Debian"
-    - name: Install Docker Ansible module
+    - name: Install Docker Ansible module - RedHat
       include_tasks: tasks/install_docker_ansible_module-centos.yml
       vars:
         - install_packages: true
-      when: ansible_os_family == "RedHat"
+      when: ansible_os_family == "RedHat" or ansible_os_family == "Rocky"
 
 - name: Clean up any existing ZDM monitoring containers (except for named volume containing metrics data)
   hosts: monitoring
