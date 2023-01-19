@@ -21,13 +21,46 @@ resource "aws_key_pair" "zdm_key_pair" {
   }
 }
 
+############################
+## AMI ID from Linux distro
+############################
+locals {
+    allowed_linux_distros = {
+    bionic = { owner = "amazon", name_pattern = "ubuntu/images/*/ubuntu-*-18.04-*", linux_user = "ubuntu" }
+    focal = { owner = "amazon", name_pattern = "ubuntu/images/*/ubuntu-*-20.04-*", linux_user = "ubuntu" }
+    jammy = { owner = "amazon", name_pattern = "ubuntu/images/*/ubuntu-*-22.04-*", linux_user = "ubuntu" }
+    centos7 = { owner = "125523088429", name_pattern = "CentOS Linux 7*", linux_user = "centos" }
+    centos8 = { owner = "125523088429", name_pattern = "CentOS Stream 8*", linux_user = "centos" }
+    centos9 = { owner = "125523088429", name_pattern = "CentOS Stream 9*", linux_user = "ec2-user" }
+    rocky8 = { owner = "679593333241", name_pattern = "Rocky-8*", linux_user = "rocky" }
+    rocky9 = { owner = "679593333241", name_pattern = "Rocky-9*", linux_user = "rocky" }
+  }
+}
+
+data "aws_ami" "linux_distro" {
+  for_each = local.allowed_linux_distros
+
+  most_recent = true
+  owners = [each.value.owner]
+
+  filter {
+    name = "name"
+    values = [each.value.name_pattern]
+  }
+
+  filter {
+    name = "architecture"
+    values = ["x86_64"]
+  }
+}
+
 #############################
 ## ZDM proxy instances
 #############################
 resource "aws_instance" "zdm_proxy" {
   count = var.zdm_proxy_instance_count
   
-  ami = lookup(var.ami, var.zdm_aws_region)
+  ami = data.aws_ami.linux_distro[var.zdm_linux_distro].id
   instance_type = var.zdm_proxy_instance_type
   key_name = aws_key_pair.zdm_key_pair.key_name
   associate_public_ip_address = false
@@ -50,7 +83,7 @@ resource "aws_instance" "zdm_proxy" {
 ## ZDM Jumphost / Monitoring instance
 #############################
 resource "aws_instance" "zdm_monitoring" {
-  ami = lookup(var.ami, var.zdm_aws_region)
+  ami = data.aws_ami.linux_distro[var.zdm_linux_distro].id
   instance_type = var.zdm_monitoring_instance_type
   key_name      = aws_key_pair.zdm_key_pair.key_name
   
@@ -85,6 +118,7 @@ resource "local_file" "zdm_ansible_inventory" {
     {
       zdm_proxy_private_ips = aws_instance.zdm_proxy.*.private_ip
       zdm_monitoring_private_ip = aws_instance.zdm_monitoring.private_ip
+      zdm_linux_user = local.allowed_linux_distros[var.zdm_linux_distro].linux_user
     }
   )
   filename = "zdm_ansible_inventory"
@@ -101,6 +135,7 @@ resource "local_file" "zdm_ssh_config" {
     jumphost_public_ip = aws_eip.zdm_monitoring_eip.public_ip
     keypath = var.zdm_public_key_local_path
     keyname = var.zdm_keypair_name
+    zdm_linux_user = local.allowed_linux_distros[var.zdm_linux_distro].linux_user
   }
   )
   filename = "zdm_ssh_config"

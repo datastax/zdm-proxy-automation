@@ -57,3 +57,11 @@ variable "custom_name_suffix" {
   default = ""
 }
 
+variable "zdm_linux_distro" {
+  default = "jammy"
+
+  validation {
+    condition     = can(regex("bionic|focal|jammy|centos7|centos8|centos9|rocky8|rocky9", var.zdm_linux_distro))
+    error_message = "Invalid Linux distro, allowed_values = [bionic focal jammy centos7 centos8 centos9 rocky8 rocky9]."
+  }
+}

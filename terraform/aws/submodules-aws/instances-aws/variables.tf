@@ -4,7 +4,6 @@ variable "zdm_aws_region" {}
 variable "zdm_public_key_local_path" {}
 variable "zdm_keypair_name" {}
 
-
 variable "ami" {
   description = "AMI to be used for this EC2 instance"
   type = map(string)
@@ -54,3 +53,12 @@ variable "public_subnet_id" {
 }
 
 variable "custom_name_suffix" {}
+
+variable "zdm_linux_distro" {
+  default = "jammy"
+
+  validation {
+    condition     = can(regex("bionic|focal|jammy|centos7|centos8|centos9|rocky8|rocky9", var.zdm_linux_distro))
+    error_message = "Invalid Linux distro, allowed_values = [bionic focal jammy centos7 centos8 centos9 rocky8 rocky9]."
+  }
+}

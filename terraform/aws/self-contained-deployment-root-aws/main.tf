@@ -52,6 +52,7 @@ module "zdm_instances" {
   zdm_public_key_local_path = var.zdm_public_key_local_path
   zdm_keypair_name = var.zdm_keypair_name
   custom_name_suffix = var.custom_name_suffix
+  zdm_linux_distro = var.zdm_linux_distro
 
   zdm_proxy_instance_count = var.zdm_proxy_instance_count
   zdm_proxy_instance_type = var.zdm_proxy_instance_type

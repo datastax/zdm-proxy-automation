@@ -10,7 +10,7 @@ Host ${ip} zdm-proxy-${index}
 %{ endfor ~}
 
 Host *
-    User ubuntu
+    User ${zdm_linux_user}
     IdentityFile ${keypath}/${keyname}
     IdentitiesOnly yes
     StrictHostKeyChecking no
