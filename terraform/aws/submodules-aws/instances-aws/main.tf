@@ -26,7 +26,6 @@ resource "aws_key_pair" "zdm_key_pair" {
 ############################
 locals {
     allowed_linux_distros = {
-    bionic = { owner = "amazon", name_pattern = "ubuntu/images/*/ubuntu-*-18.04-*", linux_user = "ubuntu" }
     focal = { owner = "amazon", name_pattern = "ubuntu/images/*/ubuntu-*-20.04-*", linux_user = "ubuntu" }
     jammy = { owner = "amazon", name_pattern = "ubuntu/images/*/ubuntu-*-22.04-*", linux_user = "ubuntu" }
     centos7 = { owner = "125523088429", name_pattern = "CentOS Linux 7*", linux_user = "centos" }
