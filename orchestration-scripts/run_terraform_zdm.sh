@@ -54,7 +54,7 @@ zdm_vpc_cidr_prefix="172.18"
 #custom_name_suffix=
 
 # OPTIONAL: zdm_linux_distro to be used for both proxy and monitoring instances.
-# Defaults to jammy (Ubuntu 22.04), valid options are focal, jammy, centos7, centos8, centos9, rocky8, rocky9.
+# Defaults to jammy (Ubuntu 22.04), valid options are focal, jammy, centos7, centos8, centos9, rocky8, rocky9, rhel7, rhel8.
 #zdm_linux_distro=
 
 # OPTIONAL: AWS instance type to be used for each ZDM proxy. Defaults to c5.xlarge, almost always fine.

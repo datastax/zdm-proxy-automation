@@ -33,6 +33,8 @@ locals {
     centos9 = { owner = "125523088429", name_pattern = "CentOS Stream 9*", linux_user = "ec2-user" }
     rocky8 = { owner = "679593333241", name_pattern = "Rocky-8*", linux_user = "rocky" }
     rocky9 = { owner = "679593333241", name_pattern = "Rocky-9*", linux_user = "rocky" }
+    rhel7 = { owner = "amazon", name_pattern = "RHEL-7*", linux_user = "ec2-user" }
+    rhel8 = { owner = "amazon", name_pattern = "RHEL-8*", linux_user = "ec2-user" }
   }
 }
 

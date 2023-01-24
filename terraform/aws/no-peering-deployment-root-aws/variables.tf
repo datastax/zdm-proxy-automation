@@ -44,7 +44,7 @@ variable "zdm_linux_distro" {
   default = "jammy"
 
   validation {
-    condition     = can(regex("focal|jammy|centos7|centos8|centos9|rocky8|rocky9", var.zdm_linux_distro))
-    error_message = "Invalid Linux distro, allowed_values = [focal jammy centos7 centos8 centos9 rocky8 rocky9]."
+    condition     = can(regex("focal|jammy|centos7|centos8|centos9|rocky8|rocky9|rhel7|rhel8", var.zdm_linux_distro))
+    error_message = "Invalid Linux distro, allowed_values = [focal jammy centos7 centos8 centos9 rocky8 rocky9 rhel7 rhel8]."
   }
 }
