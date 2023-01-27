@@ -367,7 +367,7 @@ func getUserHomeDirectory() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return currentUser.HomeDir, nil
+	return currentUser.HomeDir + "/", nil
 }
 
 func getInventoryAddressLineSuffix() (string, error){
