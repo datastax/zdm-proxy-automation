@@ -1,0 +1,48 @@
+# This workflow will build a pre-release version of the ZDM Utility from a commit sha
+
+name: Build and publish zdm-util binaries for the latest commit on the specified branch
+
+on: workflow_dispatch
+
+jobs:
+  build:
+    name: Build and Upload Release Assets
+    runs-on: ubuntu-latest
+    container: golang:1.19.2-bullseye
+    defaults:
+      run:
+        working-directory: ./zdm-util
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.sha }} 
+        
+      - name: Build Linux/amd64 binary
+        run: |
+          export GO111MODULE=on
+          export CGO_ENABLED=0
+          export GOOS=linux
+          export GOARCH=amd64
+          go build -o zdm-util-${{ github.sha }}
+          tar cvfz zdm-util-linux-amd64-${{ github.sha }}.tgz zdm-util-${{ github.sha }} ../LICENSE
+      - name: Build Windows/amd64 binary
+        run: |
+          apt update
+          apt -y install zip
+          export GO111MODULE=on
+          export CGO_ENABLED=0
+          export GOOS=windows
+          export GOARCH=amd64
+          go build -o zdm-util-${{ github.sha }}.exe
+          zip -vr zdm-util-windows-amd64-${{ github.sha }}.zip zdm-util-${{ github.sha }}.exe ../LICENSE
+      - name: Generate Checksums
+        run: |
+          sha256sum zdm-util-linux-amd64-${{ github.sha }}.tgz | cut -d ' ' -f 1 > zdm-util-linux-amd64-${{ github.sha }}-sha256.txt
+          sha256sum zdm-util-windows-amd64-${{ github.sha }}.zip | cut -d ' ' -f 1 > zdm-util-windows-amd64-${{ github.sha }}-sha256.txt
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ZDM Proxy Util ${{ github.sha }} 
+          path:
+            ./zdm-util/zdm-util-*
