@@ -128,14 +128,6 @@ else
 fi
 echo
 
-cd zdm-proxy-automation/ansible || return
-
-# Overwrite the ansible.cfg file with the appropriate parameters to run playbooks from the jumphost
-echo "Setting the appropriate options in the global Ansible configuration file"
-printf "[defaults]\ninterpreter_python = auto\n" > ansible.cfg
-printf "[ssh_connection]\nssh_args = -o StrictHostKeyChecking=no\n" >> ansible.cfg
-echo
-
 cd || return
 
 # Copy the Ansible inventory into the Ansible automation directory

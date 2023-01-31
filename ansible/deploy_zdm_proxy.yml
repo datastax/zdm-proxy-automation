@@ -65,7 +65,8 @@
 - name: If Origin is Astra and a Secure Connect Bundle was provided, make it available to all ZDM proxies
   hosts: proxies
   vars_files:
-    - vars/zdm_proxy_core_config.yml
+    - vars/zdm_proxy_cluster_config.yml
+    - vars/zdm_proxy_core_config.yml  # this inclusion is for backward compatibility and will be removed in the future
     - vars/zdm_playbook_internal_config.yml
 
   tasks:
@@ -83,7 +84,8 @@
 - name: If Origin is Astra and a Secure Connect Bundle was not provided, download it for all ZDM proxies
   hosts: proxies
   vars_files:
-    - vars/zdm_proxy_core_config.yml
+    - vars/zdm_proxy_cluster_config.yml
+    - vars/zdm_proxy_core_config.yml  # this inclusion is for backward compatibility and will be removed in the future
     - vars/zdm_playbook_internal_config.yml
 
   tasks:
@@ -105,7 +107,8 @@
 - name: If Target is Astra and a Secure Connect Bundle was provided, make it available to all ZDM proxies
   hosts: proxies
   vars_files:
-    - vars/zdm_proxy_core_config.yml
+    - vars/zdm_proxy_cluster_config.yml
+    - vars/zdm_proxy_core_config.yml  # this inclusion is for backward compatibility and will be removed in the future
     - vars/zdm_playbook_internal_config.yml
 
   tasks:
@@ -123,7 +126,8 @@
 - name: If Target is Astra and a Secure Connect Bundle was not provided, download it for all ZDM proxies
   hosts: proxies
   vars_files:
-    - vars/zdm_proxy_core_config.yml
+    - vars/zdm_proxy_cluster_config.yml
+    - vars/zdm_proxy_core_config.yml  # this inclusion is for backward compatibility and will be removed in the future
     - vars/zdm_playbook_internal_config.yml
 
   tasks:
@@ -186,6 +190,7 @@
 - name: Create ZDM proxy configuration env file
   hosts: proxies
   vars_files:
+    - vars/zdm_proxy_cluster_config.yml
     - vars/zdm_proxy_core_config.yml
     - vars/zdm_proxy_advanced_config.yml
     - vars/zdm_proxy_custom_tls_config.yml
@@ -215,6 +220,8 @@
   vars_files:
     - vars/zdm_proxy_container_config.yml
     - vars/zdm_playbook_internal_config.yml
+    - vars/zdm_proxy_cluster_config.yml
+    - vars/zdm_proxy_core_config.yml  # this inclusion is for backward compatibility and will be removed in the future
 
   tasks:
     - name: Pull ZDM Proxy Docker image from DockerHub
@@ -227,6 +234,11 @@
         name: "{{ zdm_proxy_container_name }}"
         image: "{{ zdm_proxy_image }}"
         env_file: "{{ zdm_proxy_home_dir }}/{{ zdm_proxy_environment_config_file_name }}"
+        env:
+          ZDM_ORIGIN_USERNAME: "{{ origin_username | default('') }}"
+          ZDM_ORIGIN_PASSWORD: "{{ origin_password | default('') }}"
+          ZDM_TARGET_USERNAME: "{{ target_username | default('') }}"
+          ZDM_TARGET_PASSWORD: "{{ target_password | default('') }}"
         mounts:
           - source: "{{ zdm_proxy_home_dir }}/{{ zdm_proxy_shared_assets_dir_name }}"
             target: "{{ zdm_proxy_home_dir }}/{{ zdm_proxy_shared_assets_dir_name }}"
