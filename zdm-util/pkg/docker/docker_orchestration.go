@@ -21,7 +21,7 @@ import (
 )
 
 const (
-	dockerImageName                 = "datastax/zdm-ansible:2.0.x"
+	dockerImageName                 = "datastax/zdm-ansible:2.x"
 	dockerContainerName             = "zdm-ansible-container"
 	// Note: the following two directories are on the container, not on the host
 	sshKeyPathOnContainer           = "/home/ubuntu/zdm-proxy-ssh-key-dir"
