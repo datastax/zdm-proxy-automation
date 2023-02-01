@@ -11,15 +11,13 @@
     - vars/zdm_proxy_cluster_config.yml
 
   tasks:
-    - name: Restart one ZDM proxy instance at a time
+    - name: Stop one ZDM proxy instance at a time
       docker_container:
         name: "{{ zdm_proxy_container_name }}"
-        env:
-          ZDM_ORIGIN_USERNAME: "{{ origin_username | default('') }}"
-          ZDM_ORIGIN_PASSWORD: "{{ origin_password | default('') }}"
-          ZDM_TARGET_USERNAME: "{{ target_username | default('') }}"
-          ZDM_TARGET_PASSWORD: "{{ target_password | default('') }}"
-        restart: yes
+        state: stopped
+    - name: Start that ZDM proxy instance
+      docker_container:
+        name: "{{ zdm_proxy_container_name }}"
         state: started
     - name: Wait for this ZDM proxy to come up
       uri:
