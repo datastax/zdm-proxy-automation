@@ -15,5 +15,6 @@
 - name: Install Docker Module for Python
   pip:
     name: docker
+    version: 2.7.0
   vars:
     ansible_python_interpreter: python3
