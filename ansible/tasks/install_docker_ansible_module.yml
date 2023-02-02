@@ -9,7 +9,11 @@
   pip:
     name: docker-py
     state: absent
+  vars:
+    ansible_python_interpreter: python3
 
 - name: Install Docker Module for Python
   pip:
     name: docker
+  vars:
+    ansible_python_interpreter: python3
