@@ -33,6 +33,7 @@ module "zdm_instances" {
   source = "../submodules-aws/instances-aws"
 
   custom_name_suffix = var.custom_name_suffix
+  zdm_linux_distro = var.zdm_linux_distro
   zdm_aws_profile = var.zdm_aws_profile
   zdm_aws_region = var.zdm_aws_region
   zdm_public_key_local_path = var.zdm_public_key_local_path

@@ -1,0 +1,80 @@
+# sudo groupadd docker
+- name: Create "docker" group
+  become: true
+  group:
+    name: "docker"
+    state: present
+
+# sudo usermod -aG docker root
+- name: Add OS user to "docker" group
+  become: true
+  user:
+    name: "{{ user_name }}"
+    groups: "docker"
+    append: yes
+
+- name: Install yum utils
+  yum:
+    name: "yum-utils"
+    state: latest
+
+- name: Install device-mapper-persistent-data
+  yum:
+    name: "device-mapper-persistent-data"
+    state: latest
+
+- name: Install lvm2
+  yum:
+    name: "lvm2"
+    state: latest
+
+- name: Add Docker repo
+  get_url:
+    url: "https://download.docker.com/linux/centos/docker-ce.repo"
+    dest: "/etc/yum.repos.d/docker-ce.repo"
+  become: true
+
+- name: Disable Docker Edge repo
+  ini_file:
+    dest: "/etc/yum.repos.d/docker-ce.repo"
+    section: "docker-ce-edge"
+    option: enabled
+    value: "0"
+    no_extra_spaces: yes
+  become: true
+
+- name: Disable Docker Test repo
+  ini_file:
+    dest: "/etc/yum.repos.d/docker-ce.repo"
+    section: "docker-ce-test"
+    option: enabled
+    value: "0"
+    no_extra_spaces: yes
+  become: true
+
+- name: Install Docker
+  package:
+    name: docker-ce
+    state: latest
+  become: true
+
+- name: Start Docker service
+  service:
+    name: docker
+    state: started
+    enabled: yes
+  become: true
+
+# sudo chown -R ubuntu:docker /home/ubuntu/.docker
+- name: Change ownership of Docker internal directory to this user and docker group
+  file:
+    path: "{{ home_dir }}/.docker"
+    owner: "{{ user_name }}"
+    group: "docker"
+    recurse: yes
+
+# Resets the ssh connection to activate the "docker" group change
+# Equivalent to logging out and in again
+# Note: this step will not show in the output, unless using a higher verbosity level
+- name: Activate changes to "docker" group
+  meta: reset_connection

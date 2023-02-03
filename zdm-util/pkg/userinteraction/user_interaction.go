@@ -4,12 +4,12 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"os/user"
 	"zdm-proxy-automation/zdm-util/pkg/config"
 )
 
 const (
 	DefaultConfigurationFilePath    = "ansible_container_init_config"
-	DefaultAnsibleInventoryDir      = "/home/ubuntu/"
 	DefaultAnsibleInventoryFileName = "zdm_ansible_inventory"
 
 	DefaultMaxAttempts                = 5
@@ -18,7 +18,7 @@ const (
 
 	InventoryHeadingForProxyGroup = "[proxies]"
 	InventoryHeadingForMonitoringGroup = "[monitoring]"
-	InventoryAddressLineSuffix = "ansible_connection=ssh ansible_user=ubuntu"
+
 )
 
 type InteractionOrchestrator struct {
@@ -182,12 +182,18 @@ func (o *InteractionOrchestrator) promptForAnsibleInventory() error {
 		}
 		if ynInventory {
 			fmt.Println()
-			ansibleInventoryPathOnHost = StringPrompt("Please enter the path and name of your Ansible inventory file. Simply press ENTER if your inventory is "+DefaultAnsibleInventoryDir+DefaultAnsibleInventoryFileName,
+
+			userHomeDir, err := getUserHomeDirectory()
+			if err != nil {
+				return err
+			}
+
+			ansibleInventoryPathOnHost = StringPrompt("Please enter the path and name of your Ansible inventory file. Simply press ENTER if your inventory is " + userHomeDir + DefaultAnsibleInventoryFileName,
 				"", true, DefaultMaxAttempts, config.ValidateFilePath, o.userInputReader)
 
 			if ansibleInventoryPathOnHost == "" {
-				if config.ValidateFilePath(DefaultAnsibleInventoryDir + DefaultAnsibleInventoryFileName) {
-					ansibleInventoryPathOnHost = DefaultAnsibleInventoryDir + DefaultAnsibleInventoryFileName
+				if config.ValidateFilePath(userHomeDir + DefaultAnsibleInventoryFileName) {
+					ansibleInventoryPathOnHost = userHomeDir + DefaultAnsibleInventoryFileName
 				} else {
 					fmt.Printf("The Ansible inventory file path %v  is not valid. \n", DefaultAnsibleInventoryFileName)
 					return fmt.Errorf("missing required configuration")
@@ -273,9 +279,13 @@ func populateInventoryFile(filePath string, proxyIpAddresses []string, monitorin
 		return err
 	}
 
+	inventoryAddressLineSuffix, err := getInventoryAddressLineSuffix()
+	if err != nil {
+		return err
+	}
+
 	for _, proxyIpAddress := range proxyIpAddresses {
-		//_, err = fmt.Fprintf(w, "%v ansible_connection=ssh ansible_user=ubuntu\n", proxyIpAddress)
-		_, err = fmt.Fprintf(w, "%v %v\n", proxyIpAddress, InventoryAddressLineSuffix)
+		_, err = fmt.Fprintf(w, "%v %v\n", proxyIpAddress, inventoryAddressLineSuffix)
 		if err != nil {
 			return err
 		}
@@ -290,7 +300,7 @@ func populateInventoryFile(filePath string, proxyIpAddresses []string, monitorin
 		if err != nil {
 			return err
 		}
-		_, err = fmt.Fprintf(w, "%v %v\n", monitoringIpAddress, InventoryAddressLineSuffix)
+		_, err = fmt.Fprintf(w, "%v %v\n", monitoringIpAddress, inventoryAddressLineSuffix)
 		if err != nil {
 			return err
 		}
@@ -350,4 +360,31 @@ func closeFile(f *os.File) {
 			fmt.Printf("Error closing file %v: %v \n", f.Name(), err)
 		}
 	}
+}
+
+func getUserHomeDirectory() (string, error) {
+	currentUser, err := getCurrentOSUser()
+	if err != nil {
+		return "", err
+	}
+	return currentUser.HomeDir + "/", nil
+}
+
+func getInventoryAddressLineSuffix() (string, error){
+	inventoryAddressLineSuffixRoot := "ansible_connection=ssh ansible_user="
+	currentUser, err := getCurrentOSUser()
+	if err != nil {
+		return "", err
+	}
+
+	return inventoryAddressLineSuffixRoot + currentUser.Username, nil
+
+}
+
+func getCurrentOSUser() (*user.User, error) {
+	currentUser, err := user.Current()
+	if err != nil {
+		return nil, fmt.Errorf("the current OS user could not be determined due to %v", err.Error())
+	}
+	return currentUser, nil
 }
