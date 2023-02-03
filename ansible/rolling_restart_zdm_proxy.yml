@@ -23,6 +23,3 @@
     - pause:
         prompt: "Pause for {{ pause_between_restarts_in_seconds }} seconds after restarting this ZDM proxy instance"
         seconds: "{{ pause_between_restarts_in_seconds }}"
-
-
-
