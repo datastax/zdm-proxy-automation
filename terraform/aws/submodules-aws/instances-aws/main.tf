@@ -13,11 +13,12 @@ terraform {
 ## AWS Key Pair
 #############################
 resource "aws_key_pair" "zdm_key_pair" {
-  key_name = var.zdm_keypair_name
+  key_name_prefix = var.zdm_keypair_name
   public_key = file(format("%s/%s.pub", var.zdm_public_key_local_path, var.zdm_keypair_name))
 
   tags = {
     Name = var.zdm_keypair_name
+    Owner = var.owner
   }
 }
 
@@ -76,6 +77,7 @@ resource "aws_instance" "zdm_proxy" {
 
   tags = {
     Name = "ZDM_Proxy_${count.index}${var.custom_name_suffix}"
+    Owner = var.owner
   }
 
 }
@@ -99,11 +101,16 @@ resource "aws_instance" "zdm_monitoring" {
 
   tags = {
     Name = "ZDM_Monitoring${var.custom_name_suffix}"
+    Owner = var.owner
   }
 }
 
 resource "aws_eip" "zdm_monitoring_eip" {
   vpc      = true
+  tags = {
+    Name = "ZDM_Monitoring_EIP${var.custom_name_suffix}"
+    Owner = var.owner
+  }
 }
 
 resource "aws_eip_association" "zdm_monitoring_eip_assoc" {
@@ -119,6 +126,7 @@ resource "local_file" "zdm_ansible_inventory" {
     {
       zdm_proxy_private_ips = aws_instance.zdm_proxy.*.private_ip
       zdm_monitoring_private_ip = aws_instance.zdm_monitoring.private_ip
+      //noinspection HILUnresolvedReference
       zdm_linux_user = local.allowed_linux_distros[var.zdm_linux_distro].linux_user
     }
   )
@@ -136,6 +144,7 @@ resource "local_file" "zdm_ssh_config" {
     jumphost_public_ip = aws_eip.zdm_monitoring_eip.public_ip
     keypath = var.zdm_public_key_local_path
     keyname = var.zdm_keypair_name
+    //noinspection HILUnresolvedReference
     zdm_linux_user = local.allowed_linux_distros[var.zdm_linux_distro].linux_user
   }
   )

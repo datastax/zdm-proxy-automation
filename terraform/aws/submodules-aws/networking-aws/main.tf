@@ -21,6 +21,7 @@ resource "aws_vpc" "zdm_vpc" {
 
   tags = {
     Name = "zdm_vpc${var.custom_name_suffix}"
+    Owner = var.owner
   }
 }
 
@@ -39,6 +40,7 @@ resource "aws_subnet" "private_subnets" {
   map_public_ip_on_launch = false
   tags = {
     Name = "private_subnet_${data.aws_availability_zones.available.names[count.index]}${var.custom_name_suffix}"
+    Owner = var.owner
   }
 }
 
@@ -51,6 +53,7 @@ resource "aws_route_table" "private_subnet_rt" {
   vpc_id = aws_vpc.zdm_vpc.id
   tags = {
     Name = "private_subnet_rt${var.custom_name_suffix}"
+    Owner = var.owner
   }
 }
 
@@ -107,6 +110,7 @@ resource "aws_security_group" "private_instance_sg" {
 
   tags = {
     Name = "private_instance_sg${var.custom_name_suffix}"
+    Owner = var.owner
   }
 }
 
@@ -119,6 +123,7 @@ resource "aws_subnet" "public_subnet" {
   vpc_id = aws_vpc.zdm_vpc.id
   tags = {
     Name = "public_subnet_${data.aws_availability_zones.available.names[0]}${var.custom_name_suffix}"
+    Owner = var.owner
   }
 }
 
@@ -131,6 +136,7 @@ resource "aws_nat_gateway" "nat_gateway" {
   subnet_id = aws_subnet.public_subnet.id
   tags = {
     Name = "zdm_nat_gateway${var.custom_name_suffix}"
+    Owner = var.owner
   }
 }
 
@@ -151,6 +157,7 @@ resource "aws_default_route_table" "default_route_table_for_vpc" {
 
   tags = {
     Name = "default_route_table"
+    Owner = var.owner
   }
 }
 
@@ -161,6 +168,7 @@ resource "aws_internet_gateway" "internet_gateway" {
   vpc_id = aws_vpc.zdm_vpc.id
   tags = {
     Name = "zdm_internet_gateway${var.custom_name_suffix}"
+    Owner = var.owner
   }
 }
 
@@ -171,6 +179,7 @@ resource "aws_route_table" "internet_gateway_rt" {
   vpc_id = aws_vpc.zdm_vpc.id
   tags = {
     Name = "zdm_internet_gateway_rt${var.custom_name_suffix}"
+    Owner = var.owner
   }
 }
 
@@ -233,6 +242,7 @@ resource "aws_security_group" "public_instance_sg" {
   }
 
   tags = {
-      Name = "public_instance_sg${var.custom_name_suffix}"
+    Name = "public_instance_sg${var.custom_name_suffix}"
+    Owner = var.owner
   }
 }

@@ -19,6 +19,7 @@ module "zdm_proxy_networking" {
   source = "../submodules-aws/networking-aws"
 
   custom_name_suffix = var.custom_name_suffix
+  owner = var.owner
   zdm_aws_profile = var.zdm_aws_profile
   zdm_aws_region = var.zdm_aws_region
 
@@ -33,6 +34,7 @@ module "zdm_instances" {
   source = "../submodules-aws/instances-aws"
 
   custom_name_suffix = var.custom_name_suffix
+  owner = var.owner
   zdm_linux_distro = var.zdm_linux_distro
   zdm_aws_profile = var.zdm_aws_profile
   zdm_aws_region = var.zdm_aws_region
