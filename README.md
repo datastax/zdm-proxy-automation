@@ -72,6 +72,8 @@ To launch the Terraform automation, you can use one of the two bash scripts prov
 
 Both scripts require some configuration, in the form of required and optional variables at the top of each script. You will need to uncomment and populate these variables as appropriate. If you are using the option with peering, the peering connection will be created automatically, but you may still need to make changes to the security groups of your cluster and / or client application instances to allow communication with the ZDM instances, depending on your specific configuration.
 
+An optional custom suffix can be specified, e.g. to distinguish infrastructure for different ZDM deployments within the same AWS account. In this case, the suffix is appended to the name of each resource (separated by a dash), and an Owner AWS tag set to the suffix value is assigned to each resource. This allows to easily see all infrastructure for a certain deployment by filtering by its Owner tag.
+
 When you execute the script, the Terraform output will be displayed and at the end you will see:
 * The variables with which the script has been executed.  If you need to tear down all the infrastructure provisioned, you can go to the directory of the root module that you used and execute the command `terraform destroy` followed by all these variables (these are also persisted to file `tf_latest_vars.txt` in this directory).
 * The output of the automation, with the IP addresses of the instances that were provisioned and the ZDM VPC ID. This output is also saved to file `zdm_output.txt` in the `zdm-proxy-automation` base directory.
