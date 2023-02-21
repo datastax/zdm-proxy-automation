@@ -100,7 +100,7 @@ resource "aws_instance" "zdm_monitoring" {
   }
 
   tags = {
-    Name = "ZDM_Monitoring${var.custom_name_suffix}"
+    Name = "ZDM_Jumphost${var.custom_name_suffix}"
     Owner = var.owner
   }
 }
