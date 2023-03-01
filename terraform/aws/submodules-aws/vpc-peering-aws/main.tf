@@ -133,6 +133,7 @@ resource "aws_security_group" "zdm_allow_traffic_from_peering_sg" {
   }
 
   tags = {
+    Name = "ZDM_Allow_Traffic_From_ZDMPeering_SG"
     Owner = var.owner
   }
 
@@ -155,6 +156,7 @@ resource "aws_security_group" "user_allow_traffic_from_peering_sg" {
   // Not adding the default egress rule here to avoid interfering with other restrictive egress rules that the user may have set
 
   tags = {
+    Name = "User_Allow_Traffic_From_ZDMPeering_SG"
     Owner = var.owner
   }
 

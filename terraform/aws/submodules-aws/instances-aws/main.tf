@@ -108,7 +108,7 @@ resource "aws_instance" "zdm_monitoring" {
 resource "aws_eip" "zdm_monitoring_eip" {
   vpc      = true
   tags = {
-    Name = "ZDM_Monitoring_EIP${var.custom_name_suffix}"
+    Name = "ZDM_Jumphost_EIP${var.custom_name_suffix}"
     Owner = var.owner
   }
 }
