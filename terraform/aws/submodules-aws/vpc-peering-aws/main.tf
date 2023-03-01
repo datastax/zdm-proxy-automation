@@ -37,6 +37,7 @@ resource "aws_vpc_peering_connection" "peering_request" {
 
   tags = {
     Side = "ZDM (Requester)"
+    Owner = var.owner
   }
 }
 
@@ -49,6 +50,7 @@ resource "aws_vpc_peering_connection_accepter" "peering_acceptance" {
 
   tags = {
     Side = "User (Accepter)"
+    Owner = var.owner
   }
 }
 
@@ -129,6 +131,11 @@ resource "aws_security_group" "zdm_allow_traffic_from_peering_sg" {
     protocol = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
+
+  tags = {
+    Owner = var.owner
+  }
+
 }
 
 resource "aws_security_group" "user_allow_traffic_from_peering_sg" {
@@ -146,5 +153,9 @@ resource "aws_security_group" "user_allow_traffic_from_peering_sg" {
   }
 
   // Not adding the default egress rule here to avoid interfering with other restrictive egress rules that the user may have set
+
+  tags = {
+    Owner = var.owner
+  }
 
 }

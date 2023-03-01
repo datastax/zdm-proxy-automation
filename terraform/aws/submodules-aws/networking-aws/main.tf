@@ -142,6 +142,10 @@ resource "aws_nat_gateway" "nat_gateway" {
 
 resource "aws_eip" "nat_gateway_eip" {
   vpc      = true
+  tags = {
+    Name = "zdm_nat_gateway_eip${var.custom_name_suffix}"
+    Owner = var.owner
+  }
 }
 
 ##################################################################################

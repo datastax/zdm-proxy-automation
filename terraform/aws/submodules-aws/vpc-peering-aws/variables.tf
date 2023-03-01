@@ -18,3 +18,5 @@ variable "zdm_aws_region" {}
 
 variable "custom_name_suffix" {}
 
+variable "owner" {}
+

@@ -34,6 +34,7 @@ module "vpc_peering" {
   source = "../submodules-aws/vpc-peering-aws"
 
   custom_name_suffix = var.custom_name_suffix
+  owner = var.owner
   zdm_aws_region = var.zdm_aws_region
   zdm_aws_profile = var.zdm_aws_profile
   // if no user AWS profile was specified, default the user AWS profile to the ZDM AWS profile
