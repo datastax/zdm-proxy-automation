@@ -36,10 +36,37 @@ jobs:
           export GOARCH=amd64
           go build -o zdm-util-${{ github.ref_name }}.exe
           zip -vr zdm-util-windows-amd64-${{ github.ref_name }}.zip zdm-util-${{ github.ref_name }}.exe ../LICENSE
+      - name: Build Darwin/amd64 binary
+        run: |
+          export GO111MODULE=on
+          export CGO_ENABLED=0
+          export GOOS=darwin
+          export GOARCH=amd64
+          go build -o zdm-util-${{ github.ref_name }}
+          tar cvfz zdm-util-darwin-amd64-${{ github.ref_name }}.tgz zdm-util-${{ github.ref_name }} ../LICENSE
+      - name: Build Darwin/arm64 binary
+        run: |
+          export GO111MODULE=on
+          export CGO_ENABLED=0
+          export GOOS=darwin
+          export GOARCH=arm64
+          go build -o zdm-util-${{ github.ref_name }}
+          tar cvfz zdm-util-darwin-arm64-${{ github.ref_name }}.tgz zdm-util-${{ github.ref_name }} ../LICENSE
+      - name: Build Linux/arm64 binary
+        run: |
+          export GO111MODULE=on
+          export CGO_ENABLED=0
+          export GOOS=linux
+          export GOARCH=arm64
+          go build -o zdm-util-${{ github.ref_name }}
+          tar cvfz zdm-util-linux-arm64-${{ github.ref_name }}.tgz zdm-util-${{ github.ref_name }} ../LICENSE
       - name: Generate Checksums
         run: |
           sha256sum zdm-util-linux-amd64-${{ github.ref_name }}.tgz | cut -d ' ' -f 1 > zdm-util-linux-amd64-${{ github.ref_name }}-sha256.txt
           sha256sum zdm-util-windows-amd64-${{ github.ref_name }}.zip | cut -d ' ' -f 1 > zdm-util-windows-amd64-${{ github.ref_name }}-sha256.txt
+          sha256sum zdm-util-darwin-amd64-${{ github.ref_name }}.tgz | cut -d ' ' -f 1 > zdm-util-darwin-amd64-${{ github.ref_name }}-sha256.txt
+          sha256sum zdm-util-darwin-arm64-${{ github.ref_name }}.tgz | cut -d ' ' -f 1 > zdm-util-darwin-arm64-${{ github.ref_name }}-sha256.txt
+          sha256sum zdm-util-linux-arm64-${{ github.ref_name }}.tgz | cut -d ' ' -f 1 > zdm-util-linux-arm64-${{ github.ref_name }}-sha256.txt
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
@@ -49,3 +76,9 @@ jobs:
             ./zdm-util/zdm-util-linux-amd64-${{ github.ref_name }}-sha256.txt
             ./zdm-util/zdm-util-windows-amd64-${{ github.ref_name }}.zip
             ./zdm-util/zdm-util-windows-amd64-${{ github.ref_name }}-sha256.txt
+            ./zdm-util/zdm-util-darwin-amd64-${{ github.ref_name }}.tgz
+            ./zdm-util/zdm-util-darwin-amd64-${{ github.ref_name }}-sha256.txt
+            ./zdm-util/zdm-util-darwin-arm64-${{ github.ref_name }}.tgz
+            ./zdm-util/zdm-util-darwin-arm64-${{ github.ref_name }}-sha256.txt
+            ./zdm-util/zdm-util-linux-arm64-${{ github.ref_name }}.tgz
+            ./zdm-util/zdm-util-linux-arm64-${{ github.ref_name }}-sha256.txt
