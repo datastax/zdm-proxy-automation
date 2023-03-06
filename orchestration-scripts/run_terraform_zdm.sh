@@ -50,7 +50,7 @@ zdm_vpc_cidr_prefix="172.18"
 
 # OPTIONAL: Suffix to append to the name of each resource that is being provisioned.
 # This can be useful to distinguish the resources of different deployments in the same region.
-# Defaults to an empty string.
+# Defaults to an empty string. A dash will be automatically added in front of it as this suffix is appended to the resource names.
 #custom_name_suffix=
 
 # OPTIONAL: zdm_linux_distro to be used for both proxy and monitoring instances.
@@ -159,7 +159,10 @@ build_terraform_var_str () {
   fi
 
   if [ -n "${custom_name_suffix}" ]; then
-    terraform_vars+="-var \"custom_name_suffix=${custom_name_suffix}\" "
+    # owner is simply set to the value used as a suffix, if specified
+    terraform_vars+="-var \"owner=${custom_name_suffix}\" "
+    # prepend a dash to separate from the main name
+    terraform_vars+="-var \"custom_name_suffix=-${custom_name_suffix}\" "
   fi
 
   if [ -n "${zdm_linux_distro}" ]; then

@@ -19,6 +19,7 @@ module "zdm_proxy_networking" {
   source = "../submodules-aws/networking-aws"
 
   custom_name_suffix = var.custom_name_suffix
+  owner = var.owner
   zdm_aws_profile = var.zdm_aws_profile
   zdm_aws_region = var.zdm_aws_region
 
@@ -33,6 +34,7 @@ module "vpc_peering" {
   source = "../submodules-aws/vpc-peering-aws"
 
   custom_name_suffix = var.custom_name_suffix
+  owner = var.owner
   zdm_aws_region = var.zdm_aws_region
   zdm_aws_profile = var.zdm_aws_profile
   // if no user AWS profile was specified, default the user AWS profile to the ZDM AWS profile
@@ -52,6 +54,7 @@ module "zdm_instances" {
   zdm_public_key_local_path = var.zdm_public_key_local_path
   zdm_keypair_name = var.zdm_keypair_name
   custom_name_suffix = var.custom_name_suffix
+  owner = var.owner
   zdm_linux_distro = var.zdm_linux_distro
 
   zdm_proxy_instance_count = var.zdm_proxy_instance_count

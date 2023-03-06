@@ -17,3 +17,5 @@ variable "allowed_outbound_ip_ranges" {
 }
 
 variable "custom_name_suffix" {}
+
+variable "owner" {}

@@ -57,6 +57,11 @@ variable "custom_name_suffix" {
   default = ""
 }
 
+variable "owner" {
+  description = "Owner of this set of infrastructure resources"
+  default = ""
+}
+
 variable "zdm_linux_distro" {
   default = "jammy"
 

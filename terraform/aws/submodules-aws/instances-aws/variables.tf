@@ -30,6 +30,8 @@ variable "public_subnet_id" {
 
 variable "custom_name_suffix" {}
 
+variable "owner" {}
+
 variable "zdm_linux_distro" {
   default = "jammy"
 
