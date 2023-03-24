@@ -238,6 +238,7 @@
   become: yes
   vars_files:
     - vars/zdm_proxy_container_config.yml
+    - vars/zdm_proxy_advanced_config.yml
     - vars/zdm_playbook_internal_config.yml
     - vars/zdm_proxy_cluster_config.yml
     - vars/zdm_proxy_core_config.yml  # this inclusion is for backward compatibility and will be removed in the future
@@ -271,5 +272,11 @@
       vars:
         ansible_python_interpreter: python3
 
-
-
+    - name: Wait for this ZDM proxy to come up
+      uri:
+        url: "http://{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}:{{ metrics_port }}/health/readiness"
+        status_code: 200
+      register: result
+      until: result.status == 200
+      retries: 6
+      delay: 5
