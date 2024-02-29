@@ -1,6 +1,6 @@
 module zdm-proxy-automation/zdm-util
 
-go 1.21.1
+go 1.21.7
 
 require (
 	github.com/docker/docker v25.0.3+incompatible
