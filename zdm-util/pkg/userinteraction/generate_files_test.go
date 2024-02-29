@@ -14,38 +14,38 @@ import (
 const testInventoryFilePath = "tmp_ansible_inventory"
 
 func TestPopulateInventoryFile(t *testing.T) {
-	tests := []struct{
-		name string
-		proxyIpAddresses []string
+	tests := []struct {
+		name                string
+		proxyIpAddresses    []string
 		monitoringIpAddress string
 	}{
 		{
-			name: "1 proxy, monitoring",
-			proxyIpAddresses: []string{"172.18.10.32"},
+			name:                "1 proxy, monitoring",
+			proxyIpAddresses:    []string{"172.18.10.32"},
 			monitoringIpAddress: "172.18.100.45",
 		},
 		{
-			name: "1 proxy, no monitoring",
-			proxyIpAddresses: []string{"172.18.10.32"},
+			name:                "1 proxy, no monitoring",
+			proxyIpAddresses:    []string{"172.18.10.32"},
 			monitoringIpAddress: "",
 		},
 		{
-			name: "3 proxies, monitoring",
-			proxyIpAddresses: []string{"172.18.10.32","172.18.11.58","172.18.12.47"},
+			name:                "3 proxies, monitoring",
+			proxyIpAddresses:    []string{"172.18.10.32", "172.18.11.58", "172.18.12.47"},
 			monitoringIpAddress: "172.18.100.45",
 		},
 		{
-			name: "3 proxies, no monitoring",
-			proxyIpAddresses: []string{"172.18.10.32","172.18.11.58","172.18.12.47"},
+			name:             "3 proxies, no monitoring",
+			proxyIpAddresses: []string{"172.18.10.32", "172.18.11.58", "172.18.12.47"},
 		},
 		{
-			name: "6 proxies, monitoring",
-			proxyIpAddresses: []string{"172.18.10.32","172.18.11.58","172.18.12.47","172.18.10.15","172.18.11.134","172.18.12.206"},
+			name:                "6 proxies, monitoring",
+			proxyIpAddresses:    []string{"172.18.10.32", "172.18.11.58", "172.18.12.47", "172.18.10.15", "172.18.11.134", "172.18.12.206"},
 			monitoringIpAddress: "172.18.100.45",
 		},
 		{
-			name: "6 proxies, no monitoring",
-			proxyIpAddresses: []string{"172.18.10.32","172.18.11.58","172.18.12.47","172.18.10.15","172.18.11.134","172.18.12.206"},
+			name:             "6 proxies, no monitoring",
+			proxyIpAddresses: []string{"172.18.10.32", "172.18.11.58", "172.18.12.47", "172.18.10.15", "172.18.11.134", "172.18.12.206"},
 		},
 	}
 
@@ -72,6 +72,8 @@ func compareGeneratedInventoryFileAndCleanUpForTests(filePath string, proxyIpAdd
 	expectedIndexOfLastProxyAddress := len(proxyIpAddresses)
 	expectedIndexOfMonitoringGroupHeading := expectedIndexOfLastProxyAddress + 1
 	expectedIndexOfMonitoringAddress := expectedIndexOfMonitoringGroupHeading + 1
+	inventoryAddressLineSuffix, err := getInventoryAddressLineSuffix()
+	require.Nil(t, err, "Error retrieving the inventory address line suffix")
 
 	scanner := bufio.NewScanner(file)
 
@@ -84,11 +86,11 @@ func compareGeneratedInventoryFileAndCleanUpForTests(filePath string, proxyIpAdd
 			case i == expectedIndexOfProxyGroupHeading:
 				require.Equal(t, InventoryHeadingForProxyGroup, line)
 			case i >= expectedIndexOfFirstProxyAddress && i <= expectedIndexOfLastProxyAddress:
-				require.Equal(t, fmt.Sprintf("%v %v", proxyIpAddresses[i-1], InventoryAddressLineSuffix), line)
+				require.Equal(t, fmt.Sprintf("%v %v", proxyIpAddresses[i-1], inventoryAddressLineSuffix), line)
 			case monitoringAddress != "" && i == expectedIndexOfMonitoringGroupHeading:
 				require.Equal(t, InventoryHeadingForMonitoringGroup, line)
 			case monitoringAddress != "" && i == expectedIndexOfMonitoringAddress:
-				require.Equal(t, fmt.Sprintf("%v %v", monitoringAddress, InventoryAddressLineSuffix), line)
+				require.Equal(t, fmt.Sprintf("%v %v", monitoringAddress, inventoryAddressLineSuffix), line)
 			default:
 				t.Fatalf("Unexpected line in generated inventory file: %v", line)
 			}
@@ -105,8 +107,8 @@ func compareGeneratedInventoryFileAndCleanUpForTests(filePath string, proxyIpAdd
 }
 
 func TestPersistCurrentConfigToFile(t *testing.T) {
-	tests := []struct{
-		name string
+	tests := []struct {
+		name            string
 		configToPersist *config.ContainerInitConfig
 	}{
 		{
@@ -133,7 +135,7 @@ func TestPersistCurrentConfigToFile(t *testing.T) {
 			name: "only ssh key",
 			configToPersist: &config.ContainerInitConfig{
 				Properties: map[string]string{
-					config.SshKeyPathOnHostPropertyName:           "/home/my_path/my_key",
+					config.SshKeyPathOnHostPropertyName: "/home/my_path/my_key",
 				},
 			},
 		},
@@ -141,8 +143,8 @@ func TestPersistCurrentConfigToFile(t *testing.T) {
 			name: "only ssh key and proxy ip address prefix",
 			configToPersist: &config.ContainerInitConfig{
 				Properties: map[string]string{
-					config.SshKeyPathOnHostPropertyName:           "/home/my_path/my_key",
-					config.ProxyIpAddressPrefixPropertyName:       "172.18.*",
+					config.SshKeyPathOnHostPropertyName:     "/home/my_path/my_key",
+					config.ProxyIpAddressPrefixPropertyName: "172.18.*",
 				},
 			},
 		},
@@ -150,12 +152,11 @@ func TestPersistCurrentConfigToFile(t *testing.T) {
 			name: "only ssh key and proxy ip address prefix, reverse order",
 			configToPersist: &config.ContainerInitConfig{
 				Properties: map[string]string{
-					config.ProxyIpAddressPrefixPropertyName:       "172.18.*",
-					config.SshKeyPathOnHostPropertyName:           "/home/my_path/my_key",
+					config.ProxyIpAddressPrefixPropertyName: "172.18.*",
+					config.SshKeyPathOnHostPropertyName:     "/home/my_path/my_key",
 				},
 			},
 		},
-
 	}
 
 	for _, tt := range tests {
@@ -194,7 +195,7 @@ func compareGeneratedConfigurationFileAndCleanUpForTests(filePath string, config
 			// substring line to : or =
 			// match prefix to property name
 			// check line format
-			switch propName{
+			switch propName {
 			case config.SshKeyPathOnHostPropertyName:
 				expectedLine := fmt.Sprintf("%v: %v", config.SshKeyPathOnHostPropertyName, configToPersist.Properties[config.SshKeyPathOnHostPropertyName])
 				require.Equal(t, expectedLine, line)
