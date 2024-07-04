@@ -3,3 +3,7 @@ zdm_proxy_image: datastax/zdm-proxy:2.x
 
 create_containers: 1
 zdm_proxy_container_name: zdm-proxy-container
+
+# Defines how configuration shall be passed to ZDM proxy.
+# Allowed values are "env_vars" and "conf_file".
+zdm_proxy_config_mode: env_vars

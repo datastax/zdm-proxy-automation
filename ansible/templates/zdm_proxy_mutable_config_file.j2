@@ -1,0 +1,53 @@
+#jinja2: lstrip_blocks: "True", trim_blocks: "True"
+
+{% if ( primary_cluster is defined ) %}
+primary_cluster:{{ primary_cluster }}
+{% endif %}
+
+{% if ( read_mode is defined ) %}
+read_mode:{{ read_mode }}
+{% endif %}
+
+{% if ( log_level is defined ) %}
+log_level:{{ log_level }}
+{% endif %}
+
+{% if ( zdm_proxy_max_clients_connections is defined ) %}
+proxy_max_client_connections:{{ zdm_proxy_max_clients_connections }}
+{% endif %}
+
+{% if ( zdm_proxy_request_timeout_ms is defined ) %}
+proxy_request_timeout_ms:{{ zdm_proxy_request_timeout_ms }}
+{% endif %}
+{% if ( origin_connection_timeout_ms is defined ) %}
+origin_connection_timeout_ms:{{ origin_connection_timeout_ms }}
+{% endif %}
+{% if ( target_connection_timeout_ms is defined ) %}
+target_connection_timeout_ms:{{ target_connection_timeout_ms }}
+{% endif %}
+{% if ( async_handshake_timeout_ms is defined ) %}
+async_handshake_timeout_ms:{{ async_handshake_timeout_ms }}
+{% endif %}
+{% if ( heartbeat_interval_ms is defined ) %}
+heartbeat_interval_ms:{{ heartbeat_interval_ms }}
+{% endif %}
+{% if ( zdm_proxy_max_stream_ids is defined ) %}
+proxy_max_stream_ids:{{ zdm_proxy_max_stream_ids }}
+{% endif %}
+
+{% if ( metrics_enabled is defined ) %}
+metrics_enabled:{{ metrics_enabled }}
+{% endif %}
+
+{% if ( system_queries_mode is defined ) %}
+system_queries_mode:{{ system_queries_mode }}
+{% endif %}
+
+{% if ( replace_cql_functions is defined ) %}
+replace_cql_functions:{{ replace_cql_functions }}
+{% endif %}
+
+{% if ( forward_client_credentials_to_origin is defined ) %}
+forward_client_credentials_to_origin:{{ forward_client_credentials_to_origin }}
+{% endif %}
+

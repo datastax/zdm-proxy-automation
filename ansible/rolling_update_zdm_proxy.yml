@@ -18,20 +18,21 @@
 - name: Create ZDM proxy configuration env file based on the latest configuration
   hosts: proxies
   vars_files:
+    - vars/zdm_proxy_container_config.yml
     - vars/zdm_proxy_cluster_config.yml
     - vars/zdm_proxy_core_config.yml
     - vars/zdm_proxy_advanced_config.yml
     - vars/zdm_playbook_internal_config.yml
 
   tasks:
-    - name: Generate env var file from template for mutable configuration
+    - name: Generate configuration file from template for mutable configuration
       template:
-        src: "zdm_proxy_mutable_config.j2"
+        src: "{{ 'zdm_proxy_mutable_config_env_vars.j2' if zdm_proxy_config_mode == 'env_vars' else 'zdm_proxy_mutable_config_file.j2' }}"
         dest: "{{ zdm_proxy_home_dir }}/{{ zdm_proxy_config_fragments_dir_name }}/{{ zdm_proxy_mutable_config_fragment_file_name }}"
     - name: Merge the immutable and mutable configuration files into a single one
       assemble:
         src: "{{ zdm_proxy_home_dir }}/{{ zdm_proxy_config_fragments_dir_name }}"
-        dest: "{{ zdm_proxy_home_dir }}/{{ zdm_proxy_environment_config_file_name }}"
+        dest: "{{ zdm_proxy_home_dir }}/{{ zdm_proxy_environment_config_file_name if zdm_proxy_config_mode == 'env_vars' else (zdm_proxy_shared_assets_dir_name + '/' + zdm_proxy_config_file_name) }}"
 
 - name: Configure and restart each ZDM proxy in a rolling fashion
   hosts: proxies
@@ -45,7 +46,8 @@
     - vars/zdm_proxy_core_config.yml  # this inclusion is for backward compatibility and will be removed in the future
 
   tasks:
-    - name: Create ZDM proxy container with updated configuration
+    - name: Create ZDM proxy container with updated env vars
+      when: "zdm_proxy_config_mode == 'env_vars'"
       docker_container:
         name: "{{ zdm_proxy_container_name }}"
         image: "{{ zdm_proxy_image }}"
@@ -65,6 +67,25 @@
         state: started
       vars:
         ansible_python_interpreter: python3
+
+    - name: Create ZDM proxy container with updated configuration file
+      when: "zdm_proxy_config_mode == 'conf_file'"
+      docker_container:
+        name: "{{ zdm_proxy_container_name }}"
+        image: "{{ zdm_proxy_image }}"
+        command:
+          - "--config={{ zdm_proxy_home_dir }}/{{ zdm_proxy_shared_assets_dir_name }}/{{zdm_proxy_config_file_name}}"
+        mounts:
+          - source: "{{ zdm_proxy_home_dir }}/{{ zdm_proxy_shared_assets_dir_name }}"
+            target: "{{ zdm_proxy_home_dir }}/{{ zdm_proxy_shared_assets_dir_name }}"
+            type: bind
+        network_mode: host
+        restart_policy: unless-stopped
+        restart: yes
+        state: started
+      vars:
+        ansible_python_interpreter: python3
+
     - name: Wait for this ZDM proxy to come up
       uri:
         url: "http://{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}:{{ metrics_port }}/health/readiness"
@@ -76,6 +97,3 @@
     - pause:
         prompt: "Pause for {{ pause_between_restarts_in_seconds }} seconds after restarting this ZDM proxy instance"
         seconds: "{{ pause_between_restarts_in_seconds }}"
-
-
-

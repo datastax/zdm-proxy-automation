@@ -11,6 +11,7 @@ zdm_proxy_config_fragments_dir_name: zdm_proxy_config_fragments
 zdm_proxy_mutable_config_fragment_file_name: zdm_proxy_mutable_config.env
 zdm_proxy_immutable_config_fragment_file_name: zdm_proxy_immutable_config.env
 zdm_proxy_environment_config_file_name: zdm_proxy_config.env
+zdm_proxy_config_file_name: zdm_proxy_config.yml
 
 origin_scb_file_name: origin_scb
 target_scb_file_name: target_scb
