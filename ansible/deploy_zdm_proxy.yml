@@ -217,6 +217,15 @@
     - vars/zdm_playbook_internal_config.yml
 
   tasks:
+    - name: Applying default ZDM proxy config mode
+      when: zdm_proxy_config_mode is undefined
+      set_fact:
+        zdm_proxy_config_mode: "env_vars"
+    - name: Verify proxy container configuration
+      assert:
+        that: zdm_proxy_config_mode == "env_vars" or zdm_proxy_config_mode == "conf_file"
+        success_msg: "ZDM proxy container correctly configured"
+        fail_msg: "Invalid value of 'zdm_proxy_config_mode' parameter"
     - name: Create configuration fragment directory
       file:
         path: "{{ zdm_proxy_home_dir }}/{{ zdm_proxy_config_fragments_dir_name }}"
