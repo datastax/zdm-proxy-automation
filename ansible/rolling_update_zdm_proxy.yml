@@ -31,9 +31,9 @@
         zdm_proxy_config_mode: "env_vars"
     - name: Verify proxy container configuration
       assert:
-        that: zdm_proxy_config_mode == "env_vars" or zdm_proxy_config_mode == "conf_file"
+        that: zdm_proxy_config_mode == "env_vars" or zdm_proxy_config_mode == "config_file"
         success_msg: "ZDM proxy container correctly configured"
-        fail_msg: "Invalid value of 'zdm_proxy_config_mode' parameter"
+        fail_msg: "Invalid value of 'zdm_proxy_config_mode' parameter, supported values are 'env_vars' or 'config_file'"
     - name: Generate configuration file from template for mutable configuration
       template:
         src: "{{ 'zdm_proxy_mutable_config_env_vars.j2' if zdm_proxy_config_mode == 'env_vars' else 'zdm_proxy_mutable_config_file.j2' }}"
@@ -78,7 +78,7 @@
         ansible_python_interpreter: python3
 
     - name: Create ZDM proxy container with updated configuration file
-      when: "zdm_proxy_config_mode == 'conf_file'"
+      when: "zdm_proxy_config_mode == 'config_file'"
       docker_container:
         name: "{{ zdm_proxy_container_name }}"
         image: "{{ zdm_proxy_image }}"
