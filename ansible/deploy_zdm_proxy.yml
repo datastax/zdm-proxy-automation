@@ -209,6 +209,7 @@
 - name: Create ZDM proxy configuration env file
   hosts: proxies
   vars_files:
+    - vars/zdm_proxy_container_config.yml
     - vars/zdm_proxy_cluster_config.yml
     - vars/zdm_proxy_core_config.yml
     - vars/zdm_proxy_advanced_config.yml
@@ -216,22 +217,31 @@
     - vars/zdm_playbook_internal_config.yml
 
   tasks:
+    - name: Applying default ZDM proxy config mode
+      when: zdm_proxy_config_mode is undefined
+      set_fact:
+        zdm_proxy_config_mode: "env_vars"
+    - name: Verify proxy container configuration
+      assert:
+        that: zdm_proxy_config_mode == "env_vars" or zdm_proxy_config_mode == "config_file"
+        success_msg: "ZDM proxy container correctly configured"
+        fail_msg: "Invalid value of 'zdm_proxy_config_mode' parameter, supported values are 'env_vars' or 'config_file'"
     - name: Create configuration fragment directory
       file:
         path: "{{ zdm_proxy_home_dir }}/{{ zdm_proxy_config_fragments_dir_name }}"
         state: directory
-    - name: Generate env var file from template for immutable configuration
+    - name: Generate configuration file from template for immutable configuration
       template:
-        src: "zdm_proxy_immutable_config.j2"
+        src: "{{ 'zdm_proxy_immutable_config_env_vars.j2' if zdm_proxy_config_mode == 'env_vars' else 'zdm_proxy_immutable_config_file.j2' }}"
         dest: "{{ zdm_proxy_home_dir }}/{{ zdm_proxy_config_fragments_dir_name }}/{{ zdm_proxy_immutable_config_fragment_file_name }}"
-    - name: Generate env var file from template for mutable configuration
+    - name: Generate configuration file from template for mutable configuration
       template:
-        src: "zdm_proxy_mutable_config.j2"
+        src: "{{ 'zdm_proxy_mutable_config_env_vars.j2' if zdm_proxy_config_mode == 'env_vars' else 'zdm_proxy_mutable_config_file.j2' }}"
         dest: "{{ zdm_proxy_home_dir }}/{{ zdm_proxy_config_fragments_dir_name }}/{{ zdm_proxy_mutable_config_fragment_file_name }}"
     - name: Merge the immutable and mutable configuration files into a single one
       assemble:
         src: "{{ zdm_proxy_home_dir }}/{{ zdm_proxy_config_fragments_dir_name }}"
-        dest: "{{ zdm_proxy_home_dir }}/{{ zdm_proxy_environment_config_file_name }}"
+        dest: "{{ zdm_proxy_home_dir }}/{{ zdm_proxy_environment_config_file_name if zdm_proxy_config_mode == 'env_vars' else (zdm_proxy_shared_assets_dir_name + '/' + zdm_proxy_config_file_name) }}"
 
 - name: Install ZDM Proxy
   hosts: proxies
@@ -251,7 +261,8 @@
       vars:
         ansible_python_interpreter: python3
 
-    - name: Create ZDM proxy container
+    - name: Create ZDM proxy container with env vars
+      when: "zdm_proxy_config_mode == 'env_vars'"
       docker_container:
         name: "{{ zdm_proxy_container_name }}"
         image: "docker.io/{{ zdm_proxy_image }}"
@@ -269,6 +280,24 @@
         restart_policy: unless-stopped
         restart: yes
         state: started 
+      vars:
+        ansible_python_interpreter: python3
+
+    - name: Create ZDM proxy container with configuration file
+      when: "zdm_proxy_config_mode == 'config_file'"
+      docker_container:
+        name: "{{ zdm_proxy_container_name }}"
+        image: "docker.io/{{ zdm_proxy_image }}"
+        command:
+          - "--config={{ zdm_proxy_home_dir }}/{{ zdm_proxy_shared_assets_dir_name }}/{{zdm_proxy_config_file_name}}"
+        mounts:
+          - source: "{{ zdm_proxy_home_dir }}/{{ zdm_proxy_shared_assets_dir_name }}"
+            target: "{{ zdm_proxy_home_dir }}/{{ zdm_proxy_shared_assets_dir_name }}"
+            type: bind
+        network_mode: host
+        restart_policy: unless-stopped
+        restart: yes
+        state: started
       vars:
         ansible_python_interpreter: python3
 
