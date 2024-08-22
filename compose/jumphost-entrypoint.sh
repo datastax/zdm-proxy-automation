@@ -54,14 +54,14 @@ if ! id "ubuntu" &>/dev/null; then
 	echo "Adding proxy servers to SSH known_hosts"
 	gosu ubuntu touch /home/ubuntu/.ssh/known_hosts
 
-	scan_key zdm-proxy-automation_jumphost_1
-	scan_key zdm-proxy-automation_proxy_1
-	scan_key  zdm-proxy-automation_proxy_2
-	scan_key  zdm-proxy-automation_proxy_3
+	scan_key zdm-proxy-automation-jumphost-1
+	scan_key zdm-proxy-automation-proxy-1
+	scan_key  zdm-proxy-automation-proxy-2
+	scan_key  zdm-proxy-automation-proxy-3
 
-	test_conn zdm-proxy-automation_proxy_1
-	test_conn  zdm-proxy-automation_proxy_2
-	test_conn  zdm-proxy-automation_proxy_3
+	test_conn zdm-proxy-automation-proxy-1
+	test_conn  zdm-proxy-automation-proxy-2
+	test_conn  zdm-proxy-automation-proxy-3
 
 	# remove shared keys once applied to remote servers
 	rm /run/keys/*.pub
@@ -76,14 +76,14 @@ fi
 echo "Starting SSH server"
 /etc/init.d/ssh start
 
-test_conn zdm-proxy-automation_proxy_1
-test_conn zdm-proxy-automation_proxy_2
-test_conn zdm-proxy-automation_proxy_3
+test_conn zdm-proxy-automation-proxy-1
+test_conn zdm-proxy-automation-proxy-2
+test_conn zdm-proxy-automation-proxy-3
 
-export PROXY_IP_1=$(get_ip zdm-proxy-automation_proxy_1)
-export PROXY_IP_2=$(get_ip zdm-proxy-automation_proxy_2)
-export PROXY_IP_3=$(get_ip zdm-proxy-automation_proxy_3)
-export JUMPHOST_IP=$(get_ip zdm-proxy-automation_jumphost_1)
+export PROXY_IP_1=$(get_ip zdm-proxy-automation-proxy-1)
+export PROXY_IP_2=$(get_ip zdm-proxy-automation-proxy-2)
+export PROXY_IP_3=$(get_ip zdm-proxy-automation-proxy-3)
+export JUMPHOST_IP=$(get_ip zdm-proxy-automation-jumphost-1)
 
 cd /opt/zdm-proxy-automation || return
 
@@ -100,9 +100,9 @@ gosu ubuntu ansible-playbook deploy_zdm_proxy.yml -i zdm_ansible_inventory \
 	-e "origin_password=foo" \
 	-e "target_username=foo" \
 	-e "target_password=foo" \
-	-e "origin_contact_points=zdm-proxy-automation_origin_1" \
+	-e "origin_contact_points=zdm-proxy-automation-origin-1" \
 	-e "origin_port=9042" \
-	-e "target_contact_points=zdm-proxy-automation_target_1" \
+	-e "target_contact_points=zdm-proxy-automation-target-1" \
 	-e "target_port=9042"
 
 echo "Ready"
