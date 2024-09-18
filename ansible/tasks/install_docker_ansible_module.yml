@@ -4,6 +4,9 @@
     - package_list: [ 'curl', 'software-properties-common', 'python3-pip', 'virtualenv', 'python3-setuptools' ]
   when: install_packages | bool
 
+# On Ubuntu 22 and below, install docker-py package using pip.
+# On Ubuntu 24 and above, use apt-get.
+
 - name: Uninstall incompatible Docker-py Module
   become: no
   pip:
@@ -11,10 +14,18 @@
     state: absent
   vars:
     ansible_python_interpreter: python3
+  when: ansible_distribution_major_version | int < 24
 
-- name: Install Docker Module for Python
+- name: Install Docker Module for Python Pip
   pip:
     name: docker
     version: 2.7.0
   vars:
     ansible_python_interpreter: python3
+  when: ansible_distribution_major_version | int < 24
+
+- name: Install Docker Module for Python Apt
+  apt:
+    name: python3-docker
+    state: present
+  when: ansible_distribution_major_version | int >= 24

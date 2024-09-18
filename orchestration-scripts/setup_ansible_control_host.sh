@@ -50,7 +50,7 @@ printf "# proxy instances \nHost %s.*\n  IdentityFile %s/%s\n" "${zdm_proxy_priv
 if ! command -v ansible &> /dev/null; then
   echo "Installing Ansible"
   sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 93C4A3FD7BB9C367
-  sudo apt-add-repository "deb http://ppa.launchpad.net/ansible/ansible/ubuntu jammy main"
+  sudo apt-add-repository "deb http://ppa.launchpad.net/ansible/ansible/ubuntu noble main"
   sudo apt update --yes
   sudo apt upgrade --yes
   sudo apt install --yes software-properties-common
