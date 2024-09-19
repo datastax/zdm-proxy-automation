@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM ubuntu:22.04
+FROM ubuntu:24.04
 ENV DEBIAN_FRONTEND noninteractive
 
 # install all necessary software packages and dependencies
@@ -13,18 +13,15 @@ RUN apt-get update && apt-get install -y software-properties-common \
     gnupg
 
 RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 93C4A3FD7BB9C367 && \
-    apt-add-repository "deb http://ppa.launchpad.net/ansible/ansible/ubuntu jammy main" && \
+    apt-add-repository "deb http://ppa.launchpad.net/ansible/ansible/ubuntu noble main" && \
     apt-get update && apt-get upgrade --yes &&  \
     apt-get install --yes python3-pip && \
-    apt-get install python3-jmespath && \
+    apt-get install --yes python3-jmespath && \
+    apt-get install --yes ansible && \
+    apt-get install --yes python3-cryptography && \
     apt-get autoremove && apt-get autoclean
 
-RUN sudo python3 -m pip install ansible
-RUN sudo python3 -m pip install cryptography
-
-# create ubuntu user
-RUN useradd -ms /bin/bash ubuntu
-RUN usermod -aG sudo ubuntu
+# switch to ubuntu user
 USER ubuntu
 WORKDIR /home/ubuntu/
 
@@ -52,4 +49,3 @@ RUN mkdir target_tls_files
 RUN mkdir zdm_proxy_tls_files
 
 ENTRYPOINT ["/bin/bash"]
-

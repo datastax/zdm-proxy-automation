@@ -29,6 +29,7 @@ locals {
     allowed_linux_distros = {
     focal = { owner = "amazon", name_pattern = "ubuntu/images/*/ubuntu-*-20.04-*", linux_user = "ubuntu" }
     jammy = { owner = "amazon", name_pattern = "ubuntu/images/*/ubuntu-*-22.04-*", linux_user = "ubuntu" }
+    noble = { owner = "amazon", name_pattern = "ubuntu/images/*/ubuntu-*-24.04-*", linux_user = "ubuntu" }
     centos7 = { owner = "125523088429", name_pattern = "CentOS Linux 7*", linux_user = "centos" }
     centos8 = { owner = "125523088429", name_pattern = "CentOS Stream 8*", linux_user = "centos" }
     centos9 = { owner = "125523088429", name_pattern = "CentOS Stream 9*", linux_user = "ec2-user" }
