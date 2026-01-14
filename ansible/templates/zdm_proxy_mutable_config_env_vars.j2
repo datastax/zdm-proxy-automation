@@ -51,3 +51,7 @@ ZDM_REPLACE_CQL_FUNCTIONS={{ replace_cql_functions }}
 ZDM_FORWARD_CLIENT_CREDENTIALS_TO_ORIGIN={{ forward_client_credentials_to_origin }}
 {% endif %}
 
+{% if ( blocked_protocol_versions is defined ) %}
+ZDM_BLOCKED_PROTOCOL_VERSIONS={{ blocked_protocol_versions }}
+{% endif %}
+
