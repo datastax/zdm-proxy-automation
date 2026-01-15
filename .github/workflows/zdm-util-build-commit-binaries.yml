@@ -16,8 +16,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
         with:
-          ref: ${{ github.sha }} 
-        
+          ref: ${{ github.sha }}
+      - name: Set workspace as safe (to fix go vcs issue)
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
       - name: Build Linux/amd64 binary
         run: |
           export GO111MODULE=on
