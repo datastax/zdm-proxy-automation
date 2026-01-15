@@ -12,14 +12,16 @@ RUN apt-get update && apt-get install -y software-properties-common \
     pcregrep \
     gnupg
 
-RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 93C4A3FD7BB9C367 && \
-    apt-add-repository "deb http://ppa.launchpad.net/ansible/ansible/ubuntu noble main" && \
-    apt-get update && apt-get upgrade --yes &&  \
+RUN apt-get update && apt-get upgrade --yes &&  \
     apt-get install --yes python3-pip && \
     apt-get install --yes python3-jmespath && \
-    apt-get install --yes ansible && \
     apt-get install --yes python3-cryptography && \
+    apt-get install --yes pipx && \
     apt-get autoremove && apt-get autoclean
+
+# Setup PATH for both root and the ubuntu user
+# pipx installs binaries to ~/.local/bin by default
+ENV PATH="/root/.local/bin:/home/ubuntu/.local/bin:${PATH}"
 
 # switch to ubuntu user
 USER ubuntu
@@ -39,6 +41,7 @@ RUN chmod +x init_container_internal.sh
 
 USER ubuntu
 
+RUN pipx install --include-deps ansible==10.7.0
 RUN ansible-galaxy collection install community.docker
 RUN ansible-galaxy collection install community.general
 
