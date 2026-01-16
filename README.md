@@ -36,7 +36,7 @@ If we release a major or minor version of `zdm-proxy` then we will also do a maj
 
 When you use a specific version of the proxy you should aim to use the appropriate version of the automation with it. Let's offer some practical examples to help clarify.
 
-Let's say you are using `zdm-proxy` v2.2.0 and there exists several `zdm-proxy-automation` releases: v2.1.0, v2.2.0, v2.2.1 and v2.3.0; which automation version should you use? Since you are using `zdm-proxy` v2.2.0 then you should look for a `zdm-proxy-automation` release with a version v2.2.x, in this case you can use v2.2.0 or v2.2.1 and we recommend users to use the latest patch release so you should use v2.2.1.
+Let's say you are using `zdm-proxy` v2.2.0 and there exist several `zdm-proxy-automation` releases: v2.1.0, v2.2.0, v2.2.1 and v2.3.0; which automation version should you use? Since you are using `zdm-proxy` v2.2.0 then you should look for a `zdm-proxy-automation` release with a version v2.2.x, in this case you can use v2.2.0 or v2.2.1 and we recommend users to use the latest patch release so you should use v2.2.1.
 
 Now let's say you upgrade `zdm-proxy` to v2.2.1, do you have to update the automation? No, you only upgraded the patch version (v2.2.0 to v2.2.1) so you are not required to update the automation (but you could update to a newer patch version if you wanted).
 
