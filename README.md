@@ -22,6 +22,26 @@ The components in this suite are:
 * A Docker Compose descriptor and set of scripts to easily create a local ZDM Proxy setup connecting to two single-node Cassandra clusters for testing and exploration purposes.
 * Some additional convenience scripts.
 
+## Versioning
+
+We follow the format of semantic versioning (i.e. `major.minor.patch`) but major and minor versions are determined by zdm-proxy so that users can more easily know which version of the automation they need for a specific zdm-proxy version. Patch versions are independent though.
+
+In practice this means that if we make a change to the `zdm-proxy-automation` ONLY, then we just bump the patch version (e.g. `zdm-proxy-automation 2.3.1 -> 2.3.2`) of the automation and we don't release `zdm-proxy`.
+
+If we release a patch version of `zdm-proxy` (e.g. `zdm-proxy 2.4.0 -> 2.4.1`) then we do NOT release a new version of `zdm-proxy-automation`. We ensure that any `zdm-proxy` change that requires a change to the automation will only occur in a minor or major `zdm-proxy` release, never a patch release.
+
+If we release a major or minor version of `zdm-proxy` then we will also do a major or minor release of the `zdm-proxy-automation` respectively.
+
+### What does this mean for users?
+
+When you use a specific version of the proxy you should aim to use the appropriate version of the automation with it. Let's offer some practical examples to help clarify.
+
+Let's say you are using `zdm-proxy` v2.2.0 and there exists several `zdm-proxy-automation` releases: v2.1.0, v2.2.0, v2.2.1 and v2.3.0; which automation version should you use? Since you are using `zdm-proxy` v2.2.0 then you should look for a `zdm-proxy-automation` release with a version v2.2.x, in this case you can use v2.2.0 or v2.2.1 and we recommend users to use the latest patch release so you should use v2.2.1.
+
+Now let's say you upgrade `zdm-proxy` to v2.2.1, do you have to update the automation? No, you only upgraded the patch version (v2.2.0 to v2.2.1) so you are not required to update the automation (but you could update to a newer patch version if you wanted).
+
+What about an upgrade of `zdm-proxy` to v2.3.0? In this case you'd be required to update the automation to at the very least v2.3.0. You could also update the automation to a later patch release if there is one (e.g. v2.3.1).
+
 ## Ansible automation
 
 The Ansible automation is located in the `ansible` directory and contains the following playbooks:
