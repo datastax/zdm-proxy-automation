@@ -16,6 +16,17 @@
 zdm_proxy_listen_port: 9042
 
 ################################
+### Protocol Versions        ###
+################################
+
+## Comma-separated string that represents a list of protocol versions that should be blocked by the proxy.
+## Usually this is not necessary but could be useful if the application is having issues with certain protocol versions.
+## This can generally be done in the driver but configuring it at the proxy level can be easier in certain deployments.
+## Defaults to "" (no blocked version). Possible values at the moment are: v2,v3,v4,v5,DseV1 and DseV2. The values
+## are case insensitive and the "v" letter can be ommitted (e.g. 2,3,4,5,Dse1). Example: "v2,v5,DseV1"
+#blocked_protocol_versions:
+
+################################
 ### CQL function replacement ###
 ################################
 

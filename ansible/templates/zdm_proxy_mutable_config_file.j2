@@ -56,3 +56,6 @@ replace_cql_functions: {{ replace_cql_functions }}
 forward_client_credentials_to_origin: {{ forward_client_credentials_to_origin }}
 {% endif %}
 
+{% if ( blocked_protocol_versions is defined ) %}
+blocked_protocol_versions: {{ blocked_protocol_versions }}
+{% endif %}

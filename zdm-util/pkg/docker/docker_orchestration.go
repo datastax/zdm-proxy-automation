@@ -4,25 +4,27 @@ import (
 	"bufio"
 	"context"
 	"fmt"
-	"github.com/docker/docker/api/types"
-	"github.com/docker/docker/api/types/container"
-	"github.com/docker/docker/api/types/filters"
-	"github.com/docker/docker/client"
-	"github.com/docker/docker/pkg/archive"
-	"github.com/pkg/errors"
 	"io"
 	"log"
 	"os"
 	"path/filepath"
 	"strings"
 	"time"
+
+	"github.com/docker/docker/api/types/container"
+	"github.com/docker/docker/api/types/filters"
+	"github.com/docker/docker/api/types/image"
+	"github.com/docker/docker/client"
+	"github.com/moby/go-archive"
+	"github.com/pkg/errors"
+
 	"zdm-proxy-automation/zdm-util/pkg/config"
 	"zdm-proxy-automation/zdm-util/pkg/userinteraction"
 )
 
 const (
-	dockerImageName                 = "datastax/zdm-ansible:2.x"
-	dockerContainerName             = "zdm-ansible-container"
+	dockerImageName     = "datastax/zdm-ansible:2.x"
+	dockerContainerName = "zdm-ansible-container"
 	// Note: the following two directories are on the container, not on the host
 	sshKeyPathOnContainer           = "/home/ubuntu/zdm-proxy-ssh-key-dir"
 	ansibleInventoryPathOnContainer = "/home/ubuntu"
@@ -125,7 +127,7 @@ func CreateAndInitializeContainer(containerConfig *config.ContainerInitConfig, u
 	fmt.Printf("Ansible inventory %v successfully copied to the Docker container %v \n", ansibleInventoryPathOnHost, dockerContainerName)
 
 	if err = orchestrator.initializeContainer(containerId, containerConfig); err != nil {
-		return fmt.Errorf("unable to run the initialization script on the Docker container %v due to %v. %v \n", dockerContainerName, err)
+		return fmt.Errorf("unable to run the initialization script on the Docker container %v due to %v. \n", dockerContainerName, err)
 	}
 	fmt.Printf("Ansible container %v successfully initialized \n", dockerContainerName)
 
@@ -189,7 +191,7 @@ func Retry(functionToBeRetried FunctionToBeRetried, retries int, delay time.Dura
 func (o *DockerOrchestrator) pullImageIfNotAlreadyPresent(imageName string) error {
 	imageFilters := filters.NewArgs()
 	imageFilters.Add("reference", imageName)
-	imageSummaries, err := o.cli.ImageList(o.ctx, types.ImageListOptions{Filters: imageFilters})
+	imageSummaries, err := o.cli.ImageList(o.ctx, image.ListOptions{Filters: imageFilters})
 
 	if err != nil {
 		return err
@@ -204,7 +206,7 @@ func (o *DockerOrchestrator) pullImageIfNotAlreadyPresent(imageName string) erro
 		return nil
 	}
 
-	imageReader, err := o.cli.ImagePull(o.ctx, imageName, types.ImagePullOptions{})
+	imageReader, err := o.cli.ImagePull(o.ctx, imageName, image.PullOptions{})
 	if err != nil {
 		return err
 	}
@@ -220,7 +222,7 @@ func (o *DockerOrchestrator) pullImageIfNotAlreadyPresent(imageName string) erro
 func (o *DockerOrchestrator) retrieveExistingContainer(containerName string) (string, bool, error) {
 	containerFilters := filters.NewArgs()
 	containerFilters.Add("name", containerName)
-	containerListOptions := types.ContainerListOptions{
+	containerListOptions := container.ListOptions{
 		All:     true,
 		Latest:  true,
 		Filters: containerFilters,
@@ -245,7 +247,7 @@ func (o *DockerOrchestrator) retrieveExistingContainer(containerName string) (st
 }
 
 func (o *DockerOrchestrator) removeExistingContainer(containerId string) error {
-	containerRemoveOptions := types.ContainerRemoveOptions{
+	containerRemoveOptions := container.RemoveOptions{
 		Force: true,
 	}
 	return o.cli.ContainerRemove(o.ctx, containerId, containerRemoveOptions)
@@ -256,7 +258,7 @@ func (o *DockerOrchestrator) createContainer(imageName, containerName string) (s
 		&container.Config{
 			Image: imageName,
 			Tty:   true,
-	}, &container.HostConfig{
+		}, &container.HostConfig{
 			RestartPolicy: container.RestartPolicy{
 				Name: "unless-stopped",
 			},
@@ -268,7 +270,7 @@ func (o *DockerOrchestrator) createContainer(imageName, containerName string) (s
 }
 
 func (o *DockerOrchestrator) startContainer(containerId string) error {
-	return o.cli.ContainerStart(o.ctx, containerId, types.ContainerStartOptions{})
+	return o.cli.ContainerStart(o.ctx, containerId, container.StartOptions{})
 }
 
 // copyFileToContainer copies the specified file to the container. Equivalent of docker cp.
@@ -283,19 +285,18 @@ func (o *DockerOrchestrator) copyFileToContainer(containerId, srcPath, dstPath s
 	// Prepare destination copy info by stat-ing the container path.
 	dstInfo := archive.CopyInfo{Path: dstPath}
 	dstStat, err := o.cli.ContainerStatPath(o.ctx, containerId, dstPath)
-
-	// Validate the destination path
-	if err = validateOutputPathFileMode(dstStat.Mode); err != nil {
-		return errors.Wrapf(err, `destination "%s:%s" must be a directory or a regular file`, containerId, dstPath)
-	}
-
-	// Ignore any error and assume that the parent directory of the destination
-	// path exists, in which case the copy may still succeed. If there is any
-	// type of conflict (e.g., non-directory overwriting an existing directory
-	// or vice versa) the extraction will fail. If the destination simply did
-	// not exist, but the parent directory does, the extraction will still
-	// succeed.
 	if err == nil {
+		// Validate the destination path
+		if err = validateOutputPathFileMode(dstStat.Mode); err != nil {
+			return errors.Wrapf(err, `destination "%s:%s" must be a directory or a regular file`, containerId, dstPath)
+		}
+
+		// Ignore any error and assume that the parent directory of the destination
+		// path exists, in which case the copy may still succeed. If there is any
+		// type of conflict (e.g., non-directory overwriting an existing directory
+		// or vice versa) the extraction will fail. If the destination simply did
+		// not exist, but the parent directory does, the extraction will still
+		// succeed.
 		dstInfo.Exists, dstInfo.IsDir = true, dstStat.Mode.IsDir()
 	}
 
@@ -345,7 +346,7 @@ func (o *DockerOrchestrator) copyFileToContainer(containerId, srcPath, dstPath s
 		content = preparedArchive
 	}
 
-	options := types.CopyToContainerOptions{
+	options := container.CopyToContainerOptions{
 		AllowOverwriteDirWithFile: false,
 		CopyUIDGID:                false,
 	}
@@ -357,12 +358,11 @@ func (o *DockerOrchestrator) initializeContainer(containerId string, containerCo
 	ipPrefixArg := fmt.Sprintf("-p %s", containerConfig.Properties[config.ProxyIpAddressPrefixPropertyName])
 	inventoryArg := fmt.Sprintf("-i %s", filepath.Base(containerConfig.Properties[config.AnsibleInventoryPathOnHostPropertyName]))
 
-	execConfig := &types.ExecConfig{
+	execConfig := &container.ExecOptions{
 		User:         "ubuntu",
 		Privileged:   false,
 		Tty:          true,
 		Cmd:          []string{"/home/ubuntu/init_container_internal.sh", ipPrefixArg, inventoryArg},
-		Detach:       false,
 		WorkingDir:   "/home/ubuntu",
 		AttachStdout: true,
 		AttachStderr: true,
@@ -382,7 +382,7 @@ func (o *DockerOrchestrator) initializeContainer(containerId string, containerCo
 		return errors.New("exec ID empty")
 	}
 
-	execStartCheck := types.ExecStartCheck{
+	execStartCheck := container.ExecAttachOptions{
 		Tty: execConfig.Tty,
 	}
 	resp, err := o.cli.ContainerExecAttach(o.ctx, execID, execStartCheck)
@@ -429,7 +429,7 @@ func resolveLocalPath(localPath string) (absPath string, err error) {
 	if absPath, err = filepath.Abs(localPath); err != nil {
 		return
 	}
-	return archive.PreserveTrailingDotOrSeparator(absPath, localPath, filepath.Separator), nil
+	return archive.PreserveTrailingDotOrSeparator(absPath, localPath), nil
 }
 
 func validateOutputPathFileMode(fileMode os.FileMode) error {

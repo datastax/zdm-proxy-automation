@@ -8,7 +8,7 @@ jobs:
   build:
     name: Build and Upload Release Assets
     runs-on: ubuntu-latest
-    container: golang:1.19.2-bullseye
+    container: golang:1.24.11-bookworm
     defaults:
       run:
         working-directory: ./zdm-util
@@ -16,8 +16,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
         with:
-          ref: ${{ github.sha }} 
-        
+          ref: ${{ github.sha }}
+      - name: Set workspace as safe (to fix go vcs issue)
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
       - name: Build Linux/amd64 binary
         run: |
           export GO111MODULE=on
@@ -41,8 +42,8 @@ jobs:
           sha256sum zdm-util-linux-amd64-${{ github.sha }}.tgz | cut -d ' ' -f 1 > zdm-util-linux-amd64-${{ github.sha }}-sha256.txt
           sha256sum zdm-util-windows-amd64-${{ github.sha }}.zip | cut -d ' ' -f 1 > zdm-util-windows-amd64-${{ github.sha }}-sha256.txt
       - name: Upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: ZDM Proxy Util ${{ github.sha }} 
-          path:
-            ./zdm-util/zdm-util-*
+          name: "ZDM Proxy Util ${{ github.sha }}"
+          path: ./zdm-util/zdm-util-*
+          if-no-files-found: error

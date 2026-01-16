@@ -11,13 +11,15 @@ jobs:
   build:
     name: Build and Upload Release Assets
     runs-on: ubuntu-latest
-    container: golang:1.19.2-bullseye
+    container: golang:1.24.11-bookworm
     defaults:
       run:
         working-directory: ./zdm-util
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+      - name: Set workspace as safe (to fix go vcs issue)
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
       - name: Build Linux/amd64 binary
         run: |
           export GO111MODULE=on
