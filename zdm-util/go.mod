@@ -1,11 +1,10 @@
 module zdm-proxy-automation/zdm-util
 
-go 1.24.0
-
-toolchain go1.24.11
+go 1.26
 
 require (
 	github.com/docker/docker v28.5.2+incompatible
+	github.com/moby/go-archive v0.2.0
 	github.com/phayes/permbits v0.0.0-20190612203442-39d7c581d2ee
 	github.com/pkg/errors v0.9.1
 	github.com/stretchr/testify v1.11.1
@@ -27,7 +26,6 @@ require (
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/klauspost/compress v1.18.2 // indirect
 	github.com/moby/docker-image-spec v1.3.1 // indirect
-	github.com/moby/go-archive v0.2.0 // indirect
 	github.com/moby/patternmatcher v0.6.0 // indirect
 	github.com/moby/sys/atomicwriter v0.1.0 // indirect
 	github.com/moby/sys/sequential v0.6.0 // indirect
