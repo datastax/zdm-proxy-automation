@@ -26,8 +26,8 @@ function get_ip() {
 	dig +short "$1"
 }
 
-# Skip setup step if ubuntu user already exists
-if ! id "ubuntu" &>/dev/null; then
+# Skip setup step if openssh-server is already installed
+if ! dpkg -s openssh-server &>/dev/null; then
 	echo "Updating packages"
 	apt update
 
@@ -44,7 +44,7 @@ if ! id "ubuntu" &>/dev/null; then
 	useradd -rm -d /home/ubuntu -s /bin/bash -g root -G sudo -u 1001 ubuntu
 
 	echo "Starting SSH server"
-	/etc/init.d/ssh start
+	service ssh start || /etc/init.d/ssh start
 
 	echo "Generating SSH key pair"
 	gosu ubuntu ssh-keygen -q -t rsa -N '' -f /home/ubuntu/.ssh/id_rsa
@@ -74,7 +74,7 @@ if ! id "ubuntu" &>/dev/null; then
 fi
 
 echo "Starting SSH server"
-/etc/init.d/ssh start
+service ssh start || /etc/init.d/ssh start
 
 test_conn zdm-proxy-automation-proxy-1
 test_conn zdm-proxy-automation-proxy-2

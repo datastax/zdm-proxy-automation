@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Skip setup step if ubuntu user already exists
-if ! id "ubuntu" &>/dev/null; then
+# Skip setup step if openssh-server is already installed
+if ! dpkg -s openssh-server &>/dev/null; then
 	echo "Updating packages"
 	apt update
 	 
@@ -37,7 +37,7 @@ if ! id "ubuntu" &>/dev/null; then
 fi
 
 echo "Starting SSH server"
-/etc/init.d/ssh start
+service ssh start || /etc/init.d/ssh start
 
 echo "Starting Docker daemon"
 dockerd &> /var/log/dockerd &

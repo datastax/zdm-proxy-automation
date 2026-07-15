@@ -4,6 +4,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 	"zdm-proxy-automation/zdm-util/pkg/testutils"
 )
@@ -60,11 +61,13 @@ func TestConfig_WithExistingFile(t *testing.T) {
 			expectedErrorMessage: "the specified configuration file was empty",
 		},
 		{
-			name:                 "invalid path to non-existing config file",
-			configFilePath:       "/home/invalid_dir/invalid_file",
-			expectedConfig:       &ContainerInitConfig{},
-			isErrorExpected:      true,
-			expectedErrorMessage: "error opening the specified configuration file: open /home/invalid_dir/invalid_file: no such file or directory ",
+			name:            "invalid path to non-existing config file",
+			configFilePath:  "/home/invalid_dir/invalid_file",
+			expectedConfig:  &ContainerInitConfig{},
+			isErrorExpected: true,
+			// The OS-specific path error suffix differs across platforms (Linux: "no such file or directory",
+			// Windows: "The system cannot find the path specified."), so only check the stable prefix.
+			expectedErrorMessage: "error opening the specified configuration file: open /home/invalid_dir/invalid_file:",
 		},
 		{
 			name:           "valid path to config file with invalid path variables",
@@ -84,7 +87,8 @@ func TestConfig_WithExistingFile(t *testing.T) {
 
 			if err != nil {
 				if tt.isErrorExpected {
-					require.Equal(t, tt.expectedErrorMessage, err.Error())
+					require.True(t, strings.HasPrefix(err.Error(), tt.expectedErrorMessage),
+						"expected error to start with %q, got %q", tt.expectedErrorMessage, err.Error())
 				} else {
 					t.Fatalf("Unexpected error: %v", err)
 				}

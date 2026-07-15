@@ -23,7 +23,7 @@ services:
       proxy:
 
   proxy:
-    image: thesoul/ubuntu-dind:docker-20.10.12
+    image: cruizba/ubuntu-dind:noble-29.6.1
     restart: unless-stopped
     tty: true
     privileged: true

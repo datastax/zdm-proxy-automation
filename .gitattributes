@@ -1,0 +1,3 @@
+# Always check out shell scripts with LF line endings, regardless of platform.
+# CRLF in a shebang line causes "no such file or directory" inside Linux containers.
+*.sh text eol=lf
