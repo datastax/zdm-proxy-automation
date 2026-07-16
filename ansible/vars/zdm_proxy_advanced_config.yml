@@ -68,6 +68,9 @@ zdm_proxy_listen_port: 9042
 ## This value is per cluster connection. Defaults to 2048.
 #zdm_proxy_max_stream_ids:
 
+## Maximum number of entries in the prepared statement cache. Defaults to 10000.
+#zdm_proxy_max_prepared_statement_cache_size:
+
 ###############
 ### Metrics ###
 ###############

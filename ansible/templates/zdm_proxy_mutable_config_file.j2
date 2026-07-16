@@ -39,6 +39,9 @@ heartbeat_interval_ms: {{ heartbeat_interval_ms }}
 {% if ( zdm_proxy_max_stream_ids is defined ) %}
 proxy_max_stream_ids: {{ zdm_proxy_max_stream_ids }}
 {% endif %}
+{% if ( zdm_proxy_max_prepared_statement_cache_size is defined ) %}
+proxy_max_prepared_statement_cache_size: {{ zdm_proxy_max_prepared_statement_cache_size }}
+{% endif %}
 
 {% if ( metrics_enabled is defined ) %}
 metrics_enabled: {{ metrics_enabled }}

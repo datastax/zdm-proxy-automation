@@ -34,6 +34,9 @@ ZDM_HEARTBEAT_INTERVAL_MS={{ heartbeat_interval_ms }}
 {% if ( zdm_proxy_max_stream_ids is defined ) %}
 ZDM_PROXY_MAX_STREAM_IDS={{ zdm_proxy_max_stream_ids }}
 {% endif %}
+{% if ( zdm_proxy_max_prepared_statement_cache_size is defined ) %}
+ZDM_PROXY_MAX_PREPARED_STATEMENT_CACHE_SIZE={{ zdm_proxy_max_prepared_statement_cache_size }}
+{% endif %}
 
 {% if ( metrics_enabled is defined ) %}
 ZDM_METRICS_ENABLED={{ metrics_enabled }}

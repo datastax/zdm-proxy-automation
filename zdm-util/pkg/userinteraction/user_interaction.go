@@ -327,7 +327,7 @@ func persistCurrentConfigToFile(containerConfig *config.ContainerInitConfig) err
 	w := bufio.NewWriter(configFile)
 
 	for propertyName, propertyValue := range containerConfig.Properties {
-		_, err = fmt.Fprintf(w, propertyName+": "+propertyValue+"\n")
+		_, err = fmt.Fprintf(w, "%s: %s\n", propertyName, propertyValue)
 		if err != nil {
 			return err
 		}

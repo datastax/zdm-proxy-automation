@@ -20,7 +20,7 @@ func StringPrompt(promptMessage string, tryAgainMessage string, returnOnEmptyVal
 	trimmedString := ""
 
 	for remainingAttempts := maxAttempts; remainingAttempts > 0; remainingAttempts-- {
-		fmt.Printf("\n" + promptMessage + ": ")
+		fmt.Printf("\n%s: ", promptMessage)
 		s, err := userInputReader.ReadString('\n')
 		if err != nil {
 			fmt.Printf("Error reading line %v \n", err)
@@ -61,7 +61,7 @@ func StringPromptLoopingForMultipleValues(promptMessage string, validateValue fu
 	values := make([]string, 0)
 	var s string
 	for {
-		fmt.Printf("\n" + promptMessage + ": ")
+		fmt.Printf("\n%s: ", promptMessage)
 		s, _ = userInputReader.ReadString('\n')
 		trimmedValue := config.FormatString(s)
 		if trimmedValue != "" {
