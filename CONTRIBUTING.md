@@ -73,7 +73,7 @@ docker exec -it zdm-proxy-automation-client-1 cqlsh zdm-proxy-automation-proxy-1
 Pin the proxy image to the version under test in `ansible/vars/zdm_proxy_container_config.yml`:
 
 ```yaml
-zdm_proxy_image: datastax/zdm-proxy:2.5.0
+zdm_proxy_image: quay.io/datastax/zdm-proxy:2.5.0
 ```
 
 Run a rolling update from inside the jumphost container:

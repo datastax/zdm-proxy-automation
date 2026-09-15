@@ -254,9 +254,9 @@
     - vars/zdm_proxy_core_config.yml  # this inclusion is for backward compatibility and will be removed in the future
 
   tasks:
-    - name: Pull ZDM Proxy Docker image from DockerHub
+    - name: Pull ZDM Proxy Docker image from Quay.io
       docker_image:
-        name: "docker.io/{{ zdm_proxy_image }}"
+        name: "{{ zdm_proxy_image }}"
         source: pull
       vars:
         ansible_python_interpreter: python3
@@ -265,7 +265,7 @@
       when: "zdm_proxy_config_mode == 'env_vars'"
       docker_container:
         name: "{{ zdm_proxy_container_name }}"
-        image: "docker.io/{{ zdm_proxy_image }}"
+        image: "{{ zdm_proxy_image }}"
         env_file: "{{ zdm_proxy_home_dir }}/{{ zdm_proxy_environment_config_file_name }}"
         env:
           ZDM_ORIGIN_USERNAME: "{{ origin_username | default('') }}"
@@ -287,7 +287,7 @@
       when: "zdm_proxy_config_mode == 'config_file'"
       docker_container:
         name: "{{ zdm_proxy_container_name }}"
-        image: "docker.io/{{ zdm_proxy_image }}"
+        image: "{{ zdm_proxy_image }}"
         command:
           - "--config={{ zdm_proxy_home_dir }}/{{ zdm_proxy_shared_assets_dir_name }}/{{zdm_proxy_config_file_name}}"
         mounts:
